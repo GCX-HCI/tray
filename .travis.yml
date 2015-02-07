@@ -22,8 +22,13 @@ android:
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-android-21
 
-# Emulator Management: Create, Start and Wait
+
 before_script:
+
+  # First assemble the project before launching the emulator
+  - ./gradlew assemble
+
+  # Emulator Management: Create, Start and Wait
   - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
