@@ -1,0 +1,15 @@
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.grandcentrix.tray">
+
+    <application>
+
+        <provider
+            android:name="net.grandcentrix.tray.provider.TrayProvider"
+            android:authorities="${trayAuthority}"
+            android:exported="false"
+            android:multiprocess="false" />
+
+    </application>
+
+</manifest>

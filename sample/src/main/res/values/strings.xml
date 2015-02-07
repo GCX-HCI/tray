@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Tray sample</string>
+    <string name="launched_x_times">"%1$d times launched"</string>
+</resources>
