@@ -263,7 +263,6 @@ public class TrayProvider extends ContentProvider {
             if (row == -1) {
                 throw new SQLiteException("an error occurred");
             }
-            Log.v(TAG, "New Preference inserted.");
             return 1;
         } else {
             // If insert fails (row already present) try an update
@@ -273,11 +272,12 @@ public class TrayProvider extends ContentProvider {
                     prefSelection,
                     prefSelectionArgs);
             if (update > 0) {
-                Log.v(TAG, "Preference updated.");
                 return 0;
             }
 
-            Log.v(TAG, "Could not insert or update preference.");
+            Log.w(TAG, "Could not insert or update preference ("
+                    + values.getAsString(TrayContract.Preferences.Columns.MODULE) + "/"
+                    + values.getAsString(TrayContract.Preferences.Columns.KEY) + ")");
             return -1;
         }
     }
