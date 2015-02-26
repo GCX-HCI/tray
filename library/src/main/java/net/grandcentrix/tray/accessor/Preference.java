@@ -131,7 +131,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
         mStorage.remove(key);
     }
 
-    private void detectVersionChange(final int newVersion) {
+    /*protected*/ void detectVersionChange(final int newVersion) {
         final int version = getStorage().getVersion();
         if (version != newVersion) {
             if (version == 0) {

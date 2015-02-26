@@ -40,7 +40,7 @@ public abstract class TrayModulePreferences extends TrayPreference {
 
     public TrayModulePreferences(final Context context, final String module, final int version) {
         super(new TrayStorage(context, module), version);
-        mContext = context;
+        mContext = context.getApplicationContext();
     }
 
     protected Context getContext() {

@@ -16,28 +16,89 @@
 
 package net.grandcentrix.tray.provider;
 
+import android.annotation.TargetApi;
+import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.test.IsolatedContext;
 import android.test.ProviderTestCase2;
+import android.test.mock.MockContentProvider;
+import android.test.mock.MockContentResolver;
+
+import java.util.HashMap;
 
 /**
  * Created by pascalwelsch on 11/21/14.
  */
 public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public static class TrayIsolatedContext extends IsolatedContext {
+
+        private final Context mTargetContext;
+
+        IsolatedContext innerContext = new IsolatedContext(getContentResolver(), this);
+
+        boolean mHasMockResolver = false;
+
+        private HashMap<String, ContentProvider> mProviders = new HashMap<>();
+
+        public TrayIsolatedContext(final ContentResolver resolver, final Context targetContext) {
+            super(resolver, targetContext);
+
+            mTargetContext = targetContext;
+        }
+
+        public void addProvider(String name, ContentProvider provider) {
+            mProviders.put(name, provider);
+        }
+
+        public void enableMockResolver(final boolean enabled) {
+            mHasMockResolver = enabled;
+        }
+
+        @Override
+        public Context getApplicationContext() {
+            return innerContext;
+        }
+
+        @Override
+        public ContentResolver getContentResolver() {
+            if (isHasMockResolver()) {
+                return getMockResolver();
+            } else {
+                return super.getContentResolver();
+            }
+        }
+
+        public ContentResolver getMockResolver() {
+            final MockContentResolver mockContentResolver = new MockContentResolver(mTargetContext);
+            for (String authority : mProviders.keySet()) {
+                mockContentResolver.addProvider(authority, mProviders.get(authority));
+            }
+            return mockContentResolver;
+        }
+
+        @Override
+        public String getPackageName() {
+            return "package.test";
+        }
+
+        public boolean isHasMockResolver() {
+            return mHasMockResolver;
+        }
+    }
+
     public static final String AUTHORITY = "net.grandcentrix.tray.test";
 
-    private IsolatedContext mIsolatedContext;
+    private TrayIsolatedContext mIsolatedContext;
 
     public TrayProviderTestCase() {
         super(TrayProvider.class, AUTHORITY);
         TrayProvider.setAuthority(AUTHORITY);
-    }
-
-    public IsolatedContext getProviderMockContext() {
-        return mIsolatedContext;
     }
 
     /**
@@ -74,10 +135,13 @@ public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
     protected void setUp() throws Exception {
         super.setUp();
         getMockContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
+        getMockContentResolver().delete(TrayProvider.CONTENT_URI_INTERNAL, null, null);
 
         assertDatabaseSize(0);
+        assertDatabaseSize(TrayProvider.CONTENT_URI_INTERNAL, 0, true);
 
-        mIsolatedContext = buildIsolatedContext();
+        mIsolatedContext = new TrayIsolatedContext(getMockContext().getContentResolver(),
+                getContext());
     }
 
     @Override
@@ -86,18 +150,7 @@ public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
         getMockContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
     }
 
-    public IsolatedContext buildIsolatedContext() {
-        return new IsolatedContext(
-                getMockContext().getContentResolver(), getMockContext()) {
-            @Override
-            public String getPackageName() {
-                return "package.test";
-            }
-
-            @Override
-            public Context getApplicationContext() {
-                return this;
-            }
-        };
+    public TrayIsolatedContext getProviderMockContext() {
+        return mIsolatedContext;
     }
 }

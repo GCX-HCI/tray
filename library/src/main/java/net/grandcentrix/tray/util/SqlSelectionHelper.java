@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ProviderHelper {
+public class SqlSelectionHelper {
 
     public static String extendSelection(String selection, String selectionToAdd) {
         // Add to selection or set as selection if selection is empty
@@ -30,6 +30,7 @@ public class ProviderHelper {
             if (TextUtils.isEmpty(selectionToAdd)) {
                 return selection;
             }
+            //noinspection StringBufferReplaceableByString
             StringBuilder selectionToAddBuilder = new StringBuilder();
             selection = selectionToAddBuilder
                     .append("(")
@@ -59,9 +60,9 @@ public class ProviderHelper {
         if (selectionArgs != null) {
             List<String> selectionArgList = new ArrayList<>(Arrays.asList(selectionArgs));
             selectionArgList.addAll(newSelectionArgs);
-            selectionArgs = selectionArgList.toArray(new String[0]);
+            selectionArgs = selectionArgList.toArray(new String[selectionArgList.size()]);
         } else {
-            selectionArgs = newSelectionArgs.toArray(new String[0]);
+            selectionArgs = newSelectionArgs.toArray(new String[newSelectionArgs.size()]);
         }
         return selectionArgs;
     }

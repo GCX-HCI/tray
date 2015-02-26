@@ -91,8 +91,10 @@ import android.provider.BaseColumns;
     }
 
     @Override
-    public void onUpgrade(final SQLiteDatabase sqLiteDatabase, final int i, final int i2) {
-        // Not implemented yet
+    public void onUpgrade(final SQLiteDatabase sqLiteDatabase, final int oldVersion,
+            final int newVersion) {
+        throw new IllegalStateException("Can't upgrade database from version " +
+                oldVersion + " to " + newVersion + ", not implemented.");
     }
 
     private void createTables(final SQLiteDatabase db) {

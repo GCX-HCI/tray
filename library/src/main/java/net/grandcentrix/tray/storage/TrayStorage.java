@@ -19,7 +19,6 @@ package net.grandcentrix.tray.storage;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProvider;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
-import net.grandcentrix.tray.util.ProviderHelper;
 
 import android.content.Context;
 import android.net.Uri;

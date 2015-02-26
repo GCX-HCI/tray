@@ -1,16 +1,16 @@
 package net.grandcentrix.tray.accessor;
 
-import junit.framework.TestCase;
-
 import net.grandcentrix.tray.mock.MockModularizedStorage;
 import net.grandcentrix.tray.provider.TrayItem;
 
 import android.annotation.SuppressLint;
+import android.test.AndroidTestCase;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 
-public class PreferenceTest extends TestCase {
+public class PreferenceTest extends AndroidTestCase {
 
     private class MockPreference extends Preference<TrayItem> {
 
@@ -100,7 +100,15 @@ public class PreferenceTest extends TestCase {
     }
 
     public void testInstantiation() throws Exception {
-        new MockPreference(1);
+        final HashMap<String, String> map = new HashMap<>();
+        new MockPreference(1) {
+            @Override
+            protected void onCreate(final int newVersion) {
+                super.onCreate(newVersion);
+                map.put("create", "create");
+            }
+        };
+        assertTrue(map.containsKey("create"));
     }
 
     public void testLowVersion() throws Exception {
@@ -152,5 +160,34 @@ public class PreferenceTest extends TestCase {
         final Collection<TrayItem> all = mockPreference.getAll();
         assertNotNull(all);
         assertEquals(0, all.size());
+    }
+
+    public void testVersionChange() throws Exception {
+        final HashMap<String, String> map = new HashMap<>();
+        final MockPreference mockPreference = new MockPreference(1) {
+            @Override
+            protected void onCreate(final int newVersion) {
+                super.onCreate(newVersion);
+                map.put("create", "create");
+            }
+
+            @Override
+            protected void onDowngrade(final int oldVersion, final int newVersion) {
+                map.put("down", "down");
+            }
+
+            @Override
+            protected void onUpgrade(final int oldVersion, final int newVersion) {
+                map.put("up", "up");
+            }
+        };
+        mockPreference.detectVersionChange(2);
+        assertTrue(map.containsKey("up"));
+        assertFalse(map.containsKey("down"));
+        map.clear();
+
+        mockPreference.detectVersionChange(1);
+        assertTrue(map.containsKey("down"));
+        assertFalse(map.containsKey("up"));
     }
 }

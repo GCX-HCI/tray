@@ -48,6 +48,7 @@ public class TrayAppPreferences extends TrayPreference {
 
     @Override
     protected void onUpgrade(final int oldVersion, final int newVersion) {
-
+        throw new IllegalStateException("Can't upgrade database from version " +
+                oldVersion + " to " + newVersion + ", not implemented.");
     }
 }

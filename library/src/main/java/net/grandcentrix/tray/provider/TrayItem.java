@@ -28,7 +28,7 @@ public class TrayItem {
 
     private final Date mCreated;
 
-    private final String mImportedKey;
+    private final String mMigratedKey;
 
     private final String mKey;
 
@@ -49,18 +49,18 @@ public class TrayItem {
                 TrayContract.Preferences.Columns.CREATED)));
         mUpdated = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
                 TrayContract.Preferences.Columns.UPDATED)));
-        mImportedKey = cursor.getString(cursor.getColumnIndexOrThrow(
+        mMigratedKey = cursor.getString(cursor.getColumnIndexOrThrow(
                 TrayContract.Preferences.Columns.IMPORTED_KEY));
     }
 
     public TrayItem(final Date created, final String key, final String module,
-            final Date updated, final String value, final String importedKey) {
+            final Date updated, final String value, final String migratedKey) {
         mCreated = created;
         mKey = key;
         mModule = module;
         mUpdated = updated;
         mValue = value;
-        mImportedKey = importedKey;
+        mMigratedKey = migratedKey;
     }
 
     public Date created() {
@@ -68,7 +68,7 @@ public class TrayItem {
     }
 
     public String migratedKey() {
-        return mImportedKey;
+        return mMigratedKey;
     }
 
     public String key() {
@@ -96,7 +96,7 @@ public class TrayItem {
                 .append(", updated: ")
                 .append(sf.format(mUpdated))
                 .append(", migratedKey: ")
-                .append(sf.format(mImportedKey))
+                .append(mMigratedKey)
                 .toString();
     }
 

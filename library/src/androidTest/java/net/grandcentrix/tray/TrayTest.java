@@ -20,18 +20,12 @@ import net.grandcentrix.tray.mock.MockPreferences;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
-import android.content.ContentResolver;
-import android.content.Context;
-import android.test.IsolatedContext;
-
 import java.util.Collection;
 
 /**
  * Created by pascalwelsch on 11/27/14.
  */
 public class TrayTest extends TrayProviderTestCase {
-
-    private IsolatedContext mIsolatedContext;
 
     private Tray mTray;
 
@@ -40,21 +34,33 @@ public class TrayTest extends TrayProviderTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mIsolatedContext = buildIsolatedContext();
-        mTrayModulePref = new MockPreferences(mIsolatedContext, "module");
-        mTray = new Tray(mIsolatedContext);
+        mTrayModulePref = new MockPreferences(getProviderMockContext(), "module");
+        mTray = new Tray(getProviderMockContext());
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         mTrayModulePref = null;
-        mIsolatedContext = null;
         mTray = null;
     }
 
+    public void testClear() throws Exception {
+        final TrayModulePreferences module2 =
+                new MockPreferences(getProviderMockContext(), "module2");
+        module2.put("blubb", "hello");
+        mTrayModulePref.put("test", "test");
+        assertDatabaseSize(2);
+        mTray.clear(mTrayModulePref);
+        assertDatabaseSize(1);
+
+        mTray.clear(module2);
+        assertDatabaseSize(0);
+    }
+
     public void testClearAll() throws Exception {
-        final TrayModulePreferences module2 = new MockPreferences(mIsolatedContext, "module2");
+        final TrayModulePreferences module2 =
+                new MockPreferences(getProviderMockContext(), "module2");
         module2.put("blubb", "hello");
         mTrayModulePref.put("test", "test");
         assertDatabaseSize(2);
@@ -64,7 +70,8 @@ public class TrayTest extends TrayProviderTestCase {
 
     public void testClearBut() throws Exception {
 
-        final TrayModulePreferences module2 = new MockPreferences(mIsolatedContext, "module2");
+        final TrayModulePreferences module2 =
+                new MockPreferences(getProviderMockContext(), "module2");
         mTrayModulePref.put("test", "test");
         module2.put("test", "test");
         mTrayModulePref.put("test2", "test");
@@ -74,7 +81,7 @@ public class TrayTest extends TrayProviderTestCase {
         mTray.clearBut(module2);
         assertDatabaseSize(2);
 
-        final TrayAppPreferences appPrefs = new TrayAppPreferences(mIsolatedContext);
+        final TrayAppPreferences appPrefs = new TrayAppPreferences(getProviderMockContext());
         appPrefs.put("test", "value");
 
         assertDatabaseSize(3);
@@ -87,7 +94,8 @@ public class TrayTest extends TrayProviderTestCase {
     }
 
     public void testGetAll() throws Exception {
-        final TrayModulePreferences module2 = new MockPreferences(mIsolatedContext, "module2");
+        final TrayModulePreferences module2 =
+                new MockPreferences(getProviderMockContext(), "module2");
 
         mTrayModulePref.put("test", "test");
         module2.put("test", "test");

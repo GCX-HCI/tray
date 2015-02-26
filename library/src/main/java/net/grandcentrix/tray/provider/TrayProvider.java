@@ -17,7 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.BuildConfig;
-import net.grandcentrix.tray.util.ProviderHelper;
+import net.grandcentrix.tray.util.SqlSelectionHelper;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -74,16 +74,16 @@ public class TrayProvider extends ContentProvider {
         switch (match) {
             case SINGLE_PREFERENCE:
             case INTERNAL_SINGLE_PREFERENCE:
-                selection = ProviderHelper.extendSelection(selection,
+                selection = SqlSelectionHelper.extendSelection(selection,
                         TrayContract.Preferences.Columns.KEY + " = ?");
-                selectionArgs = ProviderHelper.extendSelectionArgs(selectionArgs,
+                selectionArgs = SqlSelectionHelper.extendSelectionArgs(selectionArgs,
                         new String[]{uri.getPathSegments().get(2)});
                 // no break
             case MODULE_PREFERENCE:
             case INTERNAL_MODULE_PREFERENCE:
-                selection = ProviderHelper.extendSelection(selection,
+                selection = SqlSelectionHelper.extendSelection(selection,
                         TrayContract.Preferences.Columns.MODULE + " = ?");
-                selectionArgs = ProviderHelper.extendSelectionArgs(selectionArgs,
+                selectionArgs = SqlSelectionHelper.extendSelectionArgs(selectionArgs,
                         new String[]{uri.getPathSegments().get(1)});
                 // no break
             case ALL_PREFERENCE:
