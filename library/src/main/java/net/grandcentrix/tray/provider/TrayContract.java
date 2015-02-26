@@ -38,9 +38,16 @@ public class TrayContract {
             public static final String CREATED = TrayDBHelper.CREATED; // DATE
 
             public static final String UPDATED = TrayDBHelper.UPDATED; // DATE
+
+            public static final String IMPORTED_KEY = TrayDBHelper.IMPORTED_KEY;
         }
 
         public static final String BASE_PATH = "preferences";
+    }
+
+    public static interface InternalPreferences extends Preferences {
+
+        public static final String BASE_PATH = "internal_preferences";
     }
 
 }

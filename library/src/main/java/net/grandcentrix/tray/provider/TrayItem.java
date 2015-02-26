@@ -26,15 +26,17 @@ import java.util.Date;
  */
 public class TrayItem {
 
-    private Date mCreated;
+    private final Date mCreated;
 
-    private String mKey;
+    private final String mImportedKey;
 
-    private String mModule;
+    private final String mKey;
 
-    private Date mUpdated;
+    private final String mModule;
 
-    private String mValue;
+    private final Date mUpdated;
+
+    private final String mValue;
 
     /*package*/ TrayItem(final Cursor cursor) {
         mKey = cursor.getString(cursor.getColumnIndexOrThrow(
@@ -47,20 +49,26 @@ public class TrayItem {
                 TrayContract.Preferences.Columns.CREATED)));
         mUpdated = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
                 TrayContract.Preferences.Columns.UPDATED)));
+        mImportedKey = cursor.getString(cursor.getColumnIndexOrThrow(
+                TrayContract.Preferences.Columns.IMPORTED_KEY));
     }
 
     public TrayItem(final Date created, final String key, final String module,
-            final Date updated,
-            final String value) {
+            final Date updated, final String value, final String importedKey) {
         mCreated = created;
         mKey = key;
         mModule = module;
         mUpdated = updated;
         mValue = value;
+        mImportedKey = importedKey;
     }
 
     public Date created() {
         return mCreated;
+    }
+
+    public String importedKey() {
+        return mImportedKey;
     }
 
     public String key() {
@@ -87,6 +95,8 @@ public class TrayItem {
                 .append(sf.format(mCreated))
                 .append(", updated: ")
                 .append(sf.format(mUpdated))
+                .append(", importedKey: ")
+                .append(sf.format(mImportedKey))
                 .toString();
     }
 

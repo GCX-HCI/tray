@@ -43,6 +43,12 @@ public class TrayProvider extends ContentProvider {
 
     private static final int ALL_PREFERENCE = 30;
 
+    private static final int INTERNAL_SINGLE_PREFERENCE = -10;
+
+    private static final int INTERNAL_MODULE_PREFERENCE = -20;
+
+    private static final int INTERNAL_ALL_PREFERENCE = -30;
+
     private static final String TAG = TrayProvider.class.getSimpleName();
 
     public static String AUTHORITY;
@@ -50,6 +56,8 @@ public class TrayProvider extends ContentProvider {
     public static Uri AUTHORITY_URI;
 
     public static Uri CONTENT_URI;
+
+    public static Uri CONTENT_URI_INTERNAL;
 
     private static UriMatcher sURIMatcher;
 
@@ -62,29 +70,31 @@ public class TrayProvider extends ContentProvider {
     @Override
     public int delete(final Uri uri, String selection, String[] selectionArgs) {
 
-        final String table;
         final int match = sURIMatcher.match(uri);
         switch (match) {
             case SINGLE_PREFERENCE:
+            case INTERNAL_SINGLE_PREFERENCE:
                 selection = ProviderHelper.extendSelection(selection,
                         TrayContract.Preferences.Columns.KEY + " = ?");
                 selectionArgs = ProviderHelper.extendSelectionArgs(selectionArgs,
                         new String[]{uri.getPathSegments().get(2)});
                 // no break
             case MODULE_PREFERENCE:
+            case INTERNAL_MODULE_PREFERENCE:
                 selection = ProviderHelper.extendSelection(selection,
                         TrayContract.Preferences.Columns.MODULE + " = ?");
                 selectionArgs = ProviderHelper.extendSelectionArgs(selectionArgs,
                         new String[]{uri.getPathSegments().get(1)});
                 // no break
             case ALL_PREFERENCE:
-                table = TrayDBHelper.TABLE_NAME;
+            case INTERNAL_ALL_PREFERENCE:
                 break;
             default:
                 throw new IllegalArgumentException("Delete is not supported for Uri: " + uri);
         }
 
-        final int rows = mDbHelper.getWritableDatabase().delete(table, selection, selectionArgs);
+        final int rows = mDbHelper.getWritableDatabase()
+                .delete(getTable(uri), selection, selectionArgs);
 
         // Don't force an UI refresh if nothing has changed
         if (rows > 0) {
@@ -101,28 +111,25 @@ public class TrayProvider extends ContentProvider {
 
     @Override
     public Uri insert(final Uri uri, final ContentValues values) {
-        final String table;
+        Date date = new Date();
         final int match = sURIMatcher.match(uri);
-
         switch (match) {
             case SINGLE_PREFERENCE:
+            case INTERNAL_SINGLE_PREFERENCE:
                 // Add created and updated dates
-                Date date = new Date();
                 values.put(TrayContract.Preferences.Columns.CREATED, date.getTime());
                 values.put(TrayContract.Preferences.Columns.UPDATED, date.getTime());
-                values.put(TrayContract.Preferences.Columns.MODULE,
-                        uri.getPathSegments().get(1));
-                values.put(TrayContract.Preferences.Columns.KEY,
-                        uri.getPathSegments().get(2));
-                table = TrayDBHelper.TABLE_NAME;
+                values.put(TrayContract.Preferences.Columns.MODULE, uri.getPathSegments().get(1));
+                values.put(TrayContract.Preferences.Columns.KEY, uri.getPathSegments().get(2));
                 break;
+
             default:
                 throw new IllegalArgumentException("Insert is not supported for Uri: " + uri);
         }
 
         try {
             //long rows = mDbHelper.getWritableDatabase().insertOrThrow(table, null, values);
-            final int status = insertOrUpdate(table, values);
+            final int status = insertOrUpdate(getTable(uri), values);
 
             if (status >= 0) {
                 getContext().getContentResolver().notifyChange(uri, null);
@@ -152,12 +159,15 @@ public class TrayProvider extends ContentProvider {
 
         switch (match) {
             case SINGLE_PREFERENCE:
+            case INTERNAL_SINGLE_PREFERENCE:
                 builder.appendWhere(
                         TrayContract.Preferences.Columns.KEY + " = " +
                                 DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(2)));
                 // no break
             case MODULE_PREFERENCE:
-                if (match == SINGLE_PREFERENCE) {
+            case INTERNAL_MODULE_PREFERENCE:
+                if (match == SINGLE_PREFERENCE
+                        || match == INTERNAL_SINGLE_PREFERENCE) {
                     builder.appendWhere(" AND ");
                 }
                 builder.appendWhere(
@@ -165,7 +175,8 @@ public class TrayProvider extends ContentProvider {
                                 DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(1)));
                 // no break
             case ALL_PREFERENCE:
-                builder.setTables(TrayDBHelper.TABLE_NAME);
+            case INTERNAL_ALL_PREFERENCE:
+                builder.setTables(getTable(uri));
                 break;
             default:
                 throw new IllegalArgumentException("Query is not supported for Uri: " + uri);
@@ -194,18 +205,16 @@ public class TrayProvider extends ContentProvider {
         final int match = sURIMatcher.match(uri);
         switch (match) {
             case SINGLE_PREFERENCE:
+            case INTERNAL_SINGLE_PREFERENCE:
                 // Add updated date
-                Date date = new Date();
-                values.put(TrayContract.Preferences.Columns.UPDATED, date.getTime());
-
-                table = TrayDBHelper.TABLE_NAME;
+                values.put(TrayContract.Preferences.Columns.UPDATED, new Date().getTime());
                 break;
             default:
                 throw new IllegalArgumentException("Update is not supported for Uri: " + uri);
         }
 
-        final int rows = mDbHelper.getWritableDatabase().update(table, values, selection,
-                selectionArgs);
+        final int rows = mDbHelper.getWritableDatabase()
+                .update(getTable(uri), values, selection, selectionArgs);
 
         // Don't force an UI refresh if nothing has changed
         if (rows > 0) {
@@ -223,6 +232,9 @@ public class TrayProvider extends ContentProvider {
 
         CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, TrayContract.Preferences.BASE_PATH);
 
+        CONTENT_URI_INTERNAL = Uri
+                .withAppendedPath(AUTHORITY_URI, TrayContract.InternalPreferences.BASE_PATH);
+
         sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         sURIMatcher.addURI(TrayProvider.AUTHORITY,
@@ -238,6 +250,36 @@ public class TrayProvider extends ContentProvider {
         sURIMatcher.addURI(TrayProvider.AUTHORITY,
                 TrayContract.Preferences.BASE_PATH + "/*/*",
                 SINGLE_PREFERENCE);
+
+        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+                TrayContract.InternalPreferences.BASE_PATH,
+                INTERNAL_ALL_PREFERENCE);
+
+        // INTERNAL_BASE//module
+        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+                TrayContract.InternalPreferences.BASE_PATH + "/*",
+                INTERNAL_MODULE_PREFERENCE);
+
+        // INTERNAL_BASE/internal/module/key
+        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+                TrayContract.InternalPreferences.BASE_PATH + "/*/*",
+                INTERNAL_SINGLE_PREFERENCE);
+    }
+
+    private String getTable(final Uri uri) {
+        final int match = sURIMatcher.match(uri);
+        switch (match) {
+            case SINGLE_PREFERENCE:
+            case MODULE_PREFERENCE:
+            case ALL_PREFERENCE:
+            default:
+                return TrayDBHelper.TABLE_NAME;
+
+            case INTERNAL_SINGLE_PREFERENCE:
+            case INTERNAL_MODULE_PREFERENCE:
+            case INTERNAL_ALL_PREFERENCE:
+                return TrayDBHelper.INTERNAL_TABLE_NAME;
+        }
     }
 
     private int insertOrUpdate(final String table, final ContentValues values) {

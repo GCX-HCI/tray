@@ -52,7 +52,7 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void put(final String key, final Object o) {
         final String value = String.valueOf(o);
-        final TrayItem item = new TrayItem(new Date(), key, getModule(), new Date(), value);
+        final TrayItem item = new TrayItem(new Date(), key, getModule(), new Date(), value, null);
         data.put(key, item);
     }
 

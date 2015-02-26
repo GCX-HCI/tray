@@ -27,12 +27,16 @@ public interface PreferenceStorage<T> {
 
     public void clear();
 
-    public T get(String key);
+    public T get(final String key);
 
     public Collection<T> getAll();
 
-    public void put(String key, Object o);
+    public void put(final String key, final Object o);
 
-    public void remove(String key);
+    public void remove(final String key);
+
+    public int getVersion();
+
+    public void setVersion(final int version);
 
 }

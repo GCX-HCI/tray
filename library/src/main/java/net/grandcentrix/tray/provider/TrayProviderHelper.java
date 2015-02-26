@@ -61,7 +61,6 @@ public class TrayProviderHelper {
             }
             module.clear();
         }
-
     }
 
     /**
@@ -101,6 +100,17 @@ public class TrayProviderHelper {
         return queryProvider(TrayProvider.CONTENT_URI);
     }
 
+    public static Uri getInternalUri() {
+        return getUri(null, null, true);
+    }
+
+    public static Uri getInternalUri(final String module) {
+        return getUri(module, null, true);
+    }
+
+    public static Uri getInternalUri(@Nullable final String module, @Nullable final String key) {
+        return getUri(module, key, true);
+    }
 
     public static Uri getUri() {
         return getUri(null, null);
@@ -111,11 +121,19 @@ public class TrayProviderHelper {
     }
 
     public static Uri getUri(@Nullable final String module, @Nullable final String key) {
+        return getUri(module, key, false);
+    }
+
+    public static Uri getUri(@Nullable final String module, @Nullable final String key,
+            final boolean internal) {
         if (module == null && key != null) {
             throw new IllegalArgumentException(
                     "key without module is not valid. Look into the TryProvider for valid Uris");
         }
-        final Uri.Builder builder = TrayProvider.CONTENT_URI
+        final Uri uri = internal
+                ? TrayProvider.CONTENT_URI_INTERNAL
+                : TrayProvider.CONTENT_URI;
+        final Uri.Builder builder = uri
                 .buildUpon();
         if (module != null) {
             builder.appendPath(module);
@@ -131,12 +149,20 @@ public class TrayProviderHelper {
      */
     public void persist(@NonNull final String module, @NonNull final String key,
             @NonNull final String value) {
+        persist(module, key, value, false);
+    }
+
+    public void persist(@NonNull final String module, @NonNull final String key,
+            @NonNull final String value, final boolean internal) {
         //noinspection ConstantConditions
         if (value == null) {
             return;
         }
 
-        final Uri uri = TrayProvider.CONTENT_URI
+        final Uri contentUri = internal
+                ? TrayProvider.CONTENT_URI_INTERNAL
+                : TrayProvider.CONTENT_URI;
+        final Uri uri = contentUri
                 .buildUpon()
                 .appendPath(module)
                 .appendPath(key)
@@ -144,6 +170,11 @@ public class TrayProviderHelper {
         ContentValues values = new ContentValues();
         values.put(TrayContract.Preferences.Columns.VALUE, value);
         mContext.getContentResolver().insert(uri, values);
+    }
+
+    public void persistInternal(@NonNull final String module, @NonNull final String key,
+            @NonNull final String value) {
+        persist(module, key, value, true);
     }
 
     public List<TrayItem> queryProvider(@NonNull final Uri uri)

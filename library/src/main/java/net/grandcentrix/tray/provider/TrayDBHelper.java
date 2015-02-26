@@ -29,6 +29,8 @@ import android.provider.BaseColumns;
 
     public static final String TABLE_NAME = "TrayPreferences";
 
+    public static final String INTERNAL_TABLE_NAME = "TrayInternal";
+
     public static final String DATABASE_NAME = "tray.db";
 
     public static final String KEY = "KEY";
@@ -41,8 +43,26 @@ import android.provider.BaseColumns;
 
     public static final String UPDATED = "UPDATED";
 
+    //TODO UPGRADE to v2
+    public static final String IMPORTED_KEY = "IMPORTED_KEY";
+
     // TODO add additional meta fields:
     // public static final String APP_VERSION_CODE = "APP_VERSION_CODE";
+
+    public static final String INTERNAL_PREFERENCES_CREATE = "CREATE TABLE "
+            + INTERNAL_TABLE_NAME + " ( "
+            + BaseColumns._ID + " INTEGER PRIMARY KEY, "
+            + KEY + " TEXT NOT NULL, "
+            + VALUE + " TEXT, "
+            + MODULE + " TEXT, "
+            + CREATED + " INT DEFAULT 0, "  // Date
+            + UPDATED + " INT DEFAULT 0, "    // Date
+            + IMPORTED_KEY + " TEXT, "
+            + "UNIQUE ("
+            + MODULE + ", "
+            + KEY
+            + ")"
+            + ");";
 
     public static final String PREFERENCES_CREATE = "CREATE TABLE "
             + TABLE_NAME + " ( "
@@ -52,6 +72,7 @@ import android.provider.BaseColumns;
             + MODULE + " TEXT, "
             + CREATED + " INT DEFAULT 0, "  // Date
             + UPDATED + " INT DEFAULT 0, "    // Date
+            + IMPORTED_KEY + " TEXT, "
             + "UNIQUE ("
             + MODULE + ", "
             + KEY
@@ -76,5 +97,6 @@ import android.provider.BaseColumns;
 
     private void createTables(final SQLiteDatabase db) {
         db.execSQL(PREFERENCES_CREATE);
+        db.execSQL(INTERNAL_PREFERENCES_CREATE);
     }
 }

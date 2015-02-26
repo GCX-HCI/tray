@@ -37,10 +37,12 @@ import java.util.List;
  * provider.
  * <p/>
  * This class represents a simple key value storage solution based on a {@link
- * android.content.ContentProvider}. Replacing this class with a {@link java.util.HashMap} implementation for testing
- * works seamless.
+ * android.content.ContentProvider}. Replacing this class with a {@link java.util.HashMap}
+ * implementation for testing works seamless.
  */
 public class TrayStorage extends ModularizedStorage<TrayItem> {
+
+    public static final String VERSION = "version";
 
     private final Context mContext;
 
@@ -48,7 +50,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     public TrayStorage(@NonNull final Context context, @NonNull final String module) {
         super(module);
-        mContext = context;
+        mContext = context.getApplicationContext();
         mProviderHelper = new TrayProviderHelper(mContext);
     }
 
@@ -72,6 +74,17 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
+    public int getVersion() {
+        final Uri internalUri = TrayProviderHelper.getInternalUri(getModule(), VERSION);
+        final List<TrayItem> trayItems = mProviderHelper.queryProvider(internalUri);
+        if (trayItems == null || trayItems.size() == 0) {
+            // fallback, not found
+            return 0;
+        }
+        return Integer.valueOf(trayItems.get(0).value());
+    }
+
+    @Override
     public void put(@NonNull final String key, @NonNull final Object o) {
         //noinspection ConstantConditions
         if (o == null) {
@@ -90,5 +103,10 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         }
         final Uri uri = TrayProviderHelper.getUri(getModule(), key);
         mContext.getContentResolver().delete(uri, null, null);
+    }
+
+    @Override
+    public void setVersion(final int version) {
+        mProviderHelper.persistInternal(getModule(), VERSION, String.valueOf(version));
     }
 }

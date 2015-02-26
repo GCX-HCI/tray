@@ -22,14 +22,12 @@ import java.util.Collection;
 
 /**
  * Created by pascalwelsch on 11/20/14.
- *
+ * <p/>
  * Access interface to interact with preferences.
  */
 public interface PreferenceAccessor<T> {
 
     void clear();
-
-    void remove(String key);
 
     Collection<T> getAll();
 
@@ -67,4 +65,6 @@ public interface PreferenceAccessor<T> {
     void put(String key, long value);
 
     void put(String key, boolean value);
+
+    void remove(String key);
 }
