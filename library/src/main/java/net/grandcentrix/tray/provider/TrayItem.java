@@ -67,7 +67,7 @@ public class TrayItem {
         return mCreated;
     }
 
-    public String importedKey() {
+    public String migratedKey() {
         return mImportedKey;
     }
 
@@ -95,7 +95,7 @@ public class TrayItem {
                 .append(sf.format(mCreated))
                 .append(", updated: ")
                 .append(sf.format(mUpdated))
-                .append(", importedKey: ")
+                .append(", migratedKey: ")
                 .append(sf.format(mImportedKey))
                 .toString();
     }

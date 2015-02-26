@@ -1,4 +1,4 @@
-package net.grandcentrix.tray.importer;
+package net.grandcentrix.tray.migration;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,7 +8,7 @@ import android.util.Log;
 /**
  * Created by pascalwelsch on 2/25/15.
  */
-public class SharedPreferencesImport implements TrayImport {
+public class SharedPreferencesImport implements TrayMigration {
 
     private static final String TAG = SharedPreferencesImport.class.getSimpleName();
 
@@ -26,13 +26,13 @@ public class SharedPreferencesImport implements TrayImport {
     }
 
     @Override
-    public Object getImportData() {
+    public Object getData() {
         return mPreferences.getAll().get(mSharedPrefsKey);
     }
 
     @NonNull
     @Override
-    public String getImportedKey() {
+    public String getPreviousKey() {
         return mSharedPrefsKey;
     }
 
@@ -43,12 +43,12 @@ public class SharedPreferencesImport implements TrayImport {
     }
 
     @Override
-    public void onPostImport() {
+    public void onPostMigrate() {
         mPreferences.edit().remove(mSharedPrefsKey).apply();
     }
 
     @Override
-    public boolean onPreImport() {
+    public boolean onPreMigrate() {
         if (!mPreferences.contains(mSharedPrefsKey)) {
             Log.v(TAG, "SharedPreference with key '" + mSharedPrefsKey
                     + "' not found. skipped import");

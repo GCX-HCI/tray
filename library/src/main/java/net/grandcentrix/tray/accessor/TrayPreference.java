@@ -16,7 +16,7 @@
 
 package net.grandcentrix.tray.accessor;
 
-import net.grandcentrix.tray.importer.TrayImport;
+import net.grandcentrix.tray.migration.TrayMigration;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.storage.ModularizedStorage;
 
@@ -29,30 +29,6 @@ public abstract class TrayPreference extends Preference<TrayItem> {
 
     public TrayPreference(final ModularizedStorage<TrayItem> storage, final int version) {
         super(storage, version);
-    }
-
-    /**
-     * migrates the data from {@link #getImports(int)} into tray
-     */
-    @Override
-    protected void onUpgrade(final int version) {
-        final List<TrayImport> imports = getImports(version);
-        if (imports == null) {
-            return;
-        }
-        for (TrayImport singleImport : imports) {
-            if (isAlreadyImported(singleImport)) {
-                continue;
-            }
-            final boolean cancel = singleImport.onPreImport();
-            if (cancel) {
-                continue;
-            }
-            final Object data = singleImport.getImportData();
-            isDataTypeSupported(data);
-            getStorage().put(singleImport.getTrayKey(), data);
-            singleImport.onPostImport();
-        }
     }
 
     @Override
@@ -87,39 +63,6 @@ public abstract class TrayPreference extends Preference<TrayItem> {
     public String getString(final String key, final String defaultValue) {
         final TrayItem pref = getPref(key);
         return pref == null ? defaultValue : pref.value();
-    }
-
-
-    /**
-     * checks if the given {@param importItem} was imported before
-     *
-     * @param importItem the import operation object
-     * @return true if the item should be reimported
-     */
-    private boolean isAlreadyImported(final TrayImport importItem) {
-        // annotations are good but it's important to be sure
-        // noinspection ConstantConditions
-        if (importItem.getImportedKey() == null) {
-            throw new IllegalArgumentException("the imported key must not be null");
-        }
-
-        final String trayKey = importItem.getTrayKey();
-        final TrayItem preference = getStorage().get(trayKey);
-        if (preference.importedKey() == null) {
-            // the tray item was available before the import because it has no importedKey
-            return false;
-        }
-
-        final String importedKey = importItem.getImportedKey();
-        // for better documentation
-        // noinspection RedundantIfStatement
-        if (preference.importedKey().equals(importedKey)) {
-            // the keys are the same. so the item was imported before
-            return true;
-        } else {
-            // the key has changed since the last import. import again
-            return false;
-        }
     }
 
 }
