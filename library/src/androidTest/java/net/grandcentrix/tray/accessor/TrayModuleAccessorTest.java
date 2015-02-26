@@ -44,7 +44,17 @@ public class TrayModuleAccessorTest extends AndroidTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mTrayAccessor = new TrayPreference(new MockModularizedStorage("test")) {
+        mTrayAccessor = new TrayPreference(new MockModularizedStorage("test"), 1) {
+
+            @Override
+            protected void onCreate(final int newVersion) {
+
+            }
+
+            @Override
+            protected void onUpgrade(final int oldVersion, final int newVersion) {
+
+            }
         };
     }
 

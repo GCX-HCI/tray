@@ -28,7 +28,17 @@ public class ModularizedAccessorTest extends AndroidTestCase {
     public class MockModuleAccessor extends Preference<String> {
 
         public MockModuleAccessor(final String name) {
-            super(new MockModularizedStringStorage(name));
+            super(new MockModularizedStringStorage(name), 1);
+        }
+
+        @Override
+        protected void onCreate(final int newVersion) {
+
+        }
+
+        @Override
+        protected void onUpgrade(final int oldVersion, final int newVersion) {
+
         }
 
         @Override

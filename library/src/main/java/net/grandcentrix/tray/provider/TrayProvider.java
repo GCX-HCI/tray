@@ -43,11 +43,11 @@ public class TrayProvider extends ContentProvider {
 
     private static final int ALL_PREFERENCE = 30;
 
-    private static final int INTERNAL_SINGLE_PREFERENCE = -10;
+    private static final int INTERNAL_SINGLE_PREFERENCE = 110;
 
-    private static final int INTERNAL_MODULE_PREFERENCE = -20;
+    private static final int INTERNAL_MODULE_PREFERENCE = 120;
 
-    private static final int INTERNAL_ALL_PREFERENCE = -30;
+    private static final int INTERNAL_ALL_PREFERENCE = 130;
 
     private static final String TAG = TrayProvider.class.getSimpleName();
 

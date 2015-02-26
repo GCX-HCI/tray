@@ -22,11 +22,13 @@ import java.util.Collection;
 import java.util.HashMap;
 
 /**
-* Created by pascalwelsch on 11/21/14.
-*/
+ * Created by pascalwelsch on 11/21/14.
+ */
 public class MockModularizedStringStorage extends ModularizedStorage<String> {
 
     private HashMap<String, String> data = new HashMap<>();
+
+    private int version = 0;
 
     public MockModularizedStringStorage(final String module) {
         super(module);
@@ -48,6 +50,11 @@ public class MockModularizedStringStorage extends ModularizedStorage<String> {
     }
 
     @Override
+    public int getVersion() {
+        return version;
+    }
+
+    @Override
     public void put(final String key, final Object o) {
         data.put(key, String.valueOf(o));
     }
@@ -55,5 +62,10 @@ public class MockModularizedStringStorage extends ModularizedStorage<String> {
     @Override
     public void remove(final String key) {
         data.remove(key);
+    }
+
+    @Override
+    public void setVersion(final int version) {
+        this.version = version;
     }
 }

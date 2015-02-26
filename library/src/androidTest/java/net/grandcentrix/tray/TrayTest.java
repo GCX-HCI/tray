@@ -16,6 +16,7 @@
 
 package net.grandcentrix.tray;
 
+import net.grandcentrix.tray.mock.MockPreferences;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
@@ -35,7 +36,7 @@ public class TrayTest extends TrayProviderTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mTrayModulePref = new TrayModulePreferences(getMockContext(), "module");
+        mTrayModulePref = new MockPreferences(getMockContext(), "module");
         mTray = new Tray(getMockContext());
     }
 
@@ -54,7 +55,7 @@ public class TrayTest extends TrayProviderTestCase {
                 return "package.test";
             }
         };
-        final TrayModulePreferences module2 = new TrayModulePreferences(context, "module2");
+        final TrayModulePreferences module2 = new MockPreferences(context, "module2");
         module2.put("blubb", "hello");
         mTrayModulePref.put("test", "test");
         assertDatabaseSize(2);
@@ -71,7 +72,7 @@ public class TrayTest extends TrayProviderTestCase {
                 return "package.test";
             }
         };
-        final TrayModulePreferences module2 = new TrayModulePreferences(context, "module2");
+        final TrayModulePreferences module2 = new MockPreferences(context, "module2");
 
         mTrayModulePref.put("test", "test");
         module2.put("test", "test");
@@ -94,7 +95,7 @@ public class TrayTest extends TrayProviderTestCase {
             }
         };
 
-        final TrayModulePreferences module2 = new TrayModulePreferences(context, "module2");
+        final TrayModulePreferences module2 = new MockPreferences(context, "module2");
         mTrayModulePref.put("test", "test");
         module2.put("test", "test");
         mTrayModulePref.put("test2", "test");

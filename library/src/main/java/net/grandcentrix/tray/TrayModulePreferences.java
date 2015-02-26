@@ -34,7 +34,7 @@ import android.content.Context;
  * Communicates with the {@link net.grandcentrix.tray.storage.TrayStorage} to store the preferences
  * into a {@link android.content.ContentProvider}
  */
-public class TrayModulePreferences extends TrayPreference {
+public abstract class TrayModulePreferences extends TrayPreference {
 
     private final Context mContext;
 

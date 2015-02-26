@@ -35,7 +35,19 @@ import android.content.Context;
  */
 public class TrayAppPreferences extends TrayPreference {
 
+    private static final int VERSION = 1;
+
     public TrayAppPreferences(final Context context) {
-        super(new TrayStorage(context, context.getPackageName()));
+        super(new TrayStorage(context, context.getPackageName()), VERSION);
+    }
+
+    @Override
+    protected void onCreate(final int newVersion) {
+
+    }
+
+    @Override
+    protected void onUpgrade(final int oldVersion, final int newVersion) {
+
     }
 }

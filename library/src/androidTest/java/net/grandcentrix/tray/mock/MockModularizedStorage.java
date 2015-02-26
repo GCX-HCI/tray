@@ -30,6 +30,8 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
 
     private HashMap<String, TrayItem> data = new HashMap<>();
 
+    private int version = 0;
+
     public MockModularizedStorage(final String module) {
         super(module);
     }
@@ -50,6 +52,11 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
+    public int getVersion() {
+        return version;
+    }
+
+    @Override
     public void put(final String key, final Object o) {
         final String value = String.valueOf(o);
         final TrayItem item = new TrayItem(new Date(), key, getModule(), new Date(), value, null);
@@ -59,5 +66,10 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void remove(final String key) {
         data.remove(key);
+    }
+
+    @Override
+    public void setVersion(final int version) {
+        this.version = version;
     }
 }

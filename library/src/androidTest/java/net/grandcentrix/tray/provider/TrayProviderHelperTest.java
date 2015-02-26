@@ -21,6 +21,7 @@ import junit.framework.Assert;
 import net.grandcentrix.tray.TrayAppPreferences;
 import net.grandcentrix.tray.TrayModulePreferences;
 import net.grandcentrix.tray.accessor.TrayPreference;
+import net.grandcentrix.tray.mock.MockPreferences;
 
 import android.net.Uri;
 import android.test.IsolatedContext;
@@ -93,15 +94,15 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertDatabaseSize(8);
 
         mProviderHelper.clearBut(new TrayAppPreferences(context),
-                new TrayModulePreferences(context, MODULE_A),
-                new TrayModulePreferences(context, MODULE_B));
+                new MockPreferences(context, MODULE_A),
+                new MockPreferences(context, MODULE_B));
         assertDatabaseSize(6);
 
-        mProviderHelper.clearBut(new TrayModulePreferences(context, MODULE_A),
-                new TrayModulePreferences(context, MODULE_B));
+        mProviderHelper.clearBut(new MockPreferences(context, MODULE_A),
+                new MockPreferences(context, MODULE_B));
         assertDatabaseSize(4);
 
-        mProviderHelper.clearBut(new TrayModulePreferences(context, MODULE_A));
+        mProviderHelper.clearBut(new MockPreferences(context, MODULE_A));
         assertDatabaseSize(2);
 
         mProviderHelper.clearBut((TrayPreference) null);
@@ -129,10 +130,10 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
         assertDatabaseSize(4);
 
-        mProviderHelper.clear(new TrayModulePreferences(getMockContext(), MODULE_A));
+        mProviderHelper.clear(new MockPreferences(getMockContext(), MODULE_A));
         assertDatabaseSize(2);
 
-        mProviderHelper.clear(new TrayModulePreferences(getMockContext(), MODULE_B));
+        mProviderHelper.clear(new MockPreferences(getMockContext(), MODULE_B));
         assertDatabaseSize(0);
 
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);

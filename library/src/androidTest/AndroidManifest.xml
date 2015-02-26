@@ -22,6 +22,8 @@
     <application
         android:allowBackup="true">
 
+        <uses-library android:name="android.test.runner"/>
+
         <provider
             android:name=".provider.TrayProvider"
             tools:replace="android:authorities"
