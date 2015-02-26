@@ -46,10 +46,6 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
         }
     }
 
-    protected List<TrayMigration> getImports(final int version) {
-        return new ArrayList<>();
-    }
-
     /**
      * Called when this Preference is created for the first time. This is where the initial
      * migration from other data source should happen.
@@ -63,7 +59,8 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
      * @param newVersion
      */
     protected void onDowngrade(final int oldVersion, final int newVersion) {
-        throw new IllegalStateException("downgrade isn't implemented");
+        throw new IllegalStateException("Can't downgrade from version " +
+                oldVersion + " to " + newVersion);
     }
 
     /**

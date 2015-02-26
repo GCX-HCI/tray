@@ -2,11 +2,61 @@ package net.grandcentrix.tray.accessor;
 
 import junit.framework.TestCase;
 
+import net.grandcentrix.tray.mock.MockModularizedStorage;
+import net.grandcentrix.tray.provider.TrayItem;
+
 import android.annotation.SuppressLint;
 
+import java.util.Collection;
 import java.util.Date;
 
 public class PreferenceTest extends TestCase {
+
+    private class MockPreference extends Preference<TrayItem> {
+
+        public MockPreference(final int version) {
+            super(new MockModularizedStorage("test"), version);
+        }
+
+        public MockPreference(final MockModularizedStorage storage, final int version) {
+            super(storage, version);
+        }
+
+        @Override
+        protected void onCreate(final int newVersion) {
+
+        }
+
+        @Override
+        protected void onUpgrade(final int oldVersion, final int newVersion) {
+
+        }
+
+        @Override
+        public boolean getBoolean(final String key, final boolean defaultValue) {
+            return false;
+        }
+
+        @Override
+        public float getFloat(final String key, final float defaultValue) {
+            return 0;
+        }
+
+        @Override
+        public int getInt(final String key, final int defaultValue) {
+            return 0;
+        }
+
+        @Override
+        public long getLong(final String key, final long defaultValue) {
+            return 0;
+        }
+
+        @Override
+        public String getString(final String key, final String defaultValue) {
+            return null;
+        }
+    }
 
     @SuppressLint("UseValueOf")
     @SuppressWarnings(
@@ -33,5 +83,74 @@ public class PreferenceTest extends TestCase {
         assertFalse(Preference.isDataTypeSupported(new Date()));
         assertFalse(Preference.isDataTypeSupported(1d));
         assertFalse(Preference.isDataTypeSupported(new Double(1d)));
+    }
+
+    public void testGetAll() throws Exception {
+        final MockPreference mockPreference = new MockPreference(1);
+        final Collection<TrayItem> all = mockPreference.getAll();
+        assertNotNull(all);
+        assertEquals(0, all.size());
+
+        mockPreference.put("test", "test");
+        mockPreference.put("foo", "foo");
+
+        final Collection<TrayItem> all2 = mockPreference.getAll();
+        assertNotNull(all2);
+        assertEquals(2, all2.size());
+    }
+
+    public void testInstantiation() throws Exception {
+        new MockPreference(1);
+    }
+
+    public void testLowVersion() throws Exception {
+        int version = 0;
+        try {
+            new MockPreference(version);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains(String.valueOf(version)));
+        }
+
+        version = -1000;
+        try {
+            new MockPreference(version);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains(String.valueOf(version)));
+        }
+    }
+
+    public void testOnDowngradeShouldFail() throws Exception {
+        final MockModularizedStorage storage = new MockModularizedStorage("blubb");
+        new MockPreference(storage, 2);
+        try {
+            new MockPreference(storage, 1);
+            fail();
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage().contains("downgrade"));
+        }
+    }
+
+    public void testRemove() throws Exception {
+        final MockPreference mockPreference = new MockPreference(1);
+        mockPreference.put("test", "test");
+        mockPreference.put("foo", "foo");
+
+        final Collection<TrayItem> all2 = mockPreference.getAll();
+        assertNotNull(all2);
+        assertEquals(2, all2.size());
+
+        mockPreference.remove("test");
+
+        final Collection<TrayItem> all1 = mockPreference.getAll();
+        assertNotNull(all1);
+        assertEquals(1, all2.size());
+
+        mockPreference.remove("foo");
+
+        final Collection<TrayItem> all = mockPreference.getAll();
+        assertNotNull(all);
+        assertEquals(0, all.size());
     }
 }

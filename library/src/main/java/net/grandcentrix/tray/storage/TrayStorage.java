@@ -19,6 +19,7 @@ package net.grandcentrix.tray.storage;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProvider;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
+import net.grandcentrix.tray.util.ProviderHelper;
 
 import android.content.Context;
 import android.net.Uri;
@@ -77,7 +78,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     public int getVersion() {
         final Uri internalUri = TrayProviderHelper.getInternalUri(getModule(), VERSION);
         final List<TrayItem> trayItems = mProviderHelper.queryProvider(internalUri);
-        if (trayItems == null || trayItems.size() == 0) {
+        if (trayItems.size() == 0) {
             // fallback, not found
             return 0;
         }

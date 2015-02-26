@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storrage;
+package net.grandcentrix.tray.storage;
 
 import junit.framework.Assert;
 
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
-import net.grandcentrix.tray.storage.TrayStorage;
 
 /**
  * Created by pascalwelsch on 11/21/14.
@@ -59,6 +58,16 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
         mStorage.clear();
         assertDatabaseSize(TrayProviderHelper.getUri(MODULE2), 1, true);
+    }
+
+    public void testGet() throws Exception {
+        assertNull(mStorage.get("something"));
+
+        mStorage.put("test", "foo");
+        final TrayItem item = mStorage.get("test");
+        assertNotNull(item);
+        assertEquals("test", item.key());
+        assertEquals("foo", item.value());
     }
 
     public void testGetAll() throws Exception {
@@ -112,5 +121,13 @@ public class TrayStorageTest extends TrayProviderTestCase {
         } catch (IllegalArgumentException e) {
             // success
         }
+    }
+
+    public void testVersion() throws Exception {
+        // default version, not set yet
+        assertEquals(0, mStorage.getVersion());
+
+        mStorage.setVersion(25);
+        assertEquals(25, mStorage.getVersion());
     }
 }

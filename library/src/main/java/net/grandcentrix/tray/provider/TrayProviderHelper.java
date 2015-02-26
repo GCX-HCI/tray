@@ -177,6 +177,7 @@ public class TrayProviderHelper {
         persist(module, key, value, true);
     }
 
+    @NonNull
     public List<TrayItem> queryProvider(@NonNull final Uri uri)
             throws IllegalStateException {
         final Cursor cursor = mContext.getContentResolver().query(uri, null, null, null, null);
