@@ -65,7 +65,7 @@ public class TrayProvider extends ContentProvider {
         setAuthority(BuildConfig.AUTHORITY);
     }
 
-    private TrayDBHelper mDbHelper;
+    /*protected*/ TrayDBHelper mDbHelper;
 
     @Override
     public int delete(final Uri uri, String selection, String[] selectionArgs) {
@@ -102,6 +102,10 @@ public class TrayProvider extends ContentProvider {
         }
 
         return rows;
+    }
+
+    public SQLiteDatabase getReadableDatabase() {
+        return mDbHelper.getReadableDatabase();
     }
 
     @Override
@@ -183,13 +187,9 @@ public class TrayProvider extends ContentProvider {
         }
 
         // Query
-        Cursor cursor = builder.query(mDbHelper.getReadableDatabase(), projection, selection,
+        Cursor cursor = builder.query(getReadableDatabase(), projection, selection,
                 selectionArgs, null, null, sortOrder);
-
-        if (cursor != null) {
-            cursor.setNotificationUri(getContext().getContentResolver(), uri);
-        }
-
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
@@ -201,8 +201,14 @@ public class TrayProvider extends ContentProvider {
     @Override
     public int update(final Uri uri, final ContentValues values, final String selection,
             final String[] selectionArgs) {
-        final String table;
-        final int match = sURIMatcher.match(uri);
+        throw new UnsupportedOperationException("not implemented");
+
+        // this is a standard implementation (but untested at the moment).
+        // Perhaps useful in the future. The current implementation doesn't require a an
+        // update mechanism other than multiple calls to {@link #insert} which results
+        // in an {@link #insertOrUpdate} call
+
+        /*final int match = sURIMatcher.match(uri);
         switch (match) {
             case SINGLE_PREFERENCE:
             case INTERNAL_SINGLE_PREFERENCE:
@@ -221,7 +227,61 @@ public class TrayProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
         }
 
-        return rows;
+        return rows;*/
+    }
+
+    /*protected*/ String getTable(final Uri uri) {
+        final int match = sURIMatcher.match(uri);
+        switch (match) {
+            case SINGLE_PREFERENCE:
+            case MODULE_PREFERENCE:
+            case ALL_PREFERENCE:
+            default:
+                return TrayDBHelper.TABLE_NAME;
+
+            case INTERNAL_SINGLE_PREFERENCE:
+            case INTERNAL_MODULE_PREFERENCE:
+            case INTERNAL_ALL_PREFERENCE:
+                return TrayDBHelper.INTERNAL_TABLE_NAME;
+        }
+    }
+
+    /**
+     * Tries to insert the values. If it fails because the item already exists it tries to update
+     * the item.
+     *
+     * @param table  the table to insert
+     * @param values the values to insert
+     * @return 1 for insert, 0 for update and -1 if an error occurred
+     */
+    /*package*/ int insertOrUpdate(final String table, final ContentValues values) {
+        SQLiteDatabase sqlDB = mDbHelper.getWritableDatabase();
+        if (sqlDB == null) {
+            return -1;
+        }
+
+        final String prefSelection =
+                TrayContract.Preferences.Columns.MODULE + " = ?"
+                        + "AND " + TrayContract.Preferences.Columns.KEY + " = ?";
+        final String[] prefSelectionArgs = {
+                values.getAsString(TrayContract.Preferences.Columns.MODULE),
+                values.getAsString(TrayContract.Preferences.Columns.KEY)
+        };
+
+        final long items = DatabaseUtils
+                .queryNumEntries(sqlDB, table, prefSelection, prefSelectionArgs);
+
+        if (items == 0) {
+            // insert
+            sqlDB.insertOrThrow(table, null, values);
+            return 1;
+        } else {
+            // If insert fails (row already present) try an update
+            // Remove created timestamp since it shouldn't be updated
+            values.remove(TrayContract.Preferences.Columns.CREATED);
+            sqlDB.update(table, values, prefSelection, prefSelectionArgs);
+            return 0;
+        }
     }
 
     /*package*/
@@ -264,63 +324,5 @@ public class TrayProvider extends ContentProvider {
         sURIMatcher.addURI(TrayProvider.AUTHORITY,
                 TrayContract.InternalPreferences.BASE_PATH + "/*/*",
                 INTERNAL_SINGLE_PREFERENCE);
-    }
-
-    private String getTable(final Uri uri) {
-        final int match = sURIMatcher.match(uri);
-        switch (match) {
-            case SINGLE_PREFERENCE:
-            case MODULE_PREFERENCE:
-            case ALL_PREFERENCE:
-            default:
-                return TrayDBHelper.TABLE_NAME;
-
-            case INTERNAL_SINGLE_PREFERENCE:
-            case INTERNAL_MODULE_PREFERENCE:
-            case INTERNAL_ALL_PREFERENCE:
-                return TrayDBHelper.INTERNAL_TABLE_NAME;
-        }
-    }
-
-    private int insertOrUpdate(final String table, final ContentValues values) {
-        SQLiteDatabase sqlDB = mDbHelper.getWritableDatabase();
-        if (sqlDB == null) {
-            return -1;
-        }
-
-        final String prefSelection =
-                TrayContract.Preferences.Columns.MODULE + " = ?"
-                        + "AND " + TrayContract.Preferences.Columns.KEY + " = ?";
-        final String[] prefSelectionArgs = {
-                values.getAsString(TrayContract.Preferences.Columns.MODULE),
-                values.getAsString(TrayContract.Preferences.Columns.KEY)
-        };
-
-        final long items = DatabaseUtils
-                .queryNumEntries(sqlDB, table, prefSelection, prefSelectionArgs);
-
-        if (items == 0) {
-            // insert
-            final long row = sqlDB.insertOrThrow(table, null, values);
-            if (row == -1) {
-                throw new SQLiteException("an error occurred");
-            }
-            Log.v(TAG, "New Preference inserted.");
-            return 1;
-        } else {
-            // If insert fails (row already present) try an update
-            // Remove created timestamp since it shouldn't be updated
-            values.remove(TrayContract.Preferences.Columns.CREATED);
-            final int update = sqlDB.update(table, values,
-                    prefSelection,
-                    prefSelectionArgs);
-            if (update > 0) {
-                Log.v(TAG, "Preference updated.");
-                return 0;
-            }
-
-            Log.v(TAG, "Could not insert or update preference.");
-            return -1;
-        }
     }
 }

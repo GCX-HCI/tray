@@ -50,7 +50,7 @@ public class TrayItem {
         mUpdated = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
                 TrayContract.Preferences.Columns.UPDATED)));
         mMigratedKey = cursor.getString(cursor.getColumnIndexOrThrow(
-                TrayContract.Preferences.Columns.IMPORTED_KEY));
+                TrayContract.Preferences.Columns.MIGRATED_KEY));
     }
 
     public TrayItem(final Date created, final String key, final String module,

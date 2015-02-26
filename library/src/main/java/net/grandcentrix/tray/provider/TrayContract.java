@@ -39,7 +39,7 @@ public class TrayContract {
 
             public static final String UPDATED = TrayDBHelper.UPDATED; // DATE
 
-            public static final String IMPORTED_KEY = TrayDBHelper.IMPORTED_KEY;
+            public static final String MIGRATED_KEY = TrayDBHelper.MIGRATED_KEY;
         }
 
         public static final String BASE_PATH = "preferences";

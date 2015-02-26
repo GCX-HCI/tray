@@ -25,7 +25,7 @@ import android.provider.BaseColumns;
 /**
  * Created by jannisveerkamp on 17.09.14.
  */
-/*package*/ class TrayDBHelper extends SQLiteOpenHelper {
+public class TrayDBHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_NAME = "TrayPreferences";
 
@@ -44,7 +44,7 @@ import android.provider.BaseColumns;
     public static final String UPDATED = "UPDATED";
 
     //TODO UPGRADE to v2
-    public static final String IMPORTED_KEY = "IMPORTED_KEY";
+    public static final String MIGRATED_KEY = "MIGRATED_KEY";
 
     // TODO add additional meta fields:
     // public static final String APP_VERSION_CODE = "APP_VERSION_CODE";
@@ -57,7 +57,7 @@ import android.provider.BaseColumns;
             + MODULE + " TEXT, "
             + CREATED + " INT DEFAULT 0, "  // Date
             + UPDATED + " INT DEFAULT 0, "    // Date
-            + IMPORTED_KEY + " TEXT, "
+            + MIGRATED_KEY + " TEXT, "
             + "UNIQUE ("
             + MODULE + ", "
             + KEY
@@ -72,7 +72,7 @@ import android.provider.BaseColumns;
             + MODULE + " TEXT, "
             + CREATED + " INT DEFAULT 0, "  // Date
             + UPDATED + " INT DEFAULT 0, "    // Date
-            + IMPORTED_KEY + " TEXT, "
+            + MIGRATED_KEY + " TEXT, "
             + "UNIQUE ("
             + MODULE + ", "
             + KEY
