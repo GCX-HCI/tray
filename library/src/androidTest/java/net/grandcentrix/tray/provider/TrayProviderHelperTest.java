@@ -53,7 +53,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mProviderHelper = new TrayProviderHelper(getMockContext());
+        mProviderHelper = new TrayProviderHelper(buildIsolatedContext());
     }
 
     @Override
@@ -75,13 +75,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
 
     public void testClearBut() throws Exception {
         // We need a package name in this test, thus creating our own mock context
-        final IsolatedContext context = new IsolatedContext(
-                getMockContext().getContentResolver(), getMockContext()) {
-            @Override
-            public String getPackageName() {
-                return "package.test";
-            }
-        };
+        final IsolatedContext context = buildIsolatedContext();
 
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
@@ -130,10 +124,10 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
         assertDatabaseSize(4);
 
-        mProviderHelper.clear(new MockPreferences(getMockContext(), MODULE_A));
+        mProviderHelper.clear(new MockPreferences(getProviderMockContext(), MODULE_A));
         assertDatabaseSize(2);
 
-        mProviderHelper.clear(new MockPreferences(getMockContext(), MODULE_B));
+        mProviderHelper.clear(new MockPreferences(getProviderMockContext(), MODULE_B));
         assertDatabaseSize(0);
 
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);

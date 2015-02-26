@@ -41,7 +41,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mStorage = new TrayStorage(getMockContext(), "test");
+        mStorage = new TrayStorage(getProviderMockContext(), "test");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
     public void testClear() throws Exception {
         final String MODULE2 = "test2";
-        final TrayStorage storage2 = new TrayStorage(getMockContext(), MODULE2);
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), MODULE2);
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
         assertDatabaseSize(2);
@@ -62,7 +62,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testGetAll() throws Exception {
-        final TrayStorage storage2 = new TrayStorage(getMockContext(), "test2");
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2");
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
         assertDatabaseSize(2);
@@ -75,7 +75,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testPutMultipleModules() throws Exception {
-        final TrayStorage storage2 = new TrayStorage(getMockContext(), "test2");
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2");
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
         assertDatabaseSize(2);

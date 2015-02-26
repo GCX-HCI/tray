@@ -255,12 +255,12 @@ public class TrayProvider extends ContentProvider {
                 TrayContract.InternalPreferences.BASE_PATH,
                 INTERNAL_ALL_PREFERENCE);
 
-        // INTERNAL_BASE//module
+        // INTERNAL_BASE/module
         sURIMatcher.addURI(TrayProvider.AUTHORITY,
                 TrayContract.InternalPreferences.BASE_PATH + "/*",
                 INTERNAL_MODULE_PREFERENCE);
 
-        // INTERNAL_BASE/internal/module/key
+        // INTERNAL_BASE/module/key
         sURIMatcher.addURI(TrayProvider.AUTHORITY,
                 TrayContract.InternalPreferences.BASE_PATH + "/*/*",
                 INTERNAL_SINGLE_PREFERENCE);

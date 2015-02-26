@@ -16,8 +16,10 @@
 
 package net.grandcentrix.tray.provider;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.test.IsolatedContext;
 import android.test.ProviderTestCase2;
 
 /**
@@ -27,9 +29,15 @@ public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
 
     public static final String AUTHORITY = "net.grandcentrix.tray.test";
 
+    private IsolatedContext mIsolatedContext;
+
     public TrayProviderTestCase() {
         super(TrayProvider.class, AUTHORITY);
         TrayProvider.setAuthority(AUTHORITY);
+    }
+
+    public IsolatedContext getProviderMockContext() {
+        return mIsolatedContext;
     }
 
     /**
@@ -68,11 +76,28 @@ public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
         getMockContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
 
         assertDatabaseSize(0);
+
+        mIsolatedContext = buildIsolatedContext();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         getMockContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
+    }
+
+    public IsolatedContext buildIsolatedContext() {
+        return new IsolatedContext(
+                getMockContext().getContentResolver(), getMockContext()) {
+            @Override
+            public String getPackageName() {
+                return "package.test";
+            }
+
+            @Override
+            public Context getApplicationContext() {
+                return this;
+            }
+        };
     }
 }

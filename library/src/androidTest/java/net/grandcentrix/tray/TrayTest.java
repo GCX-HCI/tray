@@ -20,6 +20,8 @@ import net.grandcentrix.tray.mock.MockPreferences;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.test.IsolatedContext;
 
 import java.util.Collection;
@@ -29,6 +31,8 @@ import java.util.Collection;
  */
 public class TrayTest extends TrayProviderTestCase {
 
+    private IsolatedContext mIsolatedContext;
+
     private Tray mTray;
 
     private TrayModulePreferences mTrayModulePref;
@@ -36,26 +40,21 @@ public class TrayTest extends TrayProviderTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mTrayModulePref = new MockPreferences(getMockContext(), "module");
-        mTray = new Tray(getMockContext());
+        mIsolatedContext = buildIsolatedContext();
+        mTrayModulePref = new MockPreferences(mIsolatedContext, "module");
+        mTray = new Tray(mIsolatedContext);
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         mTrayModulePref = null;
+        mIsolatedContext = null;
         mTray = null;
     }
 
     public void testClearAll() throws Exception {
-        final IsolatedContext context = new IsolatedContext(
-                getMockContext().getContentResolver(), getMockContext()) {
-            @Override
-            public String getPackageName() {
-                return "package.test";
-            }
-        };
-        final TrayModulePreferences module2 = new MockPreferences(context, "module2");
+        final TrayModulePreferences module2 = new MockPreferences(mIsolatedContext, "module2");
         module2.put("blubb", "hello");
         mTrayModulePref.put("test", "test");
         assertDatabaseSize(2);
@@ -63,39 +62,9 @@ public class TrayTest extends TrayProviderTestCase {
         assertDatabaseSize(0);
     }
 
-    public void testGetAll() throws Exception {
-        // We need a package name in this test, thus creating our own mock context
-        final IsolatedContext context = new IsolatedContext(
-                getMockContext().getContentResolver(), getMockContext()) {
-            @Override
-            public String getPackageName() {
-                return "package.test";
-            }
-        };
-        final TrayModulePreferences module2 = new MockPreferences(context, "module2");
-
-        mTrayModulePref.put("test", "test");
-        module2.put("test", "test");
-        mTrayModulePref.put("test2", "test");
-        module2.put("test2", "test");
-        assertDatabaseSize(4);
-
-        final Collection<TrayItem> all = mTray.getAll();
-        assertEquals(4, all.size());
-    }
-
     public void testClearBut() throws Exception {
 
-        // We need a package name in this test, thus creating our own mock context
-        final IsolatedContext context = new IsolatedContext(
-                getMockContext().getContentResolver(), getMockContext()) {
-            @Override
-            public String getPackageName() {
-                return "package.test";
-            }
-        };
-
-        final TrayModulePreferences module2 = new MockPreferences(context, "module2");
+        final TrayModulePreferences module2 = new MockPreferences(mIsolatedContext, "module2");
         mTrayModulePref.put("test", "test");
         module2.put("test", "test");
         mTrayModulePref.put("test2", "test");
@@ -105,7 +74,7 @@ public class TrayTest extends TrayProviderTestCase {
         mTray.clearBut(module2);
         assertDatabaseSize(2);
 
-        final TrayAppPreferences appPrefs = new TrayAppPreferences(context);
+        final TrayAppPreferences appPrefs = new TrayAppPreferences(mIsolatedContext);
         appPrefs.put("test", "value");
 
         assertDatabaseSize(3);
@@ -115,5 +84,18 @@ public class TrayTest extends TrayProviderTestCase {
 
         mTray.clear();
         assertDatabaseSize(0);
+    }
+
+    public void testGetAll() throws Exception {
+        final TrayModulePreferences module2 = new MockPreferences(mIsolatedContext, "module2");
+
+        mTrayModulePref.put("test", "test");
+        module2.put("test", "test");
+        mTrayModulePref.put("test2", "test");
+        module2.put("test2", "test");
+        assertDatabaseSize(4);
+
+        final Collection<TrayItem> all = mTray.getAll();
+        assertEquals(4, all.size());
     }
 }
