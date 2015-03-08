@@ -16,14 +16,11 @@
 
 package net.grandcentrix.tray.accessor;
 
-import net.grandcentrix.tray.migration.TrayMigration;
 import net.grandcentrix.tray.storage.PreferenceStorage;
 
 import android.support.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by pascalwelsch on 11/20/14.
@@ -49,14 +46,13 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
     /**
      * Called when this Preference is created for the first time. This is where the initial
      * migration from other data source should happen.
+     *
      * @param newVersion the version set in the constructor
      */
     protected abstract void onCreate(final int newVersion);
 
     /**
      * works inverse to the {@see #onUpgrade} method
-     * @param oldVersion
-     * @param newVersion
      */
     protected void onDowngrade(final int oldVersion, final int newVersion) {
         throw new IllegalStateException("Can't downgrade from version " +
@@ -64,8 +60,8 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
     }
 
     /**
-     * Called when the Preference needs to be upgraded. Use this to performMigration data in this Preference
-     * over time.
+     * Called when the Preference needs to be upgraded. Use this to performMigration data in this
+     * Preference over time.
      * <p/>
      * Once the version in the constructor is increased the next constructor call to this Preference
      * will trigger an upgrade.

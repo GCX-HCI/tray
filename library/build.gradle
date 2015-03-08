@@ -35,6 +35,7 @@ dependencies {
 
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.+'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.+'
+    testCompile 'junit:junit:4.+'
 }
 
 String getReadAuthority() {

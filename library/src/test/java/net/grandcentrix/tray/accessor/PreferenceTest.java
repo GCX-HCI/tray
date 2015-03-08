@@ -1,16 +1,17 @@
 package net.grandcentrix.tray.accessor;
 
+import junit.framework.TestCase;
+
 import net.grandcentrix.tray.mock.MockModularizedStorage;
 import net.grandcentrix.tray.provider.TrayItem;
 
 import android.annotation.SuppressLint;
-import android.test.AndroidTestCase;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
-public class PreferenceTest extends AndroidTestCase {
+public class PreferenceTest extends TestCase {
 
     private class MockPreference extends Preference<TrayItem> {
 
@@ -34,27 +35,36 @@ public class PreferenceTest extends AndroidTestCase {
 
         @Override
         public boolean getBoolean(final String key, final boolean defaultValue) {
-            return false;
+            final TrayItem trayItem = getStorage().get(key);
+            return Boolean.valueOf(trayItem.value());
         }
 
         @Override
         public float getFloat(final String key, final float defaultValue) {
-            return 0;
+            final TrayItem trayItem = getStorage().get(key);
+            return Float.valueOf(trayItem.value());
         }
 
         @Override
         public int getInt(final String key, final int defaultValue) {
-            return 0;
+            final TrayItem trayItem = getStorage().get(key);
+            return Integer.valueOf(trayItem.value());
         }
 
         @Override
         public long getLong(final String key, final long defaultValue) {
-            return 0;
+            final TrayItem trayItem = getStorage().get(key);
+            return Long.valueOf(trayItem.value());
+        }
+
+        public MockModularizedStorage getModularizedStorage() {
+            return (MockModularizedStorage) getStorage();
         }
 
         @Override
         public String getString(final String key, final String defaultValue) {
-            return null;
+            final TrayItem trayItem = getStorage().get(key);
+            return trayItem.value();
         }
     }
 
@@ -85,6 +95,16 @@ public class PreferenceTest extends AndroidTestCase {
         assertFalse(Preference.isDataTypeSupported(new Double(1d)));
     }
 
+    public void testClear() throws Exception {
+        final MockPreference mockPreference = new MockPreference(1);
+        mockPreference.put("a", "a");
+        mockPreference.put("b", "b");
+        assertEquals(mockPreference.getAll().size(), 2);
+
+        mockPreference.clear();
+        assertEquals(mockPreference.getAll().size(), 0);
+    }
+
     public void testGetAll() throws Exception {
         final MockPreference mockPreference = new MockPreference(1);
         final Collection<TrayItem> all = mockPreference.getAll();
@@ -97,6 +117,17 @@ public class PreferenceTest extends AndroidTestCase {
         final Collection<TrayItem> all2 = mockPreference.getAll();
         assertNotNull(all2);
         assertEquals(2, all2.size());
+    }
+
+    public void testGetPref() throws Exception {
+        final MockPreference mockPreference = new MockPreference(1);
+        mockPreference.put("key", "value");
+        final TrayItem item = mockPreference.getPref("key");
+        assertNotNull(item);
+        assertEquals("key", item.key());
+        assertEquals("value", item.value());
+        assertEquals(mockPreference.getModularizedStorage().getModule(), item.module());
+        assertEquals(item.created(), item.updateTime());
     }
 
     public void testInstantiation() throws Exception {
@@ -138,6 +169,29 @@ public class PreferenceTest extends AndroidTestCase {
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage().contains("downgrade"));
         }
+    }
+
+    public void testPut() throws Exception {
+        final MockPreference pref = new MockPreference(1);
+        // String
+        pref.put("a", "a");
+        assertEquals("a", pref.getString("a", ""));
+
+        // Int
+        pref.put("a", 1);
+        assertEquals(1, pref.getInt("a", 0));
+
+        // Long
+        pref.put("a", 5l);
+        assertEquals(5l, pref.getLong("a", 0l));
+
+        // Float
+        pref.put("a", 10f);
+        assertEquals(10f, pref.getFloat("a", 0f));
+
+        // Boolean
+        pref.put("a", true);
+        assertEquals(true, pref.getBoolean("a", false));
     }
 
     public void testRemove() throws Exception {
