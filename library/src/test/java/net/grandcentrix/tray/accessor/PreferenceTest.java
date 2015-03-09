@@ -3,7 +3,6 @@ package net.grandcentrix.tray.accessor;
 import junit.framework.TestCase;
 
 import net.grandcentrix.tray.mock.MockModularizedStorage;
-import net.grandcentrix.tray.provider.TrayContract;
 import net.grandcentrix.tray.provider.TrayItem;
 
 import android.annotation.SuppressLint;

@@ -25,15 +25,18 @@ public class TrayMigrator {
             if (isAlreadyImported(migration)) {
                 continue;
             }
-            final boolean cancel = migration.onPreMigrate();
+            final boolean cancel = migration.shouldMigrate();
             if (cancel) {
                 continue;
             }
             final Object data = migration.getData();
+            boolean correctImported = false;
             if (Preference.isDataTypeSupported(data)) {
                 mTrayPreference.getStorage().put(migration.getTrayKey(), data);
-                migration.onPostMigrate();
+                final TrayItem trayItem = mTrayPreference.getStorage().get(migration.getTrayKey());
+                correctImported = trayItem != null;
             }
+            migration.onPostMigrate(correctImported);
         }
     }
 
@@ -52,6 +55,11 @@ public class TrayMigrator {
 
         final String trayKey = migration.getTrayKey();
         final TrayItem item = mTrayPreference.getStorage().get(trayKey);
+        if (item == null) {
+            // item is unknown -> migrate
+            return false;
+        }
+
         if (item.migratedKey() == null) {
             // the tray item was available before the migration because it has no migrationKey
             return false;
@@ -61,10 +69,10 @@ public class TrayMigrator {
         // for better documentation
         // noinspection RedundantIfStatement
         if (item.migratedKey().equals(migratedKey)) {
-            // the keys are the same. so the item was imported before
+            // the keys are the same. so the item was imported before -> already imported
             return true;
         } else {
-            // the key has changed since the last import. import again
+            // the key has changed since the last import. -> remigrate
             return false;
         }
     }
