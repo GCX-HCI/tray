@@ -16,11 +16,8 @@
 
 package net.grandcentrix.tray.accessor;
 
-import net.grandcentrix.tray.migration.TrayMigration;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.storage.ModularizedStorage;
-
-import java.util.List;
 
 /**
  * Created by pascalwelsch on 11/20/14.

@@ -1,21 +1,23 @@
 package net.grandcentrix.tray.provider;
 
-import android.test.AndroidTestCase;
+public class TrayDBHelperTest extends TrayProviderTestCase {
 
-public class TrayDBHelperTest extends AndroidTestCase {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
 
     public void testInstantiation() throws Exception {
-        new TrayDBHelper(getContext());
+        new TrayDBHelper(getProviderMockContext());
     }
 
     public void testOnUpgrade() throws Exception {
-        final TrayDBHelper trayDBHelper = new TrayDBHelper(getContext());
+        final TrayDBHelper trayDBHelper = new TrayDBHelper(getProviderMockContext());
         try {
             trayDBHelper.onUpgrade(trayDBHelper.getWritableDatabase(), 0, 1);
             fail();
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage().contains("version"));
         }
-
     }
 }

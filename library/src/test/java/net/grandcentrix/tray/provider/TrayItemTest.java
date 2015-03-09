@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import android.annotation.SuppressLint;
 import android.database.MatrixCursor;
+import android.text.TextUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +31,8 @@ public class TrayItemTest extends TestCase {
                 updated.getTime(),
                 "migratedKey"
         });
+        assertTrue(TextUtils.isEmpty(""));
+        assertFalse(TextUtils.isEmpty("asdf"));
         assertTrue(matrixCursor.moveToFirst());
 
         final TrayItem item = new TrayItem(matrixCursor);

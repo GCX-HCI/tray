@@ -1,7 +1,5 @@
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.TrayTest;
-
 import android.content.ContentValues;
 import android.content.pm.ProviderInfo;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-public class TrayProviderTest extends TrayTest {
+public class TrayProviderTest extends TrayProviderTestCase {
 
     @Override
     protected void setUp() throws Exception {

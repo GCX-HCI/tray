@@ -1,6 +1,8 @@
 package net.grandcentrix.tray;
 
-public class TrayModulePreferencesTest extends TrayTest {
+import net.grandcentrix.tray.provider.TrayProviderTestCase;
+
+public class TrayModulePreferencesTest extends TrayProviderTestCase {
 
     public void testGetContext() throws Exception {
         final TrayModulePreferences modulePreferences = new TrayModulePreferences(
