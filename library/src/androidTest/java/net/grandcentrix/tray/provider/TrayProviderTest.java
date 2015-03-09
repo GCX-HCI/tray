@@ -142,10 +142,6 @@ public class TrayProviderTest extends TrayProviderTestCase {
         }
     }
 
-    public void testSetAuthority() throws Exception {
-
-    }
-
     public void testShutdown() throws Exception {
         final TrayProvider provider = startupProvider();
         final SQLiteDatabase writableDatabase = provider.mDbHelper.getWritableDatabase();
