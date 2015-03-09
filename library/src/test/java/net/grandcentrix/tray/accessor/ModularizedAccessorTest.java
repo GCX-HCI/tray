@@ -78,6 +78,15 @@ public class ModularizedAccessorTest extends TestCase {
         assertEquals(TEST_FLOAT, accessor.getFloat(TEST_KEY, -1f));
     }
 
+    public void testGetModularizedStorage() throws Exception {
+        final MockTrayPreference mockTrayPreference = new MockTrayPreference();
+        final ModularizedStorage<TrayItem> modularizedStorage = mockTrayPreference
+                .getModularizedStorage();
+        assertNotNull(modularizedStorage);
+        assertEquals(mockTrayPreference.getStorage(), mockTrayPreference.getModularizedStorage());
+
+    }
+
     public void testInt() throws Exception {
         final MockTrayPreference accessor = new MockTrayPreference();
         accessor.put(TEST_KEY, TEST_INT);
@@ -94,14 +103,5 @@ public class ModularizedAccessorTest extends TestCase {
         final MockTrayPreference accessor = new MockTrayPreference();
         accessor.put(TEST_KEY, TEST_STRING);
         assertEquals(TEST_STRING, accessor.getString(TEST_KEY, "unknown"));
-    }
-
-    public void testGetModularizedStorage() throws Exception {
-        final MockTrayPreference mockTrayPreference = new MockTrayPreference();
-        final ModularizedStorage<TrayItem> modularizedStorage = mockTrayPreference
-                .getModularizedStorage();
-        assertNotNull(modularizedStorage);
-        assertEquals(mockTrayPreference.getStorage(), mockTrayPreference.getModularizedStorage());
-
     }
 }

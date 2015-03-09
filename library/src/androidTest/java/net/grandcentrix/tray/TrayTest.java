@@ -16,7 +16,7 @@
 
 package net.grandcentrix.tray;
 
-import net.grandcentrix.tray.mock.MockPreferences;
+import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
@@ -34,7 +34,7 @@ public class TrayTest extends TrayProviderTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mTrayModulePref = new MockPreferences(getProviderMockContext(), "module");
+        mTrayModulePref = new TestTrayModulePreferences(getProviderMockContext(), "module");
         mTray = new Tray(getProviderMockContext());
     }
 
@@ -47,7 +47,7 @@ public class TrayTest extends TrayProviderTestCase {
 
     public void testClear() throws Exception {
         final TrayModulePreferences module2 =
-                new MockPreferences(getProviderMockContext(), "module2");
+                new TestTrayModulePreferences(getProviderMockContext(), "module2");
         module2.put("blubb", "hello");
         mTrayModulePref.put("test", "test");
         assertDatabaseSize(2);
@@ -60,7 +60,7 @@ public class TrayTest extends TrayProviderTestCase {
 
     public void testClearAll() throws Exception {
         final TrayModulePreferences module2 =
-                new MockPreferences(getProviderMockContext(), "module2");
+                new TestTrayModulePreferences(getProviderMockContext(), "module2");
         module2.put("blubb", "hello");
         mTrayModulePref.put("test", "test");
         assertDatabaseSize(2);
@@ -71,7 +71,7 @@ public class TrayTest extends TrayProviderTestCase {
     public void testClearBut() throws Exception {
 
         final TrayModulePreferences module2 =
-                new MockPreferences(getProviderMockContext(), "module2");
+                new TestTrayModulePreferences(getProviderMockContext(), "module2");
         mTrayModulePref.put("test", "test");
         module2.put("test", "test");
         mTrayModulePref.put("test2", "test");
@@ -95,7 +95,7 @@ public class TrayTest extends TrayProviderTestCase {
 
     public void testGetAll() throws Exception {
         final TrayModulePreferences module2 =
-                new MockPreferences(getProviderMockContext(), "module2");
+                new TestTrayModulePreferences(getProviderMockContext(), "module2");
 
         mTrayModulePref.put("test", "test");
         module2.put("test", "test");

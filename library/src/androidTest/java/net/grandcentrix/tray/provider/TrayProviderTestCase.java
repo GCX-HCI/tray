@@ -25,7 +25,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.test.IsolatedContext;
 import android.test.ProviderTestCase2;
-import android.test.mock.MockContentProvider;
 import android.test.mock.MockContentResolver;
 
 import java.util.HashMap;
@@ -33,7 +32,7 @@ import java.util.HashMap;
 /**
  * Created by pascalwelsch on 11/21/14.
  */
-public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
+public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static class TrayIsolatedContext extends IsolatedContext {

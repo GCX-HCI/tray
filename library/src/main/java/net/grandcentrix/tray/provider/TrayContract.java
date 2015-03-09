@@ -21,33 +21,33 @@ import android.provider.BaseColumns;
 /**
  * Created by jannisveerkamp on 17.09.14.
  */
-public class TrayContract {
+public interface TrayContract {
 
-    public static interface Preferences {
+    interface Preferences {
 
-        public static interface Columns extends BaseColumns {
+        interface Columns extends BaseColumns {
 
-            public static final String ID = BaseColumns._ID;
+            final String ID = BaseColumns._ID;
 
-            public static final String KEY = TrayDBHelper.KEY;
+            final String KEY = TrayDBHelper.KEY;
 
-            public static final String VALUE = TrayDBHelper.VALUE;
+            final String VALUE = TrayDBHelper.VALUE;
 
-            public static final String MODULE = TrayDBHelper.MODULE;
+            final String MODULE = TrayDBHelper.MODULE;
 
-            public static final String CREATED = TrayDBHelper.CREATED; // DATE
+            final String CREATED = TrayDBHelper.CREATED; // DATE
 
-            public static final String UPDATED = TrayDBHelper.UPDATED; // DATE
+            final String UPDATED = TrayDBHelper.UPDATED; // DATE
 
-            public static final String MIGRATED_KEY = TrayDBHelper.MIGRATED_KEY;
+            final String MIGRATED_KEY = TrayDBHelper.MIGRATED_KEY;
         }
 
-        public static final String BASE_PATH = "preferences";
+        final String BASE_PATH = "preferences";
     }
 
-    public static interface InternalPreferences extends Preferences {
+    interface InternalPreferences extends Preferences {
 
-        public static final String BASE_PATH = "internal_preferences";
+        final String BASE_PATH = "internal_preferences";
     }
 
 }
