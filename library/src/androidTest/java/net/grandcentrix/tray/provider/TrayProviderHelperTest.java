@@ -238,6 +238,11 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertEquals(STRING_A, list.get(0).value());
     }
 
+    public void testQueryFailed() throws Exception {
+        buildQueryDatabase();
+
+    }
+
     public void testReadParsedProperties() throws Exception {
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         final List<TrayItem> list = mProviderHelper

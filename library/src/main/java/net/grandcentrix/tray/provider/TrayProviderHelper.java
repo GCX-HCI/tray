@@ -51,10 +51,6 @@ public class TrayProviderHelper {
      * clears the stated modules
      */
     public void clear(TrayPreference... modules) {
-        if (modules == null) {
-            return;
-        }
-
         for (TrayPreference module : modules) {
             if (module == null) {
                 continue;
@@ -69,11 +65,6 @@ public class TrayProviderHelper {
      * @param modules modules excluded when deleting preferences
      */
     public void clearBut(TrayPreference... modules) {
-        if (modules == null) {
-            clear();
-            return;
-        }
-
         String selection = null;
         String[] selectionArgs = new String[]{};
 
@@ -183,15 +174,8 @@ public class TrayProviderHelper {
             throws IllegalStateException {
         final Cursor cursor = mContext.getContentResolver().query(uri, null, null, null, null);
 
-        // Return Preference if found
-        if (cursor == null) {
-            throw new IllegalStateException(
-                    "could not access stored data with uri " + uri
-                            + ". Is the provider registered in the manifest of your application?");
-        }
         final ArrayList<TrayItem> list = new ArrayList<>();
-        for (boolean hasItem = cursor.moveToFirst(); hasItem;
-                hasItem = cursor.moveToNext()) {
+        for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
             list.add(new TrayItem(cursor));
         }
         cursor.close();

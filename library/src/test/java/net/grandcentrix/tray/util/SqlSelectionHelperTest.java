@@ -32,6 +32,9 @@ public class SqlSelectionHelperTest extends TestCase {
         assertTrue(Arrays.equals(new String[]{"a"},
                 extendSelectionArgs("a", null)));
 
+        assertTrue(Arrays.equals(new String[]{"a"},
+                extendSelectionArgs(null, Arrays.asList("a"))));
+
         assertTrue(Arrays.equals(new String[]{"a", "b"},
                 extendSelectionArgs(new String[]{"a", "b"}, new String[]{})));
 
