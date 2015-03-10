@@ -4,8 +4,6 @@ import net.grandcentrix.tray.accessor.Preference;
 import net.grandcentrix.tray.accessor.TrayPreference;
 import net.grandcentrix.tray.provider.TrayItem;
 
-import java.util.List;
-
 /**
  * Created by pascalwelsch on 2/26/15.
  */
@@ -17,24 +15,25 @@ public class TrayMigrator {
         mTrayPreference = trayPreference;
     }
 
-    public void performMigration(List<TrayMigration> migrations) {
-        if (migrations == null) {
-            return;
-        }
+    public void performMigration(TrayMigration... migrations) {
         for (TrayMigration migration : migrations) {
-            if (isAlreadyImported(migration)) {
+            if (!migration.shouldMigrate()) {
                 continue;
             }
-            final boolean cancel = migration.shouldMigrate();
-            if (cancel) {
-                continue;
-            }
-            final Object data = migration.getData();
+
             boolean correctImported = false;
-            if (Preference.isDataTypeSupported(data)) {
-                mTrayPreference.getStorage().put(migration.getTrayKey(), data);
-                final TrayItem trayItem = mTrayPreference.getStorage().get(migration.getTrayKey());
-                correctImported = trayItem != null;
+            final Object data = migration.getData();
+
+            final boolean supportedDataType = Preference.isDataTypeSupported(data);
+            if (supportedDataType) {
+                final String key = migration.getTrayKey();
+                final String migrationKey = migration.getPreviousKey();
+                // save into tray
+                mTrayPreference.getStorage().put(key, migrationKey, data);
+
+                // check if data is really there.
+                final TrayItem trayItem = mTrayPreference.getStorage().get(key);
+                correctImported = (trayItem != null && trayItem.value().equals(data));
             }
             migration.onPostMigrate(correctImported);
         }
@@ -46,7 +45,7 @@ public class TrayMigrator {
      * @param migration the import operation object
      * @return true if the item should be remigrated
      */
-    private boolean isAlreadyImported(final TrayMigration migration) {
+    /*private boolean isAlreadyImported(final TrayMigration migration) {
         // annotations are good but it's important to be sure
         // noinspection ConstantConditions
         if (migration.getPreviousKey() == null) {
@@ -75,5 +74,5 @@ public class TrayMigrator {
             // the key has changed since the last import. -> remigrate
             return false;
         }
-    }
+    }*/
 }

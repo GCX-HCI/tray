@@ -20,6 +20,7 @@ import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -79,6 +80,11 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
                 mockContentResolver.addProvider(authority, mProviders.get(authority));
             }
             return mockContentResolver;
+        }
+
+        @Override
+        public SharedPreferences getSharedPreferences(final String name, final int mode) {
+            return super.getSharedPreferences(name, mode);
         }
 
         @Override

@@ -59,8 +59,8 @@ public class TrayItemTest extends TestCase {
         SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
         final Date created = new Date();
         final Date updated = new Date();
-        final TrayItem item = new TrayItem(created, "key", "module", updated, "value",
-                "migratedKey");
+        final TrayItem item = new TrayItem("module", "key", "migratedKey", "value", created, updated
+        );
         final String string = item.toString();
         assertTrue(string.contains(item.key()));
         assertTrue(string.contains(item.value()));
@@ -73,8 +73,8 @@ public class TrayItemTest extends TestCase {
     public void testValues() throws Exception {
         final Date created = new Date();
         final Date updated = new Date();
-        final TrayItem item = new TrayItem(created, "key", "module", updated, "value",
-                "migratedKey");
+        final TrayItem item = new TrayItem("module", "key", "migratedKey", "value", created, updated
+        );
         assertEquals("key", item.key());
         assertEquals("value", item.value());
         assertEquals("migratedKey", item.migratedKey());

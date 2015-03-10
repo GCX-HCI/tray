@@ -22,10 +22,15 @@ import net.grandcentrix.tray.TrayAppPreferences;
 import net.grandcentrix.tray.accessor.TrayPreference;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
 import android.test.IsolatedContext;
 
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by pascalwelsch on 11/21/14.
@@ -231,6 +236,20 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertNotNull(list);
         assertEquals(2, list.size());
         assertNotSame(list.get(0).value(), list.get(1).value());
+    }
+
+    public void testQueryProviderWithUnregisteredProvider() throws Exception {
+        final Context context = mock(Context.class);
+        final ContentResolver contentResolver = mock(ContentResolver.class);
+        when(context.getContentResolver()).thenReturn(contentResolver);
+        final TrayProviderHelper trayProviderHelper = new TrayProviderHelper(context);
+        final Uri uri = TrayProviderHelper.getUri();
+        try {
+            trayProviderHelper.queryProvider(uri);
+            fail();
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage().contains(uri.toString()));
+        }
     }
 
     public void testQuerySingle() throws Exception {

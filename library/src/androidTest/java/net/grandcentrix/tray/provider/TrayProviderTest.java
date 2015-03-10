@@ -2,6 +2,7 @@ package net.grandcentrix.tray.provider;
 
 import android.content.ContentValues;
 import android.content.pm.ProviderInfo;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
@@ -69,6 +70,8 @@ public class TrayProviderTest extends TrayProviderTestCase {
         assertEquals(TrayDBHelper.TABLE_NAME,
                 trayProvider.getTable(Uri.parse("http://www.google.com")));
 
+        assertNull(trayProvider.getTable(null));
+
     }
 
     public void testGetType() throws Exception {
@@ -130,6 +133,21 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
     }
 
+    public void testQueryUnregisteredProvider() throws Exception {
+
+        final TrayProvider provider = spy(new TrayProvider());
+        provider.mDbHelper = spy(new TrayDBHelper(getProviderMockContext()));
+        when(provider.mDbHelper.getReadableDatabase()).thenReturn(null);
+
+        // null as table forces the internal SQLiteQueryBuilder to return null on a query
+        // in reality this may happen for many other hard sql or database errors
+        final Uri uri = TrayProviderHelper.getUri();
+        when(provider.getTable(uri)).thenReturn(null);
+
+        final Cursor cursor = provider.query(uri, null, null, null, null);
+        assertNull(cursor);
+    }
+
     public void testQueryWrongUri() throws Exception {
         final Uri googleUri = Uri.parse("http://www.google.com");
         final TrayProvider trayProvider = new TrayProvider();
@@ -155,7 +173,9 @@ public class TrayProviderTest extends TrayProviderTestCase {
     }
 
     public void testUpdate() throws Exception {
-        final TrayProvider provider = new TrayProvider();
+        final TrayProvider provider = spy(new TrayProvider());
+        provider.mDbHelper = spy(new TrayDBHelper(getProviderMockContext()));
+        when(provider.mDbHelper.getReadableDatabase()).thenReturn(null);
         try {
             provider.update(null, null, null, null);
             fail("implemented but no test written");

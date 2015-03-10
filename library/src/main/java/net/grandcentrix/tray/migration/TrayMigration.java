@@ -12,7 +12,7 @@ public interface TrayMigration {
      * <p/>
      * Only primitive types are supported. See {@link net.grandcentrix.tray.accessor.Preference#isDataTypeSupported(Object)}
      * <p/>
-     * called after {@link #shouldMigrate()} and before {@link #onPostMigrate()}
+     * called after {@link #shouldMigrate()} and before {@link #onPostMigrate(boolean)}
      *
      * @return the data in a valid primitive format
      */
@@ -42,6 +42,12 @@ public interface TrayMigration {
     /**
      * called before {@link #getData()}. This is a good point to check if the data which should be
      * migrated is available. If not, return true if you want to cancel the import.
+     * <p/>
+     * This check is very important, because the migration data should be deleted in {@link
+     * #onPostMigrate(boolean)}. When starting this migration a second time this method should
+     * return {@code true}, to skip the migration, or the previous written data will be overridden
+     * with the value from {@link #getData()} which should be {@code null} after the first
+     * migration
      *
      * @return true if the import should be canceled
      */

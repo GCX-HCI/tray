@@ -1,6 +1,5 @@
 package net.grandcentrix.tray.accessor;
 
-import net.grandcentrix.tray.accessor.TrayPreference;
 import net.grandcentrix.tray.mock.MockModularizedStorage;
 
 /**

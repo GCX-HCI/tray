@@ -37,6 +37,9 @@ public interface PreferenceAccessor<T> {
     // TODO for version 1.1
     // List<String> keys();
 
+    // TODO for version 1.1
+    // int getSize();
+
     boolean getBoolean(String key, boolean defaultValue);
 
     float getFloat(String key, float defaultValue);

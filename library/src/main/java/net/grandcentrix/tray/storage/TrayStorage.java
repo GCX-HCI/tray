@@ -86,12 +86,18 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void put(@NonNull final String key, @NonNull final Object o) {
+        put(key, null, o);
+    }
+
+    @Override
+    public void put(@NonNull final String key, @Nullable final String migrationKey,
+            @NonNull final Object o) {
         //noinspection ConstantConditions
         if (o == null) {
             return;
         }
         String value = String.valueOf(o);
-        mProviderHelper.persist(getModule(), key, value);
+        mProviderHelper.persist(getModule(), key, migrationKey, value);
     }
 
     @Override

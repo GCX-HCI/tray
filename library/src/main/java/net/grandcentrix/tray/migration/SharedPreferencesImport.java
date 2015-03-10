@@ -18,8 +18,8 @@ public class SharedPreferencesImport implements TrayMigration {
 
     private final String mTrayKey;
 
-    public SharedPreferencesImport(final Context context, final String sharedPrefsName,
-            final String sharedPrefsKey, final String trayKey) {
+    public SharedPreferencesImport(final Context context, @NonNull final String sharedPrefsName,
+            @NonNull final String sharedPrefsKey, @NonNull final String trayKey) {
         mSharedPrefsKey = sharedPrefsKey;
         mTrayKey = trayKey;
         mPreferences = context.getSharedPreferences(sharedPrefsName, Context.MODE_MULTI_PROCESS);
@@ -45,13 +45,13 @@ public class SharedPreferencesImport implements TrayMigration {
     @Override
     public void onPostMigrate(final boolean successful) {
         if (successful) {
-            mPreferences.edit().remove(mSharedPrefsKey).apply();
+            mPreferences.edit().remove(mSharedPrefsKey).commit();
         }
     }
 
     @Override
     public boolean shouldMigrate() {
-        if (!mPreferences.contains(mSharedPrefsKey)) {
+        if (mPreferences.contains(mSharedPrefsKey)) {
             Log.v(TAG, "SharedPreference with key '" + mSharedPrefsKey
                     + "' not found. skipped import");
             return true;

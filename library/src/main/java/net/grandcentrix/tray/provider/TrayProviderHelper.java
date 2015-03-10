@@ -141,11 +141,46 @@ public class TrayProviderHelper {
      */
     public void persist(@NonNull final String module, @NonNull final String key,
             @NonNull final String value) {
-        persist(module, key, value, false);
+        persist(module, key, null, value);
     }
 
+    /**
+     * saves the value into the database combined with a previousKey.
+     */
     public void persist(@NonNull final String module, @NonNull final String key,
-            @NonNull final String value, final boolean internal) {
+            @Nullable final String previousKey, @NonNull final String value) {
+        persist(module, key, previousKey, value, false);
+    }
+
+    public void persistInternal(@NonNull final String module, @NonNull final String key,
+            @NonNull final String value) {
+        persist(module, key, null, value, true);
+    }
+
+    @NonNull
+    public List<TrayItem> queryProvider(@NonNull final Uri uri)
+            throws IllegalStateException {
+        final Cursor cursor = mContext.getContentResolver().query(uri, null, null, null, null);
+
+        // Return Preference if found
+        if (cursor == null) {
+            throw new IllegalStateException(
+                    "could not access stored data with uri " + uri
+                            + ". Is the provider registered in the manifest of your application?");
+            //todo test with tray mock context
+        }
+
+        final ArrayList<TrayItem> list = new ArrayList<>();
+        for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
+            list.add(new TrayItem(cursor));
+        }
+        cursor.close();
+        return list;
+    }
+
+    private void persist(@NonNull final String module, @NonNull final String key,
+            @Nullable final String previousKey, @NonNull final String value,
+            final boolean internal) {
         //noinspection ConstantConditions
         if (value == null) {
             return;
@@ -161,24 +196,7 @@ public class TrayProviderHelper {
                 .build();
         ContentValues values = new ContentValues();
         values.put(TrayContract.Preferences.Columns.VALUE, value);
+        values.put(TrayContract.Preferences.Columns.MIGRATED_KEY, previousKey);
         mContext.getContentResolver().insert(uri, values);
-    }
-
-    public void persistInternal(@NonNull final String module, @NonNull final String key,
-            @NonNull final String value) {
-        persist(module, key, value, true);
-    }
-
-    @NonNull
-    public List<TrayItem> queryProvider(@NonNull final Uri uri)
-            throws IllegalStateException {
-        final Cursor cursor = mContext.getContentResolver().query(uri, null, null, null, null);
-
-        final ArrayList<TrayItem> list = new ArrayList<>();
-        for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
-            list.add(new TrayItem(cursor));
-        }
-        cursor.close();
-        return list;
     }
 }

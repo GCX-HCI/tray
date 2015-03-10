@@ -189,7 +189,10 @@ public class TrayProvider extends ContentProvider {
         // Query
         Cursor cursor = builder.query(getReadableDatabase(), projection, selection,
                 selectionArgs, null, null, sortOrder);
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+        if (cursor != null) {
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        }
         return cursor;
     }
 
@@ -230,7 +233,10 @@ public class TrayProvider extends ContentProvider {
         return rows;*/
     }
 
-    /*protected*/ String getTable(final Uri uri) {
+    public String getTable(final Uri uri) {
+        if (uri == null) {
+            return null;
+        }
         final int match = sURIMatcher.match(uri);
         switch (match) {
             case SINGLE_PREFERENCE:
