@@ -28,8 +28,15 @@ import java.util.Collection;
  */
 public interface PreferenceStorage<T> {
 
+    /**
+     * clears the storage and wipes all of its content
+     */
     public void clear();
 
+    /**
+     * @return the corresponding Item object {@link T} for the given key
+     */
+    @Nullable
     public T get(@NonNull final String key);
 
     public Collection<T> getAll();

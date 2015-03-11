@@ -16,15 +16,28 @@
 
 package net.grandcentrix.tray.util;
 
+import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A helper for interactions with a {@link android.database.sqlite.SQLiteDatabase} when using the
+ * {@link android.content.ContentResolver#query(Uri, String[], String, String[], String)} method.
+ *
+ * @author Pascal Welsch
+ */
 public class SqlSelectionHelper {
 
-    public static String extendSelection(String selection, String selectionToAdd) {
+    /**
+     * combines selection a and selection b to (a) AND (b). handles all cases if a or b are
+     * <code>null</code> or <code>""</code>
+     */
+    public static String extendSelection(@Nullable String selection,
+            @Nullable String selectionToAdd) {
         // Add to selection or set as selection if selection is empty
         if (!TextUtils.isEmpty(selection)) {
             if (TextUtils.isEmpty(selectionToAdd)) {
@@ -45,15 +58,25 @@ public class SqlSelectionHelper {
         return selection;
     }
 
-    public static String[] extendSelectionArgs(String[] selectionArgs, String[] newSelectionArgs) {
+    /**
+     * alternative arguments for {@link #extendSelectionArgs(String[], List)}
+     */
+    public static String[] extendSelectionArgs(@Nullable String[] selectionArgs,
+            @Nullable String[] newSelectionArgs) {
         if (newSelectionArgs == null) {
             return selectionArgs;
         }
         return extendSelectionArgs(selectionArgs, Arrays.asList(newSelectionArgs));
     }
 
-    public static String[] extendSelectionArgs(String[] selectionArgs,
-            List<String> newSelectionArgs) {
+    /**
+     * combines the selectionArgs analog to the selection itself with {@link
+     * #extendSelection(String, String)}.
+     * <p/>
+     * <code>[a, b] , [c] -> [a, b ,c]</code>
+     */
+    public static String[] extendSelectionArgs(@Nullable String[] selectionArgs,
+            @Nullable List<String> newSelectionArgs) {
         if (newSelectionArgs == null) {
             return selectionArgs;
         }
@@ -67,7 +90,11 @@ public class SqlSelectionHelper {
         return selectionArgs;
     }
 
-    public static String[] extendSelectionArgs(String selectionArg, String[] newSelectionArgs) {
+    /**
+     * alternative arguments for {@link #extendSelectionArgs(String[], List)}
+     */
+    public static String[] extendSelectionArgs(@Nullable String selectionArg,
+            @Nullable String[] newSelectionArgs) {
         if (TextUtils.isEmpty(selectionArg)) {
             return newSelectionArgs;
         }

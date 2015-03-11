@@ -18,14 +18,16 @@ package net.grandcentrix.tray.accessor;
 
 import net.grandcentrix.tray.storage.PreferenceStorage;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Collection;
 
 /**
- * Created by pascalwelsch on 11/20/14.
+ * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}. The
+ * access to this storage defines the {@link PreferenceAccessor} interface.
  * <p/>
- * A Preference has a interface to interact and a storage to save the data.
+ * Created by pascalwelsch on 11/20/14.
  */
 public abstract class Preference<T> implements PreferenceAccessor<T> {
 
@@ -47,12 +49,12 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
      * Called when this Preference is created for the first time. This is where the initial
      * migration from other data source should happen.
      *
-     * @param newVersion the version set in the constructor, always > 0
+     * @param initialVersion the version set in the constructor, always > 0
      */
-    protected abstract void onCreate(final int newVersion);
+    protected abstract void onCreate(final int initialVersion);
 
     /**
-     * works inverse to the {@see #onUpgrade} method
+     * works inverse to the {@link #onUpgrade(int, int)} method
      */
     protected void onDowngrade(final int oldVersion, final int newVersion) {
         throw new IllegalStateException("Can't downgrade from version " +
@@ -80,7 +82,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
 
     @Nullable
     @Override
-    public T getPref(final String key) {
+    public T getPref(@NonNull final String key) {
         return mStorage.get(key);
     }
 
@@ -122,11 +124,21 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
         getStorage().put(key, value);
     }
 
-    @Override
-    public void remove(final String key) {
+    public void remove(@NonNull final String key) {
         mStorage.remove(key);
     }
 
+    /**
+     * checks for version changes and calls the correct handling methods.
+     * <pre>
+     * <ul>
+     * <li>{@link #onCreate(int)} when there is no previous version</li>
+     * <li>{@link #onUpgrade(int, int)} for an increasing version</li>
+     * <li>{@link #onDowngrade(int, int)} for a decreasing version</li>
+     * </ul>
+     * </pre>
+     * compareable to the mechanism in  {@link android.database.sqlite.SQLiteOpenHelper#getWritableDatabase()}
+     */
     /*protected*/ void detectVersionChange(final int newVersion) {
         final int version = getStorage().getVersion();
         if (version != newVersion) {

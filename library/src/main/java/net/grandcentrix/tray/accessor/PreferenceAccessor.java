@@ -16,6 +16,7 @@
 
 package net.grandcentrix.tray.accessor;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Collection;
@@ -40,13 +41,13 @@ public interface PreferenceAccessor<T> {
     // TODO for version 1.1
     // int getSize();
 
-    boolean getBoolean(String key, boolean defaultValue);
+    boolean getBoolean(@NonNull String key, boolean defaultValue);
 
-    float getFloat(String key, float defaultValue);
+    float getFloat(@NonNull String key, float defaultValue);
 
-    int getInt(String key, int defaultValue);
+    int getInt(@NonNull String key, int defaultValue);
 
-    long getLong(String key, long defaultValue);
+    long getLong(@NonNull String key, long defaultValue);
 
     /**
      * Get a preference by its key
@@ -55,19 +56,19 @@ public interface PreferenceAccessor<T> {
      * @return Returns the preference if found or null if it doesn't exist
      */
     @Nullable
-    T getPref(String key);
+    T getPref(@NonNull String key);
 
-    String getString(String key, String defaultValue);
+    String getString(@NonNull String key, String defaultValue);
 
-    void put(String key, String value);
+    void put(@NonNull String key, String value);
 
-    void put(String key, int value);
+    void put(@NonNull String key, int value);
 
-    void put(String key, float value);
+    void put(@NonNull String key, float value);
 
-    void put(String key, long value);
+    void put(@NonNull String key, long value);
 
-    void put(String key, boolean value);
+    void put(@NonNull String key, boolean value);
 
-    void remove(String key);
+    void remove(@NonNull String key);
 }

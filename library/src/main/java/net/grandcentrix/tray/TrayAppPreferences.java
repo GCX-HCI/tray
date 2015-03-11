@@ -16,9 +16,6 @@
 
 package net.grandcentrix.tray;
 
-import net.grandcentrix.tray.accessor.TrayPreference;
-import net.grandcentrix.tray.storage.TrayStorage;
-
 import android.content.Context;
 
 /**
@@ -33,12 +30,12 @@ import android.content.Context;
  * data of a single module. This could help keeping the saved data as small as possible across app
  * upgrades.
  */
-public class TrayAppPreferences extends TrayPreference {
+public class TrayAppPreferences extends TrayModulePreferences {
 
     private static final int VERSION = 1;
 
     public TrayAppPreferences(final Context context) {
-        super(new TrayStorage(context, context.getPackageName()), VERSION);
+        super(context, context.getPackageName(), VERSION);
     }
 
     @Override
