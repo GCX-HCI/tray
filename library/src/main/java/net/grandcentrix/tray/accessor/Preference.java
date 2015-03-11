@@ -47,7 +47,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
      * Called when this Preference is created for the first time. This is where the initial
      * migration from other data source should happen.
      *
-     * @param newVersion the version set in the constructor
+     * @param newVersion the version set in the constructor, always > 0
      */
     protected abstract void onCreate(final int newVersion);
 
