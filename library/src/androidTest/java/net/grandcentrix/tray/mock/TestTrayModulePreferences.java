@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray;
+package net.grandcentrix.tray.mock;
 
-import net.grandcentrix.tray.provider.TrayProviderTestCase;
+import net.grandcentrix.tray.TrayModulePreferences;
 
-public class TrayAppPreferencesTest extends TrayProviderTestCase {
+import android.content.Context;
 
-    public void testInstantiation() throws Exception {
-        new TrayAppPreferences(getProviderMockContext());
+/**
+ * Created by pascalwelsch on 2/26/15.
+ */
+public class TestTrayModulePreferences extends TrayModulePreferences {
+
+    public TestTrayModulePreferences(final Context context, final String module) {
+        super(context, module, 1);
     }
 
-    public void testOnUpgrade() throws Exception {
-        final TrayAppPreferences appPreferences = new TrayAppPreferences(getProviderMockContext());
-        try {
-            appPreferences.onUpgrade(0, 1);
-            fail();
-        } catch (IllegalStateException e) {
-            // not implemented yet
-        }
+    @Override
+    protected void onCreate(final int newVersion) {
+
+    }
+
+    @Override
+    protected void onUpgrade(final int oldVersion, final int newVersion) {
+
     }
 }

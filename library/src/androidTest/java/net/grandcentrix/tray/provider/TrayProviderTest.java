@@ -1,9 +1,24 @@
-package net.grandcentrix.tray.provider;
+/*
+ * Copyright (C) 2015 grandcentrix GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import net.grandcentrix.tray.TrayTest;
+package net.grandcentrix.tray.provider;
 
 import android.content.ContentValues;
 import android.content.pm.ProviderInfo;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
@@ -12,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-public class TrayProviderTest extends TrayTest {
+public class TrayProviderTest extends TrayProviderTestCase {
 
     @Override
     protected void setUp() throws Exception {
@@ -70,6 +85,8 @@ public class TrayProviderTest extends TrayTest {
 
         assertEquals(TrayDBHelper.TABLE_NAME,
                 trayProvider.getTable(Uri.parse("http://www.google.com")));
+
+        assertNull(trayProvider.getTable(null));
 
     }
 
@@ -132,6 +149,21 @@ public class TrayProviderTest extends TrayTest {
 
     }
 
+    public void testQueryUnregisteredProvider() throws Exception {
+
+        final TrayProvider provider = spy(new TrayProvider());
+        provider.mDbHelper = spy(new TrayDBHelper(getProviderMockContext()));
+        when(provider.mDbHelper.getReadableDatabase()).thenReturn(null);
+
+        // null as table forces the internal SQLiteQueryBuilder to return null on a query
+        // in reality this may happen for many other hard sql or database errors
+        final Uri uri = TrayProviderHelper.getUri();
+        when(provider.getTable(uri)).thenReturn(null);
+
+        final Cursor cursor = provider.query(uri, null, null, null, null);
+        assertNull(cursor);
+    }
+
     public void testQueryWrongUri() throws Exception {
         final Uri googleUri = Uri.parse("http://www.google.com");
         final TrayProvider trayProvider = new TrayProvider();
@@ -142,10 +174,6 @@ public class TrayProviderTest extends TrayTest {
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("not supported"));
         }
-    }
-
-    public void testSetAuthority() throws Exception {
-
     }
 
     public void testShutdown() throws Exception {
@@ -161,7 +189,9 @@ public class TrayProviderTest extends TrayTest {
     }
 
     public void testUpdate() throws Exception {
-        final TrayProvider provider = new TrayProvider();
+        final TrayProvider provider = spy(new TrayProvider());
+        provider.mDbHelper = spy(new TrayDBHelper(getProviderMockContext()));
+        when(provider.mDbHelper.getReadableDatabase()).thenReturn(null);
         try {
             provider.update(null, null, null, null);
             fail("implemented but no test written");

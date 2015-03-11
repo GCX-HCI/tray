@@ -28,9 +28,9 @@ public class TrayItem {
 
     private final Date mCreated;
 
-    private final String mMigratedKey;
-
     private final String mKey;
+
+    private final String mMigratedKey;
 
     private final String mModule;
 
@@ -53,8 +53,8 @@ public class TrayItem {
                 TrayContract.Preferences.Columns.MIGRATED_KEY));
     }
 
-    public TrayItem(final Date created, final String key, final String module,
-            final Date updated, final String value, final String migratedKey) {
+    public TrayItem(final String module, final String key, final String migratedKey,
+            final String value, final Date created, final Date updated) {
         mCreated = created;
         mKey = key;
         mModule = module;
@@ -67,12 +67,12 @@ public class TrayItem {
         return mCreated;
     }
 
-    public String migratedKey() {
-        return mMigratedKey;
-    }
-
     public String key() {
         return mKey;
+    }
+
+    public String migratedKey() {
+        return mMigratedKey;
     }
 
     public String module() {

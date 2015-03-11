@@ -19,6 +19,9 @@ package net.grandcentrix.tray.mock;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.storage.ModularizedStorage;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,7 +45,7 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
-    public TrayItem get(final String key) {
+    public TrayItem get(@NonNull final String key) {
         return data.get(key);
     }
 
@@ -57,14 +60,21 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
-    public void put(final String key, final Object o) {
+    public void put(@NonNull final String key, @Nullable final String migrationKey,
+            final Object o) {
         final String value = String.valueOf(o);
-        final TrayItem item = new TrayItem(new Date(), key, getModule(), new Date(), value, null);
+        final TrayItem item = new TrayItem(getModule(), key, migrationKey, value, new Date(),
+                new Date());
         data.put(key, item);
     }
 
     @Override
-    public void remove(final String key) {
+    public void put(@NonNull final String key, final Object o) {
+        put(key, null, o);
+    }
+
+    @Override
+    public void remove(@NonNull final String key) {
         data.remove(key);
     }
 

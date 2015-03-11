@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2015 grandcentrix GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.grandcentrix.tray.migration;
 
 import android.content.Context;
@@ -18,8 +34,8 @@ public class SharedPreferencesImport implements TrayMigration {
 
     private final String mTrayKey;
 
-    public SharedPreferencesImport(final Context context, final String sharedPrefsName,
-            final String sharedPrefsKey, final String trayKey) {
+    public SharedPreferencesImport(final Context context, @NonNull final String sharedPrefsName,
+            @NonNull final String sharedPrefsKey, @NonNull final String trayKey) {
         mSharedPrefsKey = sharedPrefsKey;
         mTrayKey = trayKey;
         mPreferences = context.getSharedPreferences(sharedPrefsName, Context.MODE_MULTI_PROCESS);
@@ -43,13 +59,15 @@ public class SharedPreferencesImport implements TrayMigration {
     }
 
     @Override
-    public void onPostMigrate() {
-        mPreferences.edit().remove(mSharedPrefsKey).apply();
+    public void onPostMigrate(final boolean successful) {
+        if (successful) {
+            mPreferences.edit().remove(mSharedPrefsKey).commit();
+        }
     }
 
     @Override
-    public boolean onPreMigrate() {
-        if (!mPreferences.contains(mSharedPrefsKey)) {
+    public boolean shouldMigrate() {
+        if (mPreferences.contains(mSharedPrefsKey)) {
             Log.v(TAG, "SharedPreference with key '" + mSharedPrefsKey
                     + "' not found. skipped import");
             return true;

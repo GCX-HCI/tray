@@ -16,11 +16,10 @@
 
 package net.grandcentrix.tray.accessor;
 
-import net.grandcentrix.tray.migration.TrayMigration;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.storage.ModularizedStorage;
 
-import java.util.List;
+import android.support.annotation.NonNull;
 
 /**
  * Created by pascalwelsch on 11/20/14.
@@ -32,25 +31,25 @@ public abstract class TrayPreference extends Preference<TrayItem> {
     }
 
     @Override
-    public boolean getBoolean(final String key, final boolean defaultValue) {
+    public boolean getBoolean(@NonNull final String key, final boolean defaultValue) {
         final TrayItem pref = getPref(key);
         return pref == null ? defaultValue : Boolean.parseBoolean(pref.value());
     }
 
     @Override
-    public float getFloat(final String key, final float defaultValue) {
+    public float getFloat(@NonNull final String key, final float defaultValue) {
         final TrayItem pref = getPref(key);
         return pref == null ? defaultValue : Float.parseFloat(pref.value());
     }
 
     @Override
-    public int getInt(final String key, final int defaultValue) {
+    public int getInt(@NonNull final String key, final int defaultValue) {
         final TrayItem pref = getPref(key);
         return pref == null ? defaultValue : Integer.parseInt(pref.value());
     }
 
     @Override
-    public long getLong(final String key, final long defaultValue) {
+    public long getLong(@NonNull final String key, final long defaultValue) {
         final TrayItem pref = getPref(key);
         return pref == null ? defaultValue : Long.parseLong(pref.value());
     }
@@ -60,7 +59,7 @@ public abstract class TrayPreference extends Preference<TrayItem> {
     }
 
     @Override
-    public String getString(final String key, final String defaultValue) {
+    public String getString(@NonNull final String key, final String defaultValue) {
         final TrayItem pref = getPref(key);
         return pref == null ? defaultValue : pref.value();
     }

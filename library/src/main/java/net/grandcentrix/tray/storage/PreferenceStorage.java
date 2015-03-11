@@ -16,26 +16,39 @@
 
 package net.grandcentrix.tray.storage;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.util.Collection;
 
 /**
  * Created by pascalwelsch on 11/20/14.
- *
+ * <p/>
  * basic functionality for every storage implementation
  */
 public interface PreferenceStorage<T> {
 
+    /**
+     * clears the storage and wipes all of its content
+     */
     public void clear();
 
-    public T get(final String key);
+    /**
+     * @return the corresponding Item object {@link T} for the given key
+     */
+    @Nullable
+    public T get(@NonNull final String key);
 
     public Collection<T> getAll();
 
-    public void put(final String key, final Object o);
-
-    public void remove(final String key);
-
     public int getVersion();
+
+    public void put(@NonNull final String key, @Nullable final String migrationKey,
+            @Nullable final Object o);
+
+    public void put(@NonNull final String key, @Nullable final Object o);
+
+    public void remove(@NonNull final String key);
 
     public void setVersion(final int version);
 

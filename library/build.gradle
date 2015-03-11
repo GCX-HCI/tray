@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
+apply plugin: 'de.mobilej.unmock'
 
 android {
     compileSdkVersion 21
@@ -19,6 +20,7 @@ android {
 
     buildTypes {
         debug {
+            // output coverage with ./gradlew clean build createDebugCoverageReport
             testCoverageEnabled true
         }
     }
@@ -27,7 +29,85 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
+
+unMock {
+    // URI to download the android-all.jar from. e.g. https://oss.sonatype.org/content/groups/public/org/robolectric/android-all/
+    allAndroid =
+            'https://oss.sonatype.org/content/groups/public/org/robolectric/android-all/4.3_r2-robolectric-0/android-all-4.3_r2-robolectric-0.jar'
+
+    // classes to keep
+    // matched by "startsWith" - you also need to include the dependencies manually
+    // if you start with an "-" the class will match by "equals" (and it will additionally  match
+    // inner classes of this class)
+    keep = [
+            "android.text.TextUtils",
+            "android.util.",
+            "android.text.",
+            "android.content.ContentValues",
+            "android.content.Intent",
+            "-android.location.Location",
+            "android.content.res.Configuration",
+            "org.",
+            "libcore.",
+            "com.android.internal.R",
+            "com.android.internal.util.",
+            "android.database.AbstractCursor",
+            "-android.database.MatrixCursor",
+            "-android.net.Uri"
+    ]
+}
+
+def coverageSourceDirs = [
+        '../library/src/main/java'
+]
+
+task generateJacocoTestReports(type: JacocoReport, dependsOn: ["test", "createDebugCoverageReport"]) {
+    group = "Reporting"
+    description = 'Generate Jacoco Robolectric unit test coverage reports'
+
+    classDirectories = fileTree(
+            dir: '../library/build/intermediates/classes/debug',
+            excludes: ['**//*R.class',
+                       '**//*R$*.class',
+                       '***/*//*$ViewInjector*.*',
+                       '**//*BuildConfig.*',
+                       '**//*Manifest*.*']
+            )
+    sourceDirectories = files(coverageSourceDirs)
+    additionalSourceDirs = files(coverageSourceDirs)
+    executionData = files('../library/build/jacoco/testDebug.exec')
+}
+
+//task jacocoReport(type: JacocoReport, dependsOn: ["test", "connectedAndroidTest"]) {
+//    // Add execution data from all subprojects
+//    executionData fileTree(project.rootDir.absolutePath).include("../*/build/jacoco/*.exec")
+//    // Add source classes from all subprojects
+//    subprojects.each {
+//        sourceSets it.sourceSets.main
+//    }
+//    sourceDirectories = files(coverageSourceDirs)
+//    classDirectories = fileTree(
+//            dir: '../library/build/intermediates/',
+//            includes: ['**/debug/*'],
+//            excludes: ['**/R.class',
+//                       '**/R$*.class',
+//                       '**/*$ViewInjector*.*',
+//                       '**/BuildConfig.*',
+//                       '**/Manifest*.*']
+//            )
+//    // Make the aggregate report go in a top-level directory somewhere
+//    reports {
+//        html {
+//            enabled true
+//            destination "release/reports/jacoco"
+//        }
+//    }
+//}
 
 
 dependencies {
@@ -35,6 +115,7 @@ dependencies {
 
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.+'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.+'
+    testCompile 'org.mockito:mockito-core:1.9.5'
     testCompile 'junit:junit:4.+'
 }
 

@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2015 grandcentrix GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.grandcentrix.tray.migration;
 
 import android.support.annotation.NonNull;
@@ -12,7 +28,7 @@ public interface TrayMigration {
      * <p/>
      * Only primitive types are supported. See {@link net.grandcentrix.tray.accessor.Preference#isDataTypeSupported(Object)}
      * <p/>
-     * called after {@link #onPreMigrate()} and before {@link #onPostMigrate()}
+     * called after {@link #shouldMigrate()} and before {@link #onPostMigrate(boolean)}
      *
      * @return the data in a valid primitive format
      */
@@ -34,14 +50,22 @@ public interface TrayMigration {
     /**
      * this is a good point to delete the old data to free space and prevent accidentally import
      * later which could override newer data saved into Tray after the last import
+     *
+     * @param successful true if the data was imported, false otherwise
      */
-    public void onPostMigrate();
+    public void onPostMigrate(final boolean successful);
 
     /**
-     * called before {@link #getData()}. This is a good point to check if the data which
-     * should be migrated is available. If not, return true if you want to cancel the import.
+     * called before {@link #getData()}. This is a good point to check if the data which should be
+     * migrated is available. If not, return true if you want to cancel the import.
+     * <p/>
+     * This check is very important, because the migration data should be deleted in {@link
+     * #onPostMigrate(boolean)}. When starting this migration a second time this method should
+     * return {@code true}, to skip the migration, or the previous written data will be overridden
+     * with the value from {@link #getData()} which should be {@code null} after the first
+     * migration
      *
      * @return true if the import should be canceled
      */
-    public boolean onPreMigrate();
+    public boolean shouldMigrate();
 }

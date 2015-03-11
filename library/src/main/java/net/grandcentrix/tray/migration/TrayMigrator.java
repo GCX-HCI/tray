@@ -1,10 +1,24 @@
+/*
+ * Copyright (C) 2015 grandcentrix GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.grandcentrix.tray.migration;
 
 import net.grandcentrix.tray.accessor.Preference;
 import net.grandcentrix.tray.accessor.TrayPreference;
 import net.grandcentrix.tray.provider.TrayItem;
-
-import java.util.List;
 
 /**
  * Created by pascalwelsch on 2/26/15.
@@ -17,23 +31,27 @@ public class TrayMigrator {
         mTrayPreference = trayPreference;
     }
 
-    public void performMigration(List<TrayMigration> migrations) {
-        if (migrations == null) {
-            return;
-        }
+    public void performMigration(TrayMigration... migrations) {
         for (TrayMigration migration : migrations) {
-            if (isAlreadyImported(migration)) {
+            if (!migration.shouldMigrate()) {
                 continue;
             }
-            final boolean cancel = migration.onPreMigrate();
-            if (cancel) {
-                continue;
-            }
+
+            boolean correctImported = false;
             final Object data = migration.getData();
-            if (Preference.isDataTypeSupported(data)) {
-                mTrayPreference.getStorage().put(migration.getTrayKey(), data);
-                migration.onPostMigrate();
+
+            final boolean supportedDataType = Preference.isDataTypeSupported(data);
+            if (supportedDataType) {
+                final String key = migration.getTrayKey();
+                final String migrationKey = migration.getPreviousKey();
+                // save into tray
+                mTrayPreference.getStorage().put(key, migrationKey, data);
+
+                // check if data is really there.
+                final TrayItem trayItem = mTrayPreference.getStorage().get(key);
+                correctImported = (trayItem != null && trayItem.value().equals(data));
             }
+            migration.onPostMigrate(correctImported);
         }
     }
 
@@ -43,7 +61,7 @@ public class TrayMigrator {
      * @param migration the import operation object
      * @return true if the item should be remigrated
      */
-    private boolean isAlreadyImported(final TrayMigration migration) {
+    /*private boolean isAlreadyImported(final TrayMigration migration) {
         // annotations are good but it's important to be sure
         // noinspection ConstantConditions
         if (migration.getPreviousKey() == null) {
@@ -52,6 +70,11 @@ public class TrayMigrator {
 
         final String trayKey = migration.getTrayKey();
         final TrayItem item = mTrayPreference.getStorage().get(trayKey);
+        if (item == null) {
+            // item is unknown -> migrate
+            return false;
+        }
+
         if (item.migratedKey() == null) {
             // the tray item was available before the migration because it has no migrationKey
             return false;
@@ -61,11 +84,11 @@ public class TrayMigrator {
         // for better documentation
         // noinspection RedundantIfStatement
         if (item.migratedKey().equals(migratedKey)) {
-            // the keys are the same. so the item was imported before
+            // the keys are the same. so the item was imported before -> already imported
             return true;
         } else {
-            // the key has changed since the last import. import again
+            // the key has changed since the last import. -> remigrate
             return false;
         }
-    }
+    }*/
 }

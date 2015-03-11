@@ -20,12 +20,12 @@ import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.test.IsolatedContext;
 import android.test.ProviderTestCase2;
-import android.test.mock.MockContentProvider;
 import android.test.mock.MockContentResolver;
 
 import java.util.HashMap;
@@ -33,7 +33,7 @@ import java.util.HashMap;
 /**
  * Created by pascalwelsch on 11/21/14.
  */
-public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
+public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static class TrayIsolatedContext extends IsolatedContext {
@@ -80,6 +80,11 @@ public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
                 mockContentResolver.addProvider(authority, mProviders.get(authority));
             }
             return mockContentResolver;
+        }
+
+        @Override
+        public SharedPreferences getSharedPreferences(final String name, final int mode) {
+            return super.getSharedPreferences(name, mode);
         }
 
         @Override
