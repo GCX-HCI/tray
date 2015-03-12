@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'de.mobilej.unmock:UnMockPlugin:0.1.1'
+    }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 apply plugin: 'de.mobilej.unmock'
@@ -61,54 +70,6 @@ unMock {
             "-android.net.Uri"
     ]
 }
-
-def coverageSourceDirs = [
-        '../library/src/main/java'
-]
-
-task generateJacocoTestReports(type: JacocoReport, dependsOn: ["test", "createDebugCoverageReport"]) {
-    group = "Reporting"
-    description = 'Generate Jacoco Robolectric unit test coverage reports'
-
-    classDirectories = fileTree(
-            dir: '../library/build/intermediates/classes/debug',
-            excludes: ['**//*R.class',
-                       '**//*R$*.class',
-                       '***/*//*$ViewInjector*.*',
-                       '**//*BuildConfig.*',
-                       '**//*Manifest*.*']
-            )
-    sourceDirectories = files(coverageSourceDirs)
-    additionalSourceDirs = files(coverageSourceDirs)
-    executionData = files('../library/build/jacoco/testDebug.exec')
-}
-
-//task jacocoReport(type: JacocoReport, dependsOn: ["test", "connectedAndroidTest"]) {
-//    // Add execution data from all subprojects
-//    executionData fileTree(project.rootDir.absolutePath).include("../*/build/jacoco/*.exec")
-//    // Add source classes from all subprojects
-//    subprojects.each {
-//        sourceSets it.sourceSets.main
-//    }
-//    sourceDirectories = files(coverageSourceDirs)
-//    classDirectories = fileTree(
-//            dir: '../library/build/intermediates/',
-//            includes: ['**/debug/*'],
-//            excludes: ['**/R.class',
-//                       '**/R$*.class',
-//                       '**/*$ViewInjector*.*',
-//                       '**/BuildConfig.*',
-//                       '**/Manifest*.*']
-//            )
-//    // Make the aggregate report go in a top-level directory somewhere
-//    reports {
-//        html {
-//            enabled true
-//            destination "release/reports/jacoco"
-//        }
-//    }
-//}
-
 
 dependencies {
     compile 'com.android.support:support-annotations:20.0.0'
