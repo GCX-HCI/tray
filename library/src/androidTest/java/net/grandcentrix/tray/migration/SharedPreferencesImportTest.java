@@ -24,6 +24,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @SuppressLint("CommitPrefEdits")
 public class SharedPreferencesImportTest extends TrayProviderTestCase {
 
@@ -46,6 +49,17 @@ public class SharedPreferencesImportTest extends TrayProviderTestCase {
         assertEquals("trayKey", sharedPreferencesImport.getTrayKey());
     }
 
+    public void testEquals() throws Exception {
+        final Object object = new Object();
+        final Object other = "";
+        assertTrue(SharedPreferencesImport.equals(object, object));
+        assertFalse(SharedPreferencesImport.equals(object, other));
+
+        assertTrue(SharedPreferencesImport.equals(null, null));
+        assertFalse(SharedPreferencesImport.equals(object, null));
+        assertFalse(SharedPreferencesImport.equals(null, object));
+    }
+
     public void testGetData() throws Exception {
         mSharedPrefs.edit().putString("sharedPrefKey", "data").commit();
         final SharedPreferencesImport sharedPreferencesImport = new SharedPreferencesImport(
@@ -61,10 +75,9 @@ public class SharedPreferencesImportTest extends TrayProviderTestCase {
                 getProviderMockContext(), "myModule");
         assertEquals(0, trayPreference.getAll().size());
 
-        final TrayMigrator migrator = new TrayMigrator(trayPreference);
         final SharedPreferencesImport trayImport = new SharedPreferencesImport(
                 getContext(), SHARED_PREF_NAME, "key", "trayKey");
-        migrator.performMigration(trayImport);
+        trayPreference.migrate(trayImport);
 
         assertEquals("nothing", mSharedPrefs.getString("key", "nothing"));
         assertEquals(1, trayPreference.getAll().size());
@@ -74,15 +87,35 @@ public class SharedPreferencesImportTest extends TrayProviderTestCase {
         assertEquals("key", pref.migratedKey());
     }
 
-    public void testPostMigrate() throws Exception {
-        mSharedPrefs.edit().putString("key", "data").commit();
+    public void testPostMigrateCorrect() throws Exception {
+        final String DATA = "data";
+        mSharedPrefs.edit().putString("key", DATA).commit();
         final SharedPreferencesImport sharedPreferencesImport = new SharedPreferencesImport(
                 getContext(), SHARED_PREF_NAME, "key", "trayKey");
-        sharedPreferencesImport.onPostMigrate(false);
-        assertEquals("data", mSharedPrefs.getString("key", null)); // data is not deleted
+        final TrayItem trayItem = mock(TrayItem.class);
+        when(trayItem.value()).thenReturn(DATA);
+        sharedPreferencesImport.onPostMigrate(trayItem);
+        assertEquals("default", mSharedPrefs.getString("key", "default")); // data is deleted
+    }
 
-        sharedPreferencesImport.onPostMigrate(true);
-        assertEquals(null, mSharedPrefs.getString("key", null)); // data is gone
+    public void testPostMigrateIncorrect() throws Exception {
+        final String DATA = "data";
+        mSharedPrefs.edit().putString("key", DATA).commit();
+        final SharedPreferencesImport sharedPreferencesImport = new SharedPreferencesImport(
+                getContext(), SHARED_PREF_NAME, "key", "trayKey");
+        final TrayItem trayItem = mock(TrayItem.class);
+        when(trayItem.value()).thenReturn(DATA + "something");
+        sharedPreferencesImport.onPostMigrate(trayItem);
+        assertEquals(DATA, mSharedPrefs.getString("key", "default")); // data is deleted
+    }
+
+    public void testPostMigrateWithNull() throws Exception {
+        final String DATA = "data";
+        mSharedPrefs.edit().putString("key", DATA).commit();
+        final SharedPreferencesImport sharedPreferencesImport = new SharedPreferencesImport(
+                getContext(), SHARED_PREF_NAME, "key", "trayKey");
+        sharedPreferencesImport.onPostMigrate(null);
+        assertEquals(DATA, mSharedPrefs.getString("key", "default")); // data is not deleted
     }
 
     public void testShouldMigrate() throws Exception {

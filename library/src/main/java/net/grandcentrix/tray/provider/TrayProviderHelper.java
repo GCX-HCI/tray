@@ -72,7 +72,7 @@ public class TrayProviderHelper {
             if (module == null) {
                 continue;
             }
-            String moduleName = module.getModularizedStorage().getModule();
+            String moduleName = module.getModularizedStorage().getModuleName();
             selection = SqlSelectionHelper
                     .extendSelection(selection, TrayContract.Preferences.Columns.MODULE + " != ?");
             selectionArgs = SqlSelectionHelper

@@ -16,10 +16,12 @@
 
 package net.grandcentrix.tray.accessor;
 
+import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.storage.PreferenceStorage;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Collection;
 
@@ -31,18 +33,14 @@ import java.util.Collection;
  */
 public abstract class Preference<T> implements PreferenceAccessor<T> {
 
+    private static final String TAG = Preference.class.getSimpleName();
+
     private PreferenceStorage<T> mStorage;
 
     public Preference(final PreferenceStorage<T> storage, final int version) {
         mStorage = storage;
 
-        if (version < 1) {
-            throw new IllegalArgumentException("Version must be >= 1, was " + version);
-        }
-
-        synchronized (this) {
-            detectVersionChange(version);
-        }
+        changeVersion(version);
     }
 
     /**
@@ -62,8 +60,8 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
     }
 
     /**
-     * Called when the Preference needs to be upgraded. Use this to performMigration data in this
-     * Preference over time.
+     * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
+     * over time.
      * <p/>
      * Once the version in the constructor is increased the next constructor call to this Preference
      * will trigger an upgrade.
@@ -99,6 +97,37 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
                 || data == null;
     }
 
+    /**
+     * Migrates data into this preference.
+     */
+    @SafeVarargs
+    public final void migrate(Migration<T>... migrations) {
+        for (Migration<T> migration : migrations) {
+
+            if (!migration.shouldMigrate()) {
+                continue;
+            }
+
+            final Object data = migration.getData();
+
+            final boolean supportedDataType = Preference.isDataTypeSupported(data);
+            if (!supportedDataType) {
+                Log.w(TAG, "could not migrate " + migration.getPreviousKey()
+                        + " because the datatype" + data.getClass().getSimpleName() + "is invalid");
+                migration.onPostMigrate(null);
+                continue;
+            }
+            final String key = migration.getTrayKey();
+            final String migrationKey = migration.getPreviousKey();
+            // save into tray
+            getStorage().put(key, migrationKey, data);
+
+            // return the saved data.
+            final T trayItem = getStorage().get(key);
+            migration.onPostMigrate(trayItem);
+        }
+    }
+
     @Override
     public void put(final String key, final String value) {
         getStorage().put(key, value);
@@ -129,7 +158,8 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
     }
 
     /**
-     * checks for version changes and calls the correct handling methods.
+     * Changes the version of this preferences. checks for version changes and calls the correct
+     * handling methods.
      * <pre>
      * <ul>
      * <li>{@link #onCreate(int)} when there is no previous version</li>
@@ -139,7 +169,15 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
      * </pre>
      * compareable to the mechanism in  {@link android.database.sqlite.SQLiteOpenHelper#getWritableDatabase()}
      */
-    /*protected*/ void detectVersionChange(final int newVersion) {
+    // TODO PW is public useful?
+    /*package*/
+    synchronized void changeVersion(final int newVersion) {
+        if (newVersion < 1) {
+            // negative versions are illegal.
+            // 0 is reserved to detect the initial state
+            throw new IllegalArgumentException("Version must be >= 1, was " + newVersion);
+        }
+
         final int version = getStorage().getVersion();
         if (version != newVersion) {
             if (version == 0) {

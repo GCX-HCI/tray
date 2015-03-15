@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.migration;
+package net.grandcentrix.tray.accessor;
 
 import junit.framework.TestCase;
 
 import net.grandcentrix.tray.BuildConfig;
 import net.grandcentrix.tray.accessor.MockSimplePreference;
+import net.grandcentrix.tray.migration.Migration;
+import net.grandcentrix.tray.migration.TrayMigration;
 import net.grandcentrix.tray.mock.MockModularizedStorage;
 import net.grandcentrix.tray.provider.TrayItem;
 
@@ -28,12 +30,13 @@ import android.support.annotation.NonNull;
 import java.util.Date;
 import java.util.HashMap;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class TrayMigratorTest extends TestCase {
+public class PreferenceMigrateTest extends TestCase {
 
     public class TestMigration implements TrayMigration {
 
@@ -64,8 +67,8 @@ public class TrayMigratorTest extends TestCase {
         }
 
         @Override
-        public void onPostMigrate(final boolean successful) {
-            if (successful) {
+        public void onPostMigrate(final TrayItem successful) {
+            if (successful != null) {
                 mDataStore.remove(mOldKey);
             }
         }
@@ -100,10 +103,9 @@ public class TrayMigratorTest extends TestCase {
     }
 
     public void testMigrateTwice() throws Exception {
-        final TrayMigrator trayMigrator = new TrayMigrator(mTrayPreference);
-        final TrayMigration migration = new TestMigration(NEW_KEY, OLD_KEY);
-        trayMigrator.performMigration(migration);
-        trayMigrator.performMigration(migration);
+        final Migration migration = new TestMigration(NEW_KEY, OLD_KEY);
+        mTrayPreference.migrate(migration);
+        mTrayPreference.migrate(migration);
 
         assertEquals(0, mDataStore.size());
         assertEquals(1, mTrayPreference.getAll().size());
@@ -118,11 +120,10 @@ public class TrayMigratorTest extends TestCase {
         when(storage.get(NEW_KEY)).thenReturn(null);
         assertNull(storage.get(NEW_KEY));
 
-        final TrayMigrator trayMigrator = new TrayMigrator(mTrayPreference);
-        final TrayMigration migration = spy(new TestMigration(NEW_KEY, OLD_KEY));
+        final Migration migration = spy(new TestMigration(NEW_KEY, OLD_KEY));
 
-        trayMigrator.performMigration(migration);
-        verify(migration, times(1)).onPostMigrate(false);
+        mTrayPreference.migrate(migration);
+        verify(migration, times(1)).onPostMigrate(null);
     }
 
     public void testMigrationDidNotWorkWrongData() throws Exception {
@@ -134,23 +135,21 @@ public class TrayMigratorTest extends TestCase {
         when(storage.get(NEW_KEY)).thenReturn(wrongItem);
         assertEquals(wrongItem, storage.get(NEW_KEY));
 
-        final TrayMigrator trayMigrator = new TrayMigrator(mTrayPreference);
-        final TrayMigration migration = spy(new TestMigration(NEW_KEY, OLD_KEY));
+        final Migration migration = spy(new TestMigration(NEW_KEY, OLD_KEY));
 
-        trayMigrator.performMigration(migration);
-        verify(migration, times(1)).onPostMigrate(false);
+        mTrayPreference.migrate(migration);
+        verify(migration, times(1)).onPostMigrate(wrongItem);
     }
 
     public void testOverrideMigratedDataWithNewMigration() throws Exception {
         mTrayPreference.put(NEW_KEY, "other data");
 
-        final TrayMigrator trayMigrator = new TrayMigrator(mTrayPreference);
-        final TrayMigration migration = new TestMigration(NEW_KEY, OLD_KEY);
-        trayMigrator.performMigration(migration);
+        final Migration migration = new TestMigration(NEW_KEY, OLD_KEY);
+        mTrayPreference.migrate(migration);
 
         mDataStore.put("something", "other");
-        final TrayMigration migration2 = new TestMigration(NEW_KEY, "something");
-        trayMigrator.performMigration(migration2);
+        final Migration migration2 = new TestMigration(NEW_KEY, "something");
+        mTrayPreference.migrate(migration2);
         assertEquals(0, mDataStore.size());
         assertEquals(1, mTrayPreference.getAll().size());
 
@@ -160,17 +159,15 @@ public class TrayMigratorTest extends TestCase {
     public void testOverrideWithMigration() throws Exception {
         mTrayPreference.put(NEW_KEY, "other data");
 
-        final TrayMigrator trayMigrator = new TrayMigrator(mTrayPreference);
-        final TrayMigration migration = new TestMigration(NEW_KEY, OLD_KEY);
-        trayMigrator.performMigration(migration);
+        final Migration migration = new TestMigration(NEW_KEY, OLD_KEY);
+        mTrayPreference.migrate(migration);
 
         assertEquals(DATA, mTrayPreference.getString(NEW_KEY, null));
     }
 
     public void testPerformMigration() throws Exception {
-        final TrayMigrator trayMigrator = new TrayMigrator(mTrayPreference);
-        final TrayMigration migration = new TestMigration(NEW_KEY, OLD_KEY);
-        trayMigrator.performMigration(migration);
+        final Migration migration = new TestMigration(NEW_KEY, OLD_KEY);
+        mTrayPreference.migrate(migration);
 
         assertEquals(0, mDataStore.size());
         assertEquals(1, mTrayPreference.getAll().size());
@@ -179,12 +176,11 @@ public class TrayMigratorTest extends TestCase {
     }
 
     public void testUnsupportedDataType() {
-        final TrayMigrator trayMigrator = new TrayMigrator(mTrayPreference);
         final TestMigration migration = spy(new TestMigration(NEW_KEY, OLD_KEY));
         when(migration.getData()).thenReturn(1d); // double is not supported
 
-        trayMigrator.performMigration(migration);
-        verify(migration, times(1)).onPostMigrate(false);
+        mTrayPreference.migrate(migration);
+        verify(migration, times(1)).onPostMigrate(null);
 
         // not imported
         assertEquals(1, mDataStore.size());

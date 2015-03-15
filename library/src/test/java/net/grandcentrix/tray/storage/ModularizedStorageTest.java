@@ -24,6 +24,6 @@ public class ModularizedStorageTest extends TestCase {
 
     public void testGetModule() throws Exception {
         final MockModularizedStorage storage = new MockModularizedStorage("test");
-        assertEquals("test", storage.getModule());
+        assertEquals("test", storage.getModuleName());
     }
 }

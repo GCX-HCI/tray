@@ -14,13 +14,30 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.migration;
+package net.grandcentrix.tray.sample;
 
-import net.grandcentrix.tray.provider.TrayItem;
+import net.grandcentrix.tray.TrayModulePreferences;
+
+import android.content.Context;
 
 /**
  * Created by pascalwelsch on 3/14/15.
  */
-public interface TrayMigration extends Migration<TrayItem> {
+public class ImportTrayPreferences extends TrayModulePreferences {
+
+    public ImportTrayPreferences(final Context context) {
+        super(context, "imported", 1);
+    }
+
+    @Override
+    protected void onCreate(final int initialVersion) {
+        migrate();
+
+    }
+
+    @Override
+    protected void onUpgrade(final int oldVersion, final int newVersion) {
+
+    }
 
 }

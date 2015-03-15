@@ -16,4 +16,31 @@
         android:text="reset"
         android:id="@+id/reset" />
 
+    <LinearLayout
+        android:layout_below="@id/reset"
+        android:orientation="vertical"
+        android:layout_marginTop="25dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/shared_pref_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="write SharedPreferences"
+            android:id="@+id/write_shared_pref" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="import SharedPref in tray"
+            android:id="@+id/import_shared_pref" />
+
+
+    </LinearLayout>
+
 </RelativeLayout>

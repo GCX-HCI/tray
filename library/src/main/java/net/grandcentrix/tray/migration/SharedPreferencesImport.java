@@ -16,10 +16,14 @@
 
 package net.grandcentrix.tray.migration;
 
+import net.grandcentrix.tray.provider.TrayItem;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
+import java.util.Objects;
 
 /**
  * Created by pascalwelsch on 2/25/15.
@@ -59,10 +63,20 @@ public class SharedPreferencesImport implements TrayMigration {
     }
 
     @Override
-    public void onPostMigrate(final boolean successful) {
-        if (successful) {
-            mPreferences.edit().remove(mSharedPrefsKey).commit();
+    public void onPostMigrate(final TrayItem trayItem) {
+        if (trayItem != null) {
+            if (equals(trayItem.value(), getData())) {
+                mPreferences.edit().remove(mSharedPrefsKey).commit();
+            }
         }
+    }
+
+    /**
+     * Null-safe equivalent of {@code a.equals(b)}.
+     * Taken from {@link Objects#equals(Object, Object)} API level 19+
+     */
+    /*protected*/ static boolean equals(Object a, Object b) {
+        return (a == null) ? (b == null) : a.equals(b);
     }
 
     @Override

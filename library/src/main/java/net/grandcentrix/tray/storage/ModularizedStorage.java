@@ -24,13 +24,13 @@ package net.grandcentrix.tray.storage;
  */
 public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
 
-    private String mModule;
+    private String mModuleName;
 
-    public ModularizedStorage(final String module) {
-        mModule = module;
+    public ModularizedStorage(final String moduleName) {
+        mModuleName = moduleName;
     }
 
-    public String getModule() {
-        return mModule;
+    public String getModuleName() {
+        return mModuleName;
     }
 }

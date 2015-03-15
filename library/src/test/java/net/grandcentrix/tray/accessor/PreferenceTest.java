@@ -87,7 +87,7 @@ public class PreferenceTest extends TestCase {
         assertNotNull(item);
         assertEquals("key", item.key());
         assertEquals("value", item.value());
-        assertEquals(mockPreference.getModularizedStorage().getModule(), item.module());
+        assertEquals(mockPreference.getModularizedStorage().getModuleName(), item.module());
         assertEquals(item.created(), item.updateTime());
     }
 
@@ -196,12 +196,12 @@ public class PreferenceTest extends TestCase {
                 map.put("up", "up");
             }
         };
-        mockPreference.detectVersionChange(2);
+        mockPreference.changeVersion(2);
         assertTrue(map.containsKey("up"));
         assertFalse(map.containsKey("down"));
         map.clear();
 
-        mockPreference.detectVersionChange(1);
+        mockPreference.changeVersion(1);
         assertTrue(map.containsKey("down"));
         assertFalse(map.containsKey("up"));
     }

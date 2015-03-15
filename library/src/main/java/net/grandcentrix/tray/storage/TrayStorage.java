@@ -56,26 +56,26 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void clear() {
-        final Uri uri = TrayProvider.CONTENT_URI.buildUpon().appendPath(getModule()).build();
+        final Uri uri = TrayProvider.CONTENT_URI.buildUpon().appendPath(getModuleName()).build();
         mContext.getContentResolver().delete(uri, null, null);
     }
 
     @Override
     @Nullable
     public TrayItem get(@NonNull final String key) {
-        final Uri uri = TrayProviderHelper.getUri(getModule(), key);
+        final Uri uri = TrayProviderHelper.getUri(getModuleName(), key);
         final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
         return prefs.size() == 1 ? prefs.get(0) : null;
     }
 
     @Override
     public Collection<TrayItem> getAll() {
-        return mProviderHelper.queryProvider(TrayProviderHelper.getUri(getModule()));
+        return mProviderHelper.queryProvider(TrayProviderHelper.getUri(getModuleName()));
     }
 
     @Override
     public int getVersion() {
-        final Uri internalUri = TrayProviderHelper.getInternalUri(getModule(), VERSION);
+        final Uri internalUri = TrayProviderHelper.getInternalUri(getModuleName(), VERSION);
         final List<TrayItem> trayItems = mProviderHelper.queryProvider(internalUri);
         if (trayItems.size() == 0) {
             // fallback, not found
@@ -97,7 +97,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
             return;
         }
         String value = String.valueOf(o);
-        mProviderHelper.persist(getModule(), key, migrationKey, value);
+        mProviderHelper.persist(getModuleName(), key, migrationKey, value);
     }
 
     @Override
@@ -107,12 +107,12 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
             throw new IllegalArgumentException(
                     "null is not valid. use clear to delete all preferences");
         }
-        final Uri uri = TrayProviderHelper.getUri(getModule(), key);
+        final Uri uri = TrayProviderHelper.getUri(getModuleName(), key);
         mContext.getContentResolver().delete(uri, null, null);
     }
 
     @Override
     public void setVersion(final int version) {
-        mProviderHelper.persistInternal(getModule(), VERSION, String.valueOf(version));
+        mProviderHelper.persistInternal(getModuleName(), VERSION, String.valueOf(version));
     }
 }
