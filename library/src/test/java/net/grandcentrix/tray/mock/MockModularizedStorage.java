@@ -49,6 +49,7 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
         return data.get(key);
     }
 
+    @NonNull
     @Override
     public Collection<TrayItem> getAll() {
         return data.values();
@@ -61,16 +62,16 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
-            final Object o) {
-        final String value = String.valueOf(o);
+            final Object data) {
+        final String value = String.valueOf(data);
         final TrayItem item = new TrayItem(getModuleName(), key, migrationKey, value, new Date(),
                 new Date());
-        data.put(key, item);
+        this.data.put(key, item);
     }
 
     @Override
-    public void put(@NonNull final String key, final Object o) {
-        put(key, null, o);
+    public void put(@NonNull final String key, final Object data) {
+        put(key, null, data);
     }
 
     @Override

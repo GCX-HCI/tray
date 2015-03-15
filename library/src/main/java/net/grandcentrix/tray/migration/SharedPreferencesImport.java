@@ -66,7 +66,7 @@ public class SharedPreferencesImport implements TrayMigration {
     public void onPostMigrate(final TrayItem trayItem) {
         if (trayItem != null) {
             if (equals(trayItem.value(), getData())) {
-                mPreferences.edit().remove(mSharedPrefsKey).commit();
+                mPreferences.edit().remove(mSharedPrefsKey).apply();
             }
         }
     }

@@ -47,6 +47,7 @@ public class MockModularizedStringStorage extends ModularizedStorage<String> {
         return data.get(key);
     }
 
+    @NonNull
     @Override
     public Collection<String> getAll() {
         return data.values();
@@ -59,13 +60,13 @@ public class MockModularizedStringStorage extends ModularizedStorage<String> {
 
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
-            @Nullable final Object o) {
+            @Nullable final Object data) {
 
     }
 
     @Override
-    public void put(@NonNull final String key, final Object o) {
-        data.put(key, String.valueOf(o));
+    public void put(@NonNull final String key, final Object data) {
+        this.data.put(key, String.valueOf(data));
     }
 
     @Override

@@ -20,6 +20,7 @@ import android.database.Cursor;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by jannisveerkamp on 17.09.14.
@@ -81,7 +82,7 @@ public class TrayItem {
 
     @Override
     public String toString() {
-        SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
+        SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy", Locale.US);
 
         //noinspection StringBufferReplaceableByString
         return new StringBuilder()

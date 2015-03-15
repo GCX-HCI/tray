@@ -24,6 +24,7 @@ import android.text.TextUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class TrayItemTest extends TestCase {
 
@@ -71,8 +72,7 @@ public class TrayItemTest extends TestCase {
     }
 
     public void testToString() throws Exception {
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
+        SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy", Locale.US);
         final Date created = new Date();
         final Date updated = new Date();
         final TrayItem item = new TrayItem("module", "key", "migratedKey", "value", created, updated

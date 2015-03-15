@@ -33,6 +33,7 @@ public interface Migration<T> {
      *
      * @return the data in a valid primitive format
      */
+    @Nullable
     Object getData();
 
     /**

@@ -31,25 +31,51 @@ public interface PreferenceStorage<T> {
     /**
      * clears the storage and wipes all of its content
      */
-    public void clear();
+    void clear();
 
     /**
      * @return the corresponding Item object {@link T} for the given key
      */
     @Nullable
-    public T get(@NonNull final String key);
+    T get(@NonNull final String key);
 
-    public Collection<T> getAll();
+    /**
+     * @return all items saved in this storage
+     */
+    @NonNull
+    Collection<T> getAll();
 
-    public int getVersion();
+    /**
+     * @return the current version of this storage
+     * @see #setVersion(int)
+     */
+    int getVersion();
 
-    public void put(@NonNull final String key, @Nullable final String migrationKey,
-            @Nullable final Object o);
+    /**
+     * same as {@link #put(String, Object)} but with an additional migration key to save where the
+     * data came from.
+     * @param key where to save
+     * @param migrationKey where the data came from
+     * @param data what to save
+     */
+    void put(@NonNull final String key, @Nullable final String migrationKey,
+            @Nullable final Object data);
 
-    public void put(@NonNull final String key, @Nullable final Object o);
+    /**
+     * stores the data using the key to access the data later with {@link #get(String)}
+     * @param key access key to the data
+     * @param data what to save
+     */
+    void put(@NonNull final String key, @Nullable final Object data);
 
-    public void remove(@NonNull final String key);
+    /**
+     * removes the item with the given key
+     */
+    void remove(@NonNull final String key);
 
-    public void setVersion(final int version);
+    /**
+     * sets the version of this storage
+     */
+    void setVersion(final int version);
 
 }

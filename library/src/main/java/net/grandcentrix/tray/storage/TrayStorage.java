@@ -68,6 +68,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         return prefs.size() == 1 ? prefs.get(0) : null;
     }
 
+    @NonNull
     @Override
     public Collection<TrayItem> getAll() {
         return mProviderHelper.queryProvider(TrayProviderHelper.getUri(getModuleName()));
@@ -85,18 +86,27 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
-    public void put(@NonNull final String key, @NonNull final Object o) {
-        put(key, null, o);
+    public void put(@NonNull final String key, @Nullable final Object data) {
+        put(key, null, data);
     }
 
+    /**
+     * same as {@link #put(String, Object)} but with an additional migration key to save where the
+     * data came from. Putting data twice with the same {@param migraionKey} does not override the
+     * already saved data. This should prevent migrating data multiple times while the data my be
+     * edited with {@link #put(String, Object)}.
+     *
+     * @param key          where to save
+     * @param migrationKey where the data came from
+     * @param data         what to save
+     */
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
-            @NonNull final Object o) {
-        //noinspection ConstantConditions
-        if (o == null) {
+            @Nullable final Object data) {
+        if (data == null) {
             return;
         }
-        String value = String.valueOf(o);
+        String value = String.valueOf(data);
         mProviderHelper.persist(getModuleName(), key, migrationKey, value);
     }
 

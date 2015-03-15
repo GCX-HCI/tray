@@ -129,27 +129,27 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
     }
 
     @Override
-    public void put(final String key, final String value) {
+    public void put(@NonNull final String key, final String value) {
         getStorage().put(key, value);
     }
 
     @Override
-    public void put(final String key, final int value) {
+    public void put(@NonNull final String key, final int value) {
         getStorage().put(key, value);
     }
 
     @Override
-    public void put(final String key, final float value) {
+    public void put(@NonNull final String key, final float value) {
         getStorage().put(key, value);
     }
 
     @Override
-    public void put(final String key, final long value) {
+    public void put(@NonNull final String key, final long value) {
         getStorage().put(key, value);
     }
 
     @Override
-    public void put(final String key, final boolean value) {
+    public void put(@NonNull final String key, final boolean value) {
         getStorage().put(key, value);
     }
 

@@ -21,33 +21,34 @@ import android.provider.BaseColumns;
 /**
  * Created by jannisveerkamp on 17.09.14.
  */
+@SuppressWarnings("unused")
 public interface TrayContract {
 
     interface Preferences {
 
         interface Columns extends BaseColumns {
 
-            final String ID = BaseColumns._ID;
+            String ID = BaseColumns._ID;
 
-            final String KEY = TrayDBHelper.KEY;
+            String KEY = TrayDBHelper.KEY;
 
-            final String VALUE = TrayDBHelper.VALUE;
+            String VALUE = TrayDBHelper.VALUE;
 
-            final String MODULE = TrayDBHelper.MODULE;
+            String MODULE = TrayDBHelper.MODULE;
 
-            final String CREATED = TrayDBHelper.CREATED; // DATE
+            String CREATED = TrayDBHelper.CREATED; // DATE
 
-            final String UPDATED = TrayDBHelper.UPDATED; // DATE
+            String UPDATED = TrayDBHelper.UPDATED; // DATE
 
-            final String MIGRATED_KEY = TrayDBHelper.MIGRATED_KEY;
+            String MIGRATED_KEY = TrayDBHelper.MIGRATED_KEY;
         }
 
-        final String BASE_PATH = "preferences";
+        String BASE_PATH = "preferences";
     }
 
     interface InternalPreferences extends Preferences {
 
-        final String BASE_PATH = "internal_preferences";
+        String BASE_PATH = "internal_preferences";
     }
 
 }
