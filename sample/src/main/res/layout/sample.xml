@@ -13,7 +13,7 @@
         android:layout_below="@android:id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="reset"
+        android:text="@string/sample_reset"
         android:id="@+id/reset" />
 
     <LinearLayout
@@ -31,13 +31,13 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="write SharedPreferences"
+            android:text="@string/sample_write_shared_pref"
             android:id="@+id/write_shared_pref" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="import SharedPref in tray"
+            android:text="@string/sample_import_sharedpref_in_tray"
             android:id="@+id/import_shared_pref" />
 
 

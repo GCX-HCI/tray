@@ -89,7 +89,7 @@ public class SampleActivity extends Activity implements View.OnClickListener {
         }
 
         final TextView text = (TextView) findViewById(android.R.id.text1);
-        text.setText(getString(R.string.launched_x_times, startupCount));
+        text.setText(getString(R.string.sample_launched_x_times, startupCount));
 
         final Button resetBtn = (Button) findViewById(R.id.reset);
         resetBtn.setOnClickListener(this);

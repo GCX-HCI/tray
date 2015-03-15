@@ -1,4 +1,9 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Tray sample</string>
-    <string name="launched_x_times">"%1$d times launched"</string>
+
+    <!-- sample screen -->
+    <string name="sample_launched_x_times" tools:ignore="PluralsCandidate">%1$d times launched</string>
+    <string name="sample_import_sharedpref_in_tray">import SharedPref in tray</string>
+    <string name="sample_write_shared_pref">write SharedPreferences</string>
+    <string name="sample_reset">reset</string>
 </resources>
