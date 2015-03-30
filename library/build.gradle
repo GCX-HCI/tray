@@ -36,8 +36,9 @@ String getReadAuthority() {
         }
         return authority
     } else {
-        throw new Exception("define ext variable trayAuthority in your project build.gradle\n" +
+        /*throw new Exception("define ext variable trayAuthority in your project build.gradle\n" +
                 "Example:\n" +
-                "ext.trayAuthority = \"com.example.preferences\"");
+                "ext.trayAuthority = \"com.example.preferences\"");*/
+        return "";
     }
 }

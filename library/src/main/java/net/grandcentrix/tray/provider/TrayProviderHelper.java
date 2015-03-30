@@ -153,7 +153,8 @@ public class TrayProviderHelper {
         // Return Preference if found
         if (cursor == null) {
             throw new IllegalStateException(
-                    "could not access stored data. Is the provider registered in the manifest of your application?");
+                    "could not access stored data with uri " + uri
+                            + ". Is the provider registered in the manifest of your application?");
         }
         final ArrayList<TrayItem> list = new ArrayList<>();
         for (boolean hasItem = cursor.moveToFirst(); hasItem;

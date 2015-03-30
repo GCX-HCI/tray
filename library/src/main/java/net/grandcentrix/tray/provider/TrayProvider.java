@@ -28,6 +28,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.Date;
@@ -54,7 +55,9 @@ public class TrayProvider extends ContentProvider {
     private static UriMatcher sURIMatcher;
 
     static {
-        setAuthority(BuildConfig.AUTHORITY);
+        if (!TextUtils.isEmpty(BuildConfig.AUTHORITY)) {
+            setAuthority(BuildConfig.AUTHORITY);
+        }
     }
 
     private TrayDBHelper mDbHelper;
@@ -140,6 +143,12 @@ public class TrayProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        if (AUTHORITY == null) {
+            Log.w(TAG, "The AUTHORITY of the tray provider is null! "
+                    + "Set the AUTHORITY with ext.trayAuthority = \"com.example.preferences\" in your main build.gradle"
+                    + " or call TrayProvider.setAuthority(BuildConfig.APPLICATION_ID + \".tray\");");
+            return false;
+        }
         mDbHelper = new TrayDBHelper(getContext());
         return true;
     }
@@ -182,6 +191,30 @@ public class TrayProvider extends ContentProvider {
         return cursor;
     }
 
+    public static void setAuthority(final String authority) {
+        AUTHORITY = authority;
+
+        AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
+
+        CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, TrayContract.Preferences.BASE_PATH);
+
+        sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
+        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+                TrayContract.Preferences.BASE_PATH,
+                ALL_PREFERENCE);
+
+        // BASE/module
+        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+                TrayContract.Preferences.BASE_PATH + "/*",
+                MODULE_PREFERENCE);
+
+        // BASE/module/key
+        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+                TrayContract.Preferences.BASE_PATH + "/*/*",
+                SINGLE_PREFERENCE);
+    }
+
     @Override
     public void shutdown() {
         mDbHelper.close();
@@ -213,31 +246,6 @@ public class TrayProvider extends ContentProvider {
         }
 
         return rows;
-    }
-
-    /*package*/
-    static void setAuthority(final String authority) {
-        AUTHORITY = authority;
-
-        AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
-
-        CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, TrayContract.Preferences.BASE_PATH);
-
-        sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
-                TrayContract.Preferences.BASE_PATH,
-                ALL_PREFERENCE);
-
-        // BASE/module
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
-                TrayContract.Preferences.BASE_PATH + "/*",
-                MODULE_PREFERENCE);
-
-        // BASE/module/key
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
-                TrayContract.Preferences.BASE_PATH + "/*/*",
-                SINGLE_PREFERENCE);
     }
 
     private int insertOrUpdate(final String table, final ContentValues values) {
