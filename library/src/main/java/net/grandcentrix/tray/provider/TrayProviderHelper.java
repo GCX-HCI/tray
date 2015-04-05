@@ -36,15 +36,18 @@ public class TrayProviderHelper {
 
     final Context mContext;
 
+    private final Uri mContentUri;
+
     public TrayProviderHelper(@NonNull final Context context) {
         mContext = context;
+        mContentUri = TrayContract.generateContentUri(context);
     }
 
     /**
      * clears <b>all</b> Preferences saved. Module independent. Erases everything
      */
     public void clear() {
-        mContext.getContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
+        mContext.getContentResolver().delete(mContentUri, null, null);
     }
 
     /**
@@ -89,7 +92,7 @@ public class TrayProviderHelper {
                     .extendSelectionArgs(selectionArgs, new String[]{moduleName});
         }
 
-        mContext.getContentResolver().delete(TrayProvider.CONTENT_URI, selection, selectionArgs);
+        mContext.getContentResolver().delete(mContentUri, selection, selectionArgs);
     }
 
     /**
@@ -98,24 +101,27 @@ public class TrayProviderHelper {
      * @return all Preferences as list.
      */
     public List<TrayItem> getAll() {
-        return queryProvider(TrayProvider.CONTENT_URI);
+        return queryProvider(mContentUri);
     }
 
+    public Uri getContentUri() {
+        return mContentUri;
+    }
 
-    public static Uri getUri() {
+    public Uri getUri() {
         return getUri(null, null);
     }
 
-    public static Uri getUri(final String module) {
+    public Uri getUri(final String module) {
         return getUri(module, null);
     }
 
-    public static Uri getUri(@Nullable final String module, @Nullable final String key) {
+    public Uri getUri(@Nullable final String module, @Nullable final String key) {
         if (module == null && key != null) {
             throw new IllegalArgumentException(
                     "key without module is not valid. Look into the TryProvider for valid Uris");
         }
-        final Uri.Builder builder = TrayProvider.CONTENT_URI
+        final Uri.Builder builder = mContentUri
                 .buildUpon();
         if (module != null) {
             builder.appendPath(module);
@@ -136,7 +142,7 @@ public class TrayProviderHelper {
             return;
         }
 
-        final Uri uri = TrayProvider.CONTENT_URI
+        final Uri uri = mContentUri
                 .buildUpon()
                 .appendPath(module)
                 .appendPath(key)

@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.mock.MockProvider;
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.test.ProviderTestCase2;
@@ -25,11 +27,8 @@ import android.test.ProviderTestCase2;
  */
 public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
 
-    public static final String AUTHORITY = "net.grandcentrix.tray.test";
-
     public TrayProviderTestCase() {
-        super(TrayProvider.class, AUTHORITY);
-        TrayProvider.setAuthority(AUTHORITY);
+        super(TrayProvider.class, MockProvider.AUTHORITY);
     }
 
     /**
@@ -38,7 +37,7 @@ public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
      * @param expectedSize the number of items you expect
      */
     protected void assertDatabaseSize(final long expectedSize) {
-        assertDatabaseSize(TrayProvider.CONTENT_URI, expectedSize, true);
+        assertDatabaseSize(MockProvider.getConetntUri(), expectedSize, true);
     }
 
     /**
@@ -65,7 +64,9 @@ public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        getMockContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
+        TrayContract.setAuthority(MockProvider.AUTHORITY);
+        TrayProvider.setAuthority(MockProvider.AUTHORITY);
+        getMockContentResolver().delete(MockProvider.getConetntUri(), null, null);
 
         assertDatabaseSize(0);
     }
@@ -73,6 +74,6 @@ public class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        getMockContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
+        getMockContentResolver().delete(MockProvider.getConetntUri(), null, null);
     }
 }
