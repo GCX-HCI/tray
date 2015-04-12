@@ -18,7 +18,6 @@ package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.TrayAppPreferences;
 import net.grandcentrix.tray.accessor.TrayPreference;
-import net.grandcentrix.tray.mock.MockProvider;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
 import android.content.ContentResolver;
@@ -26,7 +25,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.test.IsolatedContext;
 
-import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;

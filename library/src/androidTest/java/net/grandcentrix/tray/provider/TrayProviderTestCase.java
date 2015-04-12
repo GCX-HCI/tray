@@ -44,11 +44,11 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
 
         private final Context mTargetContext;
 
-        IsolatedContext innerContext = new IsolatedContext(getContentResolver(), this);
-
         boolean mHasMockResolver = false;
 
         private HashMap<String, ContentProvider> mProviders = new HashMap<>();
+
+        IsolatedContext innerContext = new IsolatedContext(getContentResolver(), this);
 
         public TrayIsolatedContext(final ContentResolver resolver, final Context targetContext) {
             super(resolver, targetContext);
@@ -87,13 +87,13 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
         }
 
         @Override
-        public SharedPreferences getSharedPreferences(final String name, final int mode) {
-            return super.getSharedPreferences(name, mode);
+        public String getPackageName() {
+            return "package.test";
         }
 
         @Override
-        public String getPackageName() {
-            return "package.test";
+        public SharedPreferences getSharedPreferences(final String name, final int mode) {
+            return super.getSharedPreferences(name, mode);
         }
 
         public boolean isHasMockResolver() {
@@ -150,21 +150,6 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
                 getContext());
     }
 
-    private void cleanupProvider() {
-        TrayContract.setAuthority(MockProvider.AUTHORITY);
-        TrayProvider.setAuthority(MockProvider.AUTHORITY);
-        try {
-            getMockContentResolver().delete(MockProvider.getContentUri(), null, null);
-            getMockContentResolver().delete(MockProvider.getInternalContentUri(), null, null);
-
-
-            assertDatabaseSize(0);
-            assertDatabaseSize(MockProvider.getInternalContentUri(), 0, true);
-        } catch (SQLiteException e){
-            // the table is unknown. no problem
-        }
-    }
-
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
@@ -173,5 +158,19 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
 
     public TrayIsolatedContext getProviderMockContext() {
         return mIsolatedContext;
+    }
+
+    private void cleanupProvider() {
+        TrayContract.setAuthority(MockProvider.AUTHORITY);
+        TrayProvider.setAuthority(MockProvider.AUTHORITY);
+        try {
+            getMockContentResolver().delete(MockProvider.getContentUri(), null, null);
+            getMockContentResolver().delete(MockProvider.getInternalContentUri(), null, null);
+
+            assertDatabaseSize(0);
+            assertDatabaseSize(MockProvider.getInternalContentUri(), 0, true);
+        } catch (SQLiteException e) {
+            // the table is unknown. no problem
+        }
     }
 }

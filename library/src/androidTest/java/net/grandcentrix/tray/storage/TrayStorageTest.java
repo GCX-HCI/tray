@@ -18,7 +18,6 @@ package net.grandcentrix.tray.storage;
 
 import junit.framework.Assert;
 
-import net.grandcentrix.tray.provider.TrayContract;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;

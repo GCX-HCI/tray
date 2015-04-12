@@ -79,24 +79,6 @@ public class TrayContract {
         return generateContentUri(context, InternalPreferences.BASE_PATH);
     }
 
-    @NonNull
-    private static Uri generateContentUri(@NonNull final Context context, final String basepath) {
-
-        final String authority = getAuthority(context);
-        checkForDefaultAuthority(authority);
-        final Uri authorityUri = Uri.parse("content://" + authority);
-        //noinspection UnnecessaryLocalVariable
-        final Uri contentUri = Uri.withAppendedPath(authorityUri, basepath);
-        return contentUri;
-    }
-
-    @NonNull
-    private static String getAuthority(@NonNull final Context context) {
-        return TextUtils.isEmpty(sTestAuthority) ?
-                context.getString(R.string.tray__authority) :
-                sTestAuthority;
-    }
-
     private static void checkForDefaultAuthority(final @NonNull String authority) {
         if (authority.equals("com.example.preferences")) {
             Log.e("Tray", "Tray authority not defined\n"
@@ -114,5 +96,23 @@ public class TrayContract {
                     + "#########################################\n"
                     + "#########################################");
         }
+    }
+
+    @NonNull
+    private static Uri generateContentUri(@NonNull final Context context, final String basepath) {
+
+        final String authority = getAuthority(context);
+        checkForDefaultAuthority(authority);
+        final Uri authorityUri = Uri.parse("content://" + authority);
+        //noinspection UnnecessaryLocalVariable
+        final Uri contentUri = Uri.withAppendedPath(authorityUri, basepath);
+        return contentUri;
+    }
+
+    @NonNull
+    private static String getAuthority(@NonNull final Context context) {
+        return TextUtils.isEmpty(sTestAuthority) ?
+                context.getString(R.string.tray__authority) :
+                sTestAuthority;
     }
 }

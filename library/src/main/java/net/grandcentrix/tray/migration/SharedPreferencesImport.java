@@ -71,14 +71,6 @@ public class SharedPreferencesImport implements TrayMigration {
         }
     }
 
-    /**
-     * Null-safe equivalent of {@code a.equals(b)}.
-     * Taken from {@link Objects#equals(Object, Object)} API level 19+
-     */
-    /*protected*/ static boolean equals(Object a, Object b) {
-        return (a == null) ? (b == null) : a.equals(b);
-    }
-
     @Override
     public boolean shouldMigrate() {
         if (mPreferences.contains(mSharedPrefsKey)) {
@@ -87,5 +79,14 @@ public class SharedPreferencesImport implements TrayMigration {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Null-safe equivalent of {@code a.equals(b)}. Taken from {@link Objects#equals(Object,
+     * Object)} API level 19+
+     */
+    /*protected*/
+    static boolean equals(Object a, Object b) {
+        return (a == null) ? (b == null) : a.equals(b);
     }
 }

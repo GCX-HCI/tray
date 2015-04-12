@@ -19,7 +19,6 @@ package net.grandcentrix.tray.accessor;
 import junit.framework.TestCase;
 
 import net.grandcentrix.tray.BuildConfig;
-import net.grandcentrix.tray.accessor.MockSimplePreference;
 import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.migration.TrayMigration;
 import net.grandcentrix.tray.mock.MockModularizedStorage;
@@ -30,7 +29,6 @@ import android.support.annotation.NonNull;
 import java.util.Date;
 import java.util.HashMap;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

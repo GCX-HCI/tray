@@ -54,16 +54,18 @@ public interface PreferenceStorage<T> {
     /**
      * same as {@link #put(String, Object)} but with an additional migration key to save where the
      * data came from.
-     * @param key where to save
+     *
+     * @param key          where to save
      * @param migrationKey where the data came from
-     * @param data what to save
+     * @param data         what to save
      */
     void put(@NonNull final String key, @Nullable final String migrationKey,
             @Nullable final Object data);
 
     /**
      * stores the data using the key to access the data later with {@link #get(String)}
-     * @param key access key to the data
+     *
+     * @param key  access key to the data
      * @param data what to save
      */
     void put(@NonNull final String key, @Nullable final Object data);

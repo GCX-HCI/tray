@@ -18,7 +18,6 @@ package net.grandcentrix.tray.provider;
 
 import junit.framework.TestCase;
 
-import android.annotation.SuppressLint;
 import android.database.MatrixCursor;
 import android.text.TextUtils;
 

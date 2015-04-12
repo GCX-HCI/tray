@@ -173,6 +173,14 @@ public class TrayProvider extends ContentProvider {
         return null;
     }
 
+    public int insertOrUpdate(final SQLiteDatabase writableDatabase, final String table,
+            final String prefSelection, final String[] prefSelectionArgs,
+            final ContentValues values, final String[] excludeForUpdate) {
+        return SqliteHelper
+                .insertOrUpdate(writableDatabase, table, prefSelection, prefSelectionArgs, values,
+                        excludeForUpdate);
+    }
+
     @Override
     public boolean onCreate() {
         setAuthority(getContext().getString(R.string.tray__authority));
@@ -292,14 +300,6 @@ public class TrayProvider extends ContentProvider {
         sURIMatcher.addURI(authority,
                 TrayContract.InternalPreferences.BASE_PATH + "/*/*",
                 INTERNAL_SINGLE_PREFERENCE);
-    }
-
-    public int insertOrUpdate(final SQLiteDatabase writableDatabase, final String table,
-            final String prefSelection, final String[] prefSelectionArgs,
-            final ContentValues values, final String[] excludeForUpdate) {
-        return SqliteHelper
-                .insertOrUpdate(writableDatabase, table, prefSelection, prefSelectionArgs, values,
-                        excludeForUpdate);
     }
 
 }
