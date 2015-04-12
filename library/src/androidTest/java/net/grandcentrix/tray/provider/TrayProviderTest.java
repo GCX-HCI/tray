@@ -22,10 +22,11 @@ import android.content.ContentValues;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -137,20 +138,21 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
     public void testInsertFailed() throws Exception {
 
-        final TrayProvider trayProvider = new TrayProvider();
-        final TrayDBHelper mockDbHelper = mock(TrayDBHelper.class);
-        when(mockDbHelper.getWritableDatabase()).thenReturn(null);
-        trayProvider.mDbHelper = mockDbHelper;
-        final ContentValues values = new ContentValues();
-        assertNull(trayProvider
-                .insert(mProviderHelper.getUri("module", "key"), values));
+        assertInsertUriEqualsNullForUpdateOrInsertError(-1);
+        assertInsertUriEqualsNullForUpdateOrInsertError(-2);
+        assertInsertUriEqualsNullForUpdateOrInsertError(-1000);
 
-        final TrayProvider spy = spy(trayProvider);
-        when(spy.insertOrUpdate(TrayDBHelper.TABLE_NAME, values))
-                .thenThrow(new SQLiteException("some error"));
 
-        trayProvider
+        /*doReturn(null).when(spy).getWritableDatabase();
+        final String table = trayProvider.getTable(uri1);
+        doReturn(-1).when(spy).insertOrUpdate(null, table, prefSelection, prefSelectionArgs, values,
+                excludeForUpdate);
+
+        assertNull(spy.insert(uri1, values));
+
+        final Uri uri = spy
                 .insert(mProviderHelper.getUri("module", "key"), values);
+        assertEquals(null, uri);*/
 
     }
 
@@ -203,5 +205,20 @@ public class TrayProviderTest extends TrayProviderTestCase {
         } catch (UnsupportedOperationException e) {
             assertTrue(e.getMessage().contains("not implemented"));
         }
+    }
+
+    void assertInsertUriEqualsNullForUpdateOrInsertError(final int errorCode) {
+        final TrayProvider trayProvider = new TrayProvider();
+        final TrayProvider spy = spy(trayProvider);
+
+        doReturn(null).when(spy).getWritableDatabase();
+
+        final Uri mockInsertUri = mProviderHelper.getUri("module", "key");
+
+        doReturn(errorCode).when(spy)
+                .insertOrUpdate(any(SQLiteDatabase.class), anyString(), anyString(),
+                        any(String[].class), any(ContentValues.class), any(String[].class));
+        final Uri insert = spy.insert(mockInsertUri, new ContentValues());
+        assertNull(insert);
     }
 }

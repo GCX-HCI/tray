@@ -55,7 +55,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void clear() {
-        final Uri uri = mProviderHelper.getContentUri().buildUpon().appendPath(getModuleName())
+        final Uri uri = mProviderHelper.getUri().buildUpon().appendPath(getModuleName())
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
     }

@@ -16,16 +16,37 @@
 
 package net.grandcentrix.tray.util;
 
-import junit.framework.TestCase;
+
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.test.AndroidTestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static net.grandcentrix.tray.util.SqlSelectionHelper.extendSelection;
-import static net.grandcentrix.tray.util.SqlSelectionHelper.extendSelectionArgs;
+import static net.grandcentrix.tray.util.SqliteHelper.extendSelection;
+import static net.grandcentrix.tray.util.SqliteHelper.extendSelectionArgs;
 
-public class SqlSelectionHelperTest extends TestCase {
+public class SqliteHelperTest extends AndroidTestCase {
+
+    public class MockDatabaseHelper extends SQLiteOpenHelper {
+
+        public MockDatabaseHelper() {
+            super(getContext(), "sqlitehelpertest", null, 1);
+        }
+
+        @Override
+        public void onCreate(final SQLiteDatabase db) {
+            db.execSQL("CREATE TABLE test (_id INTEGER PRIMARY KEY, name TEXT, foo TEXT);");
+        }
+
+        @Override
+        public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+
+        }
+    }
 
     public void testExtendSelection() throws Exception {
         assertEquals("(a) AND (b)", extendSelection("a", "b"));
@@ -68,8 +89,39 @@ public class SqlSelectionHelperTest extends TestCase {
         assertEquals(null, extendSelectionArgs(null, (List<String>) null));
     }
 
+    public void testInsertFails() throws Exception {
+        final SQLiteDatabase db = new MockDatabaseHelper().getWritableDatabase();
+        db.delete("test", null, null);
+        final ContentValues values = new ContentValues();
+        values.put("wrongColName", "foobar");
+        final int result = SqliteHelper.insertOrUpdate(db, "test", null, null, values, null);
+        assertEquals(-1, result);
+    }
+
+    public void testInsertOrUpdateWithNullDb() throws Exception {
+        final int result = SqliteHelper.insertOrUpdate(null, null, null, null, null, null);
+        assertEquals(-1, result);
+    }
+
+    public void testUpdateWithoutExclusion() throws Exception {
+        final SQLiteDatabase db = new MockDatabaseHelper().getReadableDatabase();
+        db.delete("test", null, null);
+
+        // insert data. This forces the update
+        final ContentValues dataValues = new ContentValues();
+        dataValues.put("name", "has data");
+        db.insert("test", null, dataValues);
+
+        // update without exclusion
+        final ContentValues values = new ContentValues();
+        values.put("name", "data");
+        final int result = SqliteHelper
+                .insertOrUpdate(db, "test", null, null, values, null);
+        assertEquals(0, result);
+    }
+
     public void testUselessConstructorCall() throws Exception {
         // make sure the test coverage is at 100%
-        new SqlSelectionHelper();
+        new SqliteHelper();
     }
 }

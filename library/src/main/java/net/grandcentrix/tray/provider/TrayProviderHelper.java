@@ -17,7 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.accessor.TrayPreference;
-import net.grandcentrix.tray.util.SqlSelectionHelper;
+import net.grandcentrix.tray.util.SqliteHelper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -79,9 +79,9 @@ public class TrayProviderHelper {
                 continue;
             }
             String moduleName = module.getModularizedStorage().getModuleName();
-            selection = SqlSelectionHelper
+            selection = SqliteHelper
                     .extendSelection(selection, TrayContract.Preferences.Columns.MODULE + " != ?");
-            selectionArgs = SqlSelectionHelper
+            selectionArgs = SqliteHelper
                     .extendSelectionArgs(selectionArgs, new String[]{moduleName});
         }
 
@@ -96,14 +96,6 @@ public class TrayProviderHelper {
     @NonNull
     public List<TrayItem> getAll() {
         return queryProvider(mContentUri);
-    }
-
-    public Uri getContentUri() {
-        return mContentUri;
-    }
-
-    public Uri getContentUriInternal() {
-        return mContentUriInternal;
     }
 
     public Uri getInternalUri() {

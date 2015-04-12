@@ -16,10 +16,9 @@
 
 package net.grandcentrix.tray.provider;
 
-import junit.framework.Assert;
-
 import net.grandcentrix.tray.TrayAppPreferences;
 import net.grandcentrix.tray.accessor.TrayPreference;
+import net.grandcentrix.tray.mock.MockProvider;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
 import android.content.ContentResolver;
@@ -27,6 +26,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.test.IsolatedContext;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -150,7 +150,21 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertEquals(1, list.size());
         TrayItem itemA = list.get(0);
         assertNotNull(itemA.created());
-        assertEqualsWithin(start, itemA.created().getTime(), 100l);
+        assertEqualsWithin(start, itemA.created().getTime(), 50l);
+    }
+
+    public void testCreatedTimeDoesNotChange() throws Exception {
+        testCreatedTime();
+        final TrayItem insertedItem = mProviderHelper.getAll().get(0);
+        final long createdTime = insertedItem.created().getTime();
+
+        Thread.sleep(50);
+
+        // save again
+        mProviderHelper.persist(MODULE_A, KEY_A, STRING_B);
+        final long updatedCreatedTime = mProviderHelper.getAll().get(0).created().getTime();
+        assertEquals(createdTime, updatedCreatedTime);
+
     }
 
     public void testGetAll() throws Exception {
@@ -168,6 +182,16 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
         final List<TrayItem> all = mProviderHelper.getAll();
         assertEquals(4, all.size());
+    }
+
+    public void testGetUriWithoutModule() throws Exception {
+
+        try {
+            mProviderHelper.getUri(null, "key");
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("module"));
+        }
     }
 
     public void testPersist() throws Exception {
@@ -269,7 +293,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         specialCharTest(MODULE_A, testString);
         specialCharTest(testString, KEY_A);
     }
-    
+
     public void testSpecialChars3() {
         final String testString = "test'blubb";
         specialCharTest(MODULE_A, testString);

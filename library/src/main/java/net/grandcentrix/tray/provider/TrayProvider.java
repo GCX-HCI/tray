@@ -17,7 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.R;
-import net.grandcentrix.tray.util.SqlSelectionHelper;
+import net.grandcentrix.tray.util.SqliteHelper;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -25,7 +25,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.util.Log;
@@ -53,7 +52,7 @@ public class TrayProvider extends ContentProvider {
 
     private static UriMatcher sURIMatcher;
 
-    /*protected*/ TrayDBHelper mDbHelper;
+    TrayDBHelper mDbHelper;
 
     @Override
     public int delete(final Uri uri, String selection, String[] selectionArgs) {
@@ -62,16 +61,16 @@ public class TrayProvider extends ContentProvider {
         switch (match) {
             case SINGLE_PREFERENCE:
             case INTERNAL_SINGLE_PREFERENCE:
-                selection = SqlSelectionHelper.extendSelection(selection,
+                selection = SqliteHelper.extendSelection(selection,
                         TrayContract.Preferences.Columns.KEY + " = ?");
-                selectionArgs = SqlSelectionHelper.extendSelectionArgs(selectionArgs,
+                selectionArgs = SqliteHelper.extendSelectionArgs(selectionArgs,
                         new String[]{uri.getPathSegments().get(2)});
                 // no break
             case MODULE_PREFERENCE:
             case INTERNAL_MODULE_PREFERENCE:
-                selection = SqlSelectionHelper.extendSelection(selection,
+                selection = SqliteHelper.extendSelection(selection,
                         TrayContract.Preferences.Columns.MODULE + " = ?");
-                selectionArgs = SqlSelectionHelper.extendSelectionArgs(selectionArgs,
+                selectionArgs = SqliteHelper.extendSelectionArgs(selectionArgs,
                         new String[]{uri.getPathSegments().get(1)});
                 // no break
             case ALL_PREFERENCE:
@@ -81,7 +80,7 @@ public class TrayProvider extends ContentProvider {
                 throw new IllegalArgumentException("Delete is not supported for Uri: " + uri);
         }
 
-        final int rows = mDbHelper.getWritableDatabase()
+        final int rows = getWritableDatabase()
                 .delete(getTable(uri), selection, selectionArgs);
 
         // Don't force an UI refresh if nothing has changed
@@ -124,6 +123,10 @@ public class TrayProvider extends ContentProvider {
         return null;
     }
 
+    public SQLiteDatabase getWritableDatabase() {
+        return mDbHelper.getWritableDatabase();
+    }
+
     @Override
     public Uri insert(final Uri uri, final ContentValues values) {
         Date date = new Date();
@@ -142,22 +145,32 @@ public class TrayProvider extends ContentProvider {
                 throw new IllegalArgumentException("Insert is not supported for Uri: " + uri);
         }
 
-        try {
-            //long rows = mDbHelper.getWritableDatabase().insertOrThrow(table, null, values);
-            final int status = insertOrUpdate(getTable(uri), values);
+        final String prefSelection =
+                TrayContract.Preferences.Columns.MODULE + " = ?"
+                        + "AND " + TrayContract.Preferences.Columns.KEY + " = ?";
+        final String[] prefSelectionArgs = {
+                values.getAsString(TrayContract.Preferences.Columns.MODULE),
+                values.getAsString(TrayContract.Preferences.Columns.KEY)
+        };
 
-            if (status >= 0) {
-                getContext().getContentResolver().notifyChange(uri, null);
-            } else {
-                //throw new SQLiteException("An error occurred while saving preference.");
-                Log.w(TAG, "Couldn't update or insert data. Uri: " + uri);
-                return null;
-            }
-        } catch (SQLiteException e) {
+        final String[] excludeForUpdate = {TrayContract.Preferences.Columns.CREATED};
+
+        final int status = insertOrUpdate(getWritableDatabase(), getTable(uri),
+                prefSelection, prefSelectionArgs, values, excludeForUpdate);
+
+        if (status >= 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+            return uri;
+
+        } else if (status == -1) {
+            //throw new SQLiteException("An error occurred while saving preference.");
+            Log.w(TAG, "Couldn't update or insert data. Uri: " + uri);
+        } else if (status == -2) {
             Log.w(TAG, "Data is already inserted, no need to insert here");
+        } else {
+            Log.w(TAG, "unknown SQLite error");
         }
-
-        return uri;
+        return null;
     }
 
     @Override
@@ -247,56 +260,6 @@ public class TrayProvider extends ContentProvider {
     }
 
     /**
-     * Tries to insert the values. If it fails because the item already exists it tries to update
-     * the item.
-     *
-     * @param table  the table to insert
-     * @param values the values to insert
-     * @return 1 for insert, 0 for update and -1 if an error occurred
-     */
-    /*package*/ int insertOrUpdate(final String table, final ContentValues values) {
-        SQLiteDatabase sqlDB = mDbHelper.getWritableDatabase();
-        if (sqlDB == null) {
-            return -1;
-        }
-
-        final String prefSelection =
-                TrayContract.Preferences.Columns.MODULE + " = ?"
-                        + "AND " + TrayContract.Preferences.Columns.KEY + " = ?";
-        final String[] prefSelectionArgs = {
-                values.getAsString(TrayContract.Preferences.Columns.MODULE),
-                values.getAsString(TrayContract.Preferences.Columns.KEY)
-        };
-
-        final long items = DatabaseUtils
-                .queryNumEntries(sqlDB, table, prefSelection, prefSelectionArgs);
-
-        if (items == 0) {
-            // insert, item doesn't exist
-            final long row = sqlDB.insertOrThrow(table, null, values);
-            if (row == -1) {
-                throw new SQLiteException("an error occurred");
-            }
-            return 1;
-        } else {
-            // update existing item
-            // Remove created timestamp since it shouldn't be updated
-            values.remove(TrayContract.Preferences.Columns.CREATED);
-            final int update = sqlDB.update(table, values,
-                    prefSelection,
-                    prefSelectionArgs);
-            if (update > 0) {
-                return 0;
-            }
-
-            Log.w(TAG, "Could not insert or update preference ("
-                    + values.getAsString(TrayContract.Preferences.Columns.MODULE) + "/"
-                    + values.getAsString(TrayContract.Preferences.Columns.KEY) + ")");
-            return -1;
-        }
-    }
-
-    /**
      * @see TrayContract#setAuthority(String)
      */
     static void setAuthority(final String authority) {
@@ -329,6 +292,14 @@ public class TrayProvider extends ContentProvider {
         sURIMatcher.addURI(authority,
                 TrayContract.InternalPreferences.BASE_PATH + "/*/*",
                 INTERNAL_SINGLE_PREFERENCE);
+    }
+
+    public int insertOrUpdate(final SQLiteDatabase writableDatabase, final String table,
+            final String prefSelection, final String[] prefSelectionArgs,
+            final ContentValues values, final String[] excludeForUpdate) {
+        return SqliteHelper
+                .insertOrUpdate(writableDatabase, table, prefSelection, prefSelectionArgs, values,
+                        excludeForUpdate);
     }
 
 }

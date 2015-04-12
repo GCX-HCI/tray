@@ -16,7 +16,11 @@
 
 package net.grandcentrix.tray.util;
 
+import android.content.ContentValues;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -30,7 +34,9 @@ import java.util.List;
  *
  * @author Pascal Welsch
  */
-public class SqlSelectionHelper {
+public class SqliteHelper {
+
+    private static final String TAG = SqliteHelper.class.getSimpleName();
 
     /**
      * combines selection a and selection b to (a) AND (b). handles all cases if a or b are
@@ -101,4 +107,52 @@ public class SqlSelectionHelper {
         return extendSelectionArgs(new String[]{selectionArg}, newSelectionArgs);
     }
 
+    /**
+     * Tries to insert the values. If it fails because the item already exists it tries to update
+     * the item.
+     *
+     * @param sqlDb                  database to work with. has to be writeable
+     * @param table                  the table to insert
+     * @param selection              selection to detect a already inserted item
+     * @param selectionArgs          keys of the contentValues. there values will be used as the
+     *                               selectionArgs for the {@param selection}
+     * @param values                 the values to insert
+     * @param excludeFieldsForUpdate contentValues keys which should be deleted before the update
+     * @return 1 for insert, 0 for update and -1 if something goes wrong
+     */
+    public static int insertOrUpdate(@Nullable SQLiteDatabase sqlDb, String table,
+            @Nullable String selection, String[] selectionArgs, @NonNull final ContentValues values,
+            @Nullable final String[] excludeFieldsForUpdate) {
+        if (sqlDb == null) {
+            return -1;
+        }
+
+        final long items = DatabaseUtils.queryNumEntries(sqlDb, table, selection, selectionArgs);
+
+        if (items == 0) {
+            // insert, item doesn't exist
+            final long row = sqlDb.insert(table, null, values);
+            if (row == -1) {
+                // unknown error
+                return -1;
+            }
+            // success, inserted
+            return 1;
+        } else {
+            // update existing item
+
+            if (excludeFieldsForUpdate != null) {
+                for (String excludeField : excludeFieldsForUpdate) {
+                    values.remove(excludeField);
+                }
+            }
+
+            sqlDb.update(table, values, selection, selectionArgs);
+
+            // handling the update error is not needed. All possible errors are thrown by the
+            // DatabaseUtils.queryNumEntries() (which uses the same params).
+            // a wrong selection results only in an insert. update will never called then.
+            return 0;
+        }
+    }
 }
