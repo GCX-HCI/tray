@@ -1,15 +1,5 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'de.mobilej.unmock:UnMockPlugin:0.1.1'
-    }
-}
-
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
-apply plugin: 'de.mobilej.unmock'
 
 android {
     compileSdkVersion 22
@@ -39,33 +29,6 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
-}
-
-unMock {
-    // URI to download the android-all.jar from. e.g. https://oss.sonatype.org/content/groups/public/org/robolectric/android-all/
-    allAndroid =
-            'https://oss.sonatype.org/content/groups/public/org/robolectric/android-all/5.0.0_r2-robolectric-0/android-all-5.0.0_r2-robolectric-0.jar'
-
-    // classes to keep
-    // matched by "startsWith" - you also need to include the dependencies manually
-    // if you start with an "-" the class will match by "equals" (and it will additionally  match
-    // inner classes of this class)
-    keep = [
-            "android.text.TextUtils",
-            "android.util.",
-            "android.text.",
-            "android.content.ContentValues",
-            "android.content.Intent",
-            "-android.location.Location",
-            "android.content.res.Configuration",
-            "org.",
-            "libcore.",
-            "com.android.internal.R",
-            "com.android.internal.util.",
-            "android.database.AbstractCursor",
-            "-android.database.MatrixCursor",
-            "-android.net.Uri"
-    ]
 }
 
 dependencies {
