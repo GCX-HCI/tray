@@ -6,4 +6,8 @@
     <string name="sample_import_sharedpref_in_tray">import SharedPref in tray</string>
     <string name="sample_write_shared_pref">write SharedPreferences</string>
     <string name="sample_reset">reset</string>
+    <string name="launch_counter">Launch Counter</string>
+    <string name="launch_counter_decription">restart the app to increase the counter. See? It\'s persistent</string>
+    <string name="sharedprefs_import">SharedPreference import</string>
+    <string name="sharedprefs_import_description">generate data in the SharedPreferences and import them to the tray preference</string>
 </resources>

@@ -12,13 +12,13 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:text="Launch Counter"
+            android:text="@string/launch_counter"
             android:layout_width="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Headline"
             android:layout_height="wrap_content" />
 
         <TextView
-            android:text="restart the app to increase the counter. See? It's persistent"
+            android:text="@string/launch_counter_decription"
             android:layout_width="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_marginBottom="16dp"
@@ -31,7 +31,6 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:layout_below="@android:id/text1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sample_reset"
@@ -49,13 +48,13 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:text="SharedPreference import"
+            android:text="@string/sharedprefs_import"
             android:layout_width="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Headline"
             android:layout_height="wrap_content" />
 
         <TextView
-            android:text="generate data in the SharedPreferences and import them to the tray preference"
+            android:text="@string/sharedprefs_import_description"
             android:layout_width="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Small"
             android:layout_marginBottom="16dp"
