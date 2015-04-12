@@ -31,9 +31,9 @@ import java.util.HashMap;
  */
 public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
 
-    private HashMap<String, TrayItem> data = new HashMap<>();
+    private HashMap<String, TrayItem> mData = new HashMap<>();
 
-    private int version = 0;
+    private int mVersion = 0;
 
     public MockModularizedStorage(final String module) {
         super(module);
@@ -41,23 +41,23 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void clear() {
-        data.clear();
+        mData.clear();
     }
 
     @Override
     public TrayItem get(@NonNull final String key) {
-        return data.get(key);
+        return mData.get(key);
     }
 
     @NonNull
     @Override
     public Collection<TrayItem> getAll() {
-        return data.values();
+        return mData.values();
     }
 
     @Override
     public int getVersion() {
-        return version;
+        return mVersion;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
         final String value = String.valueOf(data);
         final TrayItem item = new TrayItem(getModuleName(), key, migrationKey, value, new Date(),
                 new Date());
-        this.data.put(key, item);
+        this.mData.put(key, item);
     }
 
     @Override
@@ -76,11 +76,11 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void remove(@NonNull final String key) {
-        data.remove(key);
+        mData.remove(key);
     }
 
     @Override
     public void setVersion(final int version) {
-        this.version = version;
+        this.mVersion = version;
     }
 }

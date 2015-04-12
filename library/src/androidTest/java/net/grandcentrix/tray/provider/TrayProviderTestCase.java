@@ -25,6 +25,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Build;
 import android.test.IsolatedContext;
@@ -111,7 +112,8 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
      *
      * @param expectedSize the number of items you expect
      */
-    protected void assertDatabaseSize(final long expectedSize) {
+    protected void
+    assertDatabaseSize(final long expectedSize) {
         assertDatabaseSize(MockProvider.getContentUri(), expectedSize, true);
     }
 
@@ -151,11 +153,16 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
     private void cleanupProvider() {
         TrayContract.setAuthority(MockProvider.AUTHORITY);
         TrayProvider.setAuthority(MockProvider.AUTHORITY);
-        getMockContentResolver().delete(MockProvider.getContentUri(), null, null);
-        getMockContentResolver().delete(MockProvider.getInternalContentUri(), null, null);
+        try {
+            getMockContentResolver().delete(MockProvider.getContentUri(), null, null);
+            getMockContentResolver().delete(MockProvider.getInternalContentUri(), null, null);
 
-        assertDatabaseSize(0);
-        assertDatabaseSize(MockProvider.getInternalContentUri(), 0, true);
+
+            assertDatabaseSize(0);
+            assertDatabaseSize(MockProvider.getInternalContentUri(), 0, true);
+        } catch (SQLiteException e){
+            // the table is unknown. no problem
+        }
     }
 
     @Override
