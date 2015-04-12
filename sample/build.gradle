@@ -13,6 +13,7 @@ android {
 
         resValue "string", "tray__authority", "net.grandcentrix.tray.sample.preferences"
     }
+
     buildTypes {
         release {
             minifyEnabled false
