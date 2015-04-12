@@ -1,27 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="8dp">
 
-    <TextView
-        android:id="@android:id/text1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/launch_counter"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:layout_below="@android:id/text1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sample_reset"
-        android:id="@+id/reset" />
+        <TextView
+            android:text="Launch Counter"
+            android:layout_width="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Headline"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="restart the app to increase the counter. See? It's persistent"
+            android:layout_width="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_marginBottom="16dp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@android:id/text1"
+            android:layout_width="wrap_content"
+            tools:text="X times launched"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_below="@android:id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sample_reset"
+            android:id="@+id/reset" />
+
+    </LinearLayout>
+
 
     <LinearLayout
-        android:layout_below="@id/reset"
+        android:layout_below="@id/launch_counter"
         android:orientation="vertical"
+        android:id="@+id/shared_preference_import"
         android:layout_marginTop="25dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
+        <TextView
+            android:text="SharedPreference import"
+            android:layout_width="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Headline"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="generate data in the SharedPreferences and import them to the tray preference"
+            android:layout_width="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_marginBottom="16dp"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/shared_pref_info"
