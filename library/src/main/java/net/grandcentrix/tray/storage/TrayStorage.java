@@ -54,21 +54,22 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void clear() {
-        final Uri uri = TrayProvider.CONTENT_URI.buildUpon().appendPath(getModule()).build();
+        final Uri uri = mProviderHelper.getContentUri().buildUpon().appendPath(getModule()).build();
         mContext.getContentResolver().delete(uri, null, null);
     }
 
     @Override
     @Nullable
     public TrayItem get(@NonNull final String key) {
-        final Uri uri = TrayProviderHelper.getUri(getModule(), key);
+        final Uri uri = mProviderHelper.getUri(getModule(), key);
         final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
         return prefs.size() == 1 ? prefs.get(0) : null;
     }
 
     @Override
     public Collection<TrayItem> getAll() {
-        return mProviderHelper.queryProvider(TrayProviderHelper.getUri(getModule()));
+        final Uri uri = mProviderHelper.getUri(getModule());
+        return mProviderHelper.queryProvider(uri);
     }
 
     @Override
@@ -88,7 +89,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
             throw new IllegalArgumentException(
                     "null is not valid. use clear to delete all preferences");
         }
-        final Uri uri = TrayProviderHelper.getUri(getModule(), key);
+        final Uri uri = mProviderHelper.getUri(getModule(), key);
         mContext.getContentResolver().delete(uri, null, null);
     }
 }

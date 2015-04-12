@@ -16,7 +16,7 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.BuildConfig;
+import net.grandcentrix.tray.R;
 import net.grandcentrix.tray.util.ProviderHelper;
 
 import android.content.ContentProvider;
@@ -45,17 +45,7 @@ public class TrayProvider extends ContentProvider {
 
     private static final String TAG = TrayProvider.class.getSimpleName();
 
-    public static String AUTHORITY;
-
-    public static Uri AUTHORITY_URI;
-
-    public static Uri CONTENT_URI;
-
     private static UriMatcher sURIMatcher;
-
-    static {
-        setAuthority(BuildConfig.AUTHORITY);
-    }
 
     private TrayDBHelper mDbHelper;
 
@@ -140,6 +130,8 @@ public class TrayProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        setAuthority(getContext().getString(R.string.tray__authority));
+
         mDbHelper = new TrayDBHelper(getContext());
         return true;
     }
@@ -215,27 +207,23 @@ public class TrayProvider extends ContentProvider {
         return rows;
     }
 
-    /*package*/
+    /**
+     * @see TrayContract#setAuthority(String)
+     */
     static void setAuthority(final String authority) {
-        AUTHORITY = authority;
-
-        AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
-
-        CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, TrayContract.Preferences.BASE_PATH);
-
         sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+        sURIMatcher.addURI(authority,
                 TrayContract.Preferences.BASE_PATH,
                 ALL_PREFERENCE);
 
         // BASE/module
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+        sURIMatcher.addURI(authority,
                 TrayContract.Preferences.BASE_PATH + "/*",
                 MODULE_PREFERENCE);
 
         // BASE/module/key
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+        sURIMatcher.addURI(authority,
                 TrayContract.Preferences.BASE_PATH + "/*/*",
                 SINGLE_PREFERENCE);
     }

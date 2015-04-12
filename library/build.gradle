@@ -10,10 +10,7 @@ android {
         versionCode 1
         versionName "0.3"
 
-        buildConfigField "String", "AUTHORITY", "\"${getReadAuthority()}\""
-        manifestPlaceholders = [
-                trayAuthority: getReadAuthority()
-        ]
+        resValue "string", "tray__authority", "com.example.preferences"
     }
 
     compileOptions {
@@ -24,20 +21,4 @@ android {
 
 dependencies {
     compile 'com.android.support:support-annotations:20.0.0'
-}
-
-String getReadAuthority() {
-    if (project.properties.containsKey("trayAuthority")) {
-        def authority = project.properties.get("trayAuthority")
-        if (authority.equals("com.example.preferences")) {
-            throw new Exception("com.example.preferences isn't a unique authority!!!\n" +
-                    "This will prevent your application from getting installed if another app " +
-                    "uses the same authority for Tray or any other ContentProvider.")
-        }
-        return authority
-    } else {
-        throw new Exception("define ext variable trayAuthority in your project build.gradle\n" +
-                "Example:\n" +
-                "ext.trayAuthority = \"com.example.preferences\"");
-    }
 }

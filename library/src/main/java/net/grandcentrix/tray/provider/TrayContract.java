@@ -16,31 +16,64 @@
 
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.R;
+
+import android.content.Context;
+import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 /**
  * Created by jannisveerkamp on 17.09.14.
  */
 public class TrayContract {
 
-    public static interface Preferences {
+    public interface Preferences {
 
-        public static interface Columns extends BaseColumns {
+        interface Columns extends BaseColumns {
 
-            public static final String ID = BaseColumns._ID;
+            String ID = BaseColumns._ID;
 
-            public static final String KEY = TrayDBHelper.KEY;
+            String KEY = TrayDBHelper.KEY;
 
-            public static final String VALUE = TrayDBHelper.VALUE;
+            String VALUE = TrayDBHelper.VALUE;
 
-            public static final String MODULE = TrayDBHelper.MODULE;
+            String MODULE = TrayDBHelper.MODULE;
 
-            public static final String CREATED = TrayDBHelper.CREATED; // DATE
+            String CREATED = TrayDBHelper.CREATED; // DATE
 
-            public static final String UPDATED = TrayDBHelper.UPDATED; // DATE
+            String UPDATED = TrayDBHelper.UPDATED; // DATE
         }
 
-        public static final String BASE_PATH = "preferences";
+        String BASE_PATH = "preferences";
     }
 
+    private static String sTestAuthority;
+
+    @NonNull
+    public static Uri generateContentUri(@NonNull final Context context) {
+
+        final String authority = getAuthority(context);
+        final Uri authorityUri = Uri.parse("content://" + authority);
+        final Uri contentUri = Uri.withAppendedPath(authorityUri, Preferences.BASE_PATH);
+
+        return contentUri;
+    }
+
+    /**
+     * use this only for tests and not in production
+     *
+     * @see TrayProvider#setAuthority(String)
+     */
+    public static void setAuthority(final String authority) {
+        sTestAuthority = authority;
+    }
+
+    @NonNull
+    private static String getAuthority(@NonNull final Context context) {
+        return TextUtils.isEmpty(sTestAuthority) ?
+                context.getString(R.string.tray__authority) :
+                sTestAuthority;
+    }
 }
