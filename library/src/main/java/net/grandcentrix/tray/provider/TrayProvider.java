@@ -16,7 +16,7 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.BuildConfig;
+import net.grandcentrix.tray.R;
 import net.grandcentrix.tray.util.SqlSelectionHelper;
 
 import android.content.ContentProvider;
@@ -51,19 +51,7 @@ public class TrayProvider extends ContentProvider {
 
     private static final String TAG = TrayProvider.class.getSimpleName();
 
-    public static String AUTHORITY;
-
-    public static Uri AUTHORITY_URI;
-
-    public static Uri CONTENT_URI;
-
-    public static Uri CONTENT_URI_INTERNAL;
-
     private static UriMatcher sURIMatcher;
-
-    static {
-        setAuthority(BuildConfig.AUTHORITY);
-    }
 
     /*protected*/ TrayDBHelper mDbHelper;
 
@@ -106,6 +94,29 @@ public class TrayProvider extends ContentProvider {
 
     public SQLiteDatabase getReadableDatabase() {
         return mDbHelper.getReadableDatabase();
+    }
+
+    /**
+     * @param uri localtion of the data
+     * @return correct sqlite table for the given {@param uri}
+     */
+    public String getTable(final Uri uri) {
+        if (uri == null) {
+            return null;
+        }
+        final int match = sURIMatcher.match(uri);
+        switch (match) {
+            case SINGLE_PREFERENCE:
+            case MODULE_PREFERENCE:
+            case ALL_PREFERENCE:
+            default:
+                return TrayDBHelper.TABLE_NAME;
+
+            case INTERNAL_SINGLE_PREFERENCE:
+            case INTERNAL_MODULE_PREFERENCE:
+            case INTERNAL_ALL_PREFERENCE:
+                return TrayDBHelper.INTERNAL_TABLE_NAME;
+        }
     }
 
     @Override
@@ -151,6 +162,8 @@ public class TrayProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        setAuthority(getContext().getString(R.string.tray__authority));
+
         mDbHelper = new TrayDBHelper(getContext());
         return true;
     }
@@ -233,25 +246,6 @@ public class TrayProvider extends ContentProvider {
         return rows;*/
     }
 
-    public String getTable(final Uri uri) {
-        if (uri == null) {
-            return null;
-        }
-        final int match = sURIMatcher.match(uri);
-        switch (match) {
-            case SINGLE_PREFERENCE:
-            case MODULE_PREFERENCE:
-            case ALL_PREFERENCE:
-            default:
-                return TrayDBHelper.TABLE_NAME;
-
-            case INTERNAL_SINGLE_PREFERENCE:
-            case INTERNAL_MODULE_PREFERENCE:
-            case INTERNAL_ALL_PREFERENCE:
-                return TrayDBHelper.INTERNAL_TABLE_NAME;
-        }
-    }
-
     /**
      * Tries to insert the values. If it fails because the item already exists it tries to update
      * the item.
@@ -278,57 +272,63 @@ public class TrayProvider extends ContentProvider {
                 .queryNumEntries(sqlDB, table, prefSelection, prefSelectionArgs);
 
         if (items == 0) {
-            // insert
-            sqlDB.insertOrThrow(table, null, values);
+            // insert, item doesn't exist
+            final long row = sqlDB.insertOrThrow(table, null, values);
+            if (row == -1) {
+                throw new SQLiteException("an error occurred");
+            }
             return 1;
         } else {
-            // If insert fails (row already present) try an update
+            // update existing item
             // Remove created timestamp since it shouldn't be updated
             values.remove(TrayContract.Preferences.Columns.CREATED);
-            sqlDB.update(table, values, prefSelection, prefSelectionArgs);
-            return 0;
+            final int update = sqlDB.update(table, values,
+                    prefSelection,
+                    prefSelectionArgs);
+            if (update > 0) {
+                return 0;
+            }
+
+            Log.w(TAG, "Could not insert or update preference ("
+                    + values.getAsString(TrayContract.Preferences.Columns.MODULE) + "/"
+                    + values.getAsString(TrayContract.Preferences.Columns.KEY) + ")");
+            return -1;
         }
     }
 
-    /*package*/
+    /**
+     * @see TrayContract#setAuthority(String)
+     */
     static void setAuthority(final String authority) {
-        AUTHORITY = authority;
-
-        AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
-
-        CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, TrayContract.Preferences.BASE_PATH);
-
-        CONTENT_URI_INTERNAL = Uri
-                .withAppendedPath(AUTHORITY_URI, TrayContract.InternalPreferences.BASE_PATH);
-
         sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+        sURIMatcher.addURI(authority,
                 TrayContract.Preferences.BASE_PATH,
                 ALL_PREFERENCE);
 
         // BASE/module
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+        sURIMatcher.addURI(authority,
                 TrayContract.Preferences.BASE_PATH + "/*",
                 MODULE_PREFERENCE);
 
         // BASE/module/key
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+        sURIMatcher.addURI(authority,
                 TrayContract.Preferences.BASE_PATH + "/*/*",
                 SINGLE_PREFERENCE);
 
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+        sURIMatcher.addURI(authority,
                 TrayContract.InternalPreferences.BASE_PATH,
                 INTERNAL_ALL_PREFERENCE);
 
         // INTERNAL_BASE/module
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+        sURIMatcher.addURI(authority,
                 TrayContract.InternalPreferences.BASE_PATH + "/*",
                 INTERNAL_MODULE_PREFERENCE);
 
         // INTERNAL_BASE/module/key
-        sURIMatcher.addURI(TrayProvider.AUTHORITY,
+        sURIMatcher.addURI(authority,
                 TrayContract.InternalPreferences.BASE_PATH + "/*/*",
                 INTERNAL_SINGLE_PREFERENCE);
     }
+
 }

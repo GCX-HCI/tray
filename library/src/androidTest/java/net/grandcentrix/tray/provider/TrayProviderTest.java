@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.mock.MockProvider;
+
 import android.content.ContentValues;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
@@ -29,10 +31,13 @@ import static org.mockito.Mockito.when;
 
 public class TrayProviderTest extends TrayProviderTestCase {
 
+    private TrayProviderHelper mProviderHelper;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         System.setProperty("dexmaker.dexcache", getContext().getCacheDir().getPath());
+        mProviderHelper = new TrayProviderHelper(getProviderMockContext());
     }
 
     public TrayProvider startupProvider() {
@@ -46,19 +51,19 @@ public class TrayProviderTest extends TrayProviderTestCase {
     public void testDelete() throws Exception {
 
         final Uri[] workingUris = {
-                TrayProviderHelper.getUri(),
-                TrayProviderHelper.getUri("module"),
-                TrayProviderHelper.getUri("module", "key"),
-                TrayProviderHelper.getInternalUri(),
-                TrayProviderHelper.getInternalUri("module"),
-                TrayProviderHelper.getInternalUri("module", "key")
+                mProviderHelper.getUri(),
+                mProviderHelper.getUri("module"),
+                mProviderHelper.getUri("module", "key"),
+                mProviderHelper.getInternalUri(),
+                mProviderHelper.getInternalUri("module"),
+                mProviderHelper.getInternalUri("module", "key")
         };
         for (Uri uri : workingUris) {
             getProviderMockContext().getContentResolver().delete(uri, null, null);
         }
 
         final Uri badUri = Uri
-                .withAppendedPath(TrayProvider.AUTHORITY_URI, "something");
+                .withAppendedPath(Uri.parse("content://" + MockProvider.AUTHORITY), "something");
         try {
             getProviderMockContext().getContentResolver().delete(badUri, null, null);
             fail();
@@ -70,18 +75,18 @@ public class TrayProviderTest extends TrayProviderTestCase {
     public void testGetTable() throws Exception {
         final TrayProvider trayProvider = new TrayProvider();
         assertEquals(TrayDBHelper.TABLE_NAME,
-                trayProvider.getTable(TrayProviderHelper.getUri()));
+                trayProvider.getTable(mProviderHelper.getUri()));
         assertEquals(TrayDBHelper.TABLE_NAME,
-                trayProvider.getTable(TrayProviderHelper.getUri("module")));
+                trayProvider.getTable(mProviderHelper.getUri("module")));
         assertEquals(TrayDBHelper.TABLE_NAME,
-                trayProvider.getTable(TrayProviderHelper.getUri("module", "key")));
+                trayProvider.getTable(mProviderHelper.getUri("module", "key")));
 
         assertEquals(TrayDBHelper.INTERNAL_TABLE_NAME,
-                trayProvider.getTable(TrayProviderHelper.getInternalUri()));
+                trayProvider.getTable(mProviderHelper.getInternalUri()));
         assertEquals(TrayDBHelper.INTERNAL_TABLE_NAME,
-                trayProvider.getTable(TrayProviderHelper.getInternalUri("module")));
+                trayProvider.getTable(mProviderHelper.getInternalUri("module")));
         assertEquals(TrayDBHelper.INTERNAL_TABLE_NAME,
-                trayProvider.getTable(TrayProviderHelper.getInternalUri("module", "key")));
+                trayProvider.getTable(mProviderHelper.getInternalUri("module", "key")));
 
         assertEquals(TrayDBHelper.TABLE_NAME,
                 trayProvider.getTable(Uri.parse("http://www.google.com")));
@@ -92,32 +97,32 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
     public void testGetType() throws Exception {
         assertNull(getProviderMockContext().getContentResolver()
-                .getType(TrayProviderHelper.getUri()));
+                .getType(mProviderHelper.getUri()));
         assertNull(getProviderMockContext().getContentResolver()
-                .getType(TrayProviderHelper.getUri("module", "key")));
+                .getType(mProviderHelper.getUri("module", "key")));
 
         assertNull(getProviderMockContext().getContentResolver()
-                .getType(TrayProviderHelper.getInternalUri()));
+                .getType(mProviderHelper.getInternalUri()));
         assertNull(getProviderMockContext().getContentResolver()
-                .getType(TrayProviderHelper.getInternalUri("module", "key")));
+                .getType(mProviderHelper.getInternalUri("module", "key")));
     }
 
     public void testInsert() throws Exception {
         final ContentValues fakeValues = new ContentValues();
 
         final Uri[] workingUris = {
-                TrayProviderHelper.getUri("module", "key"),
-                TrayProviderHelper.getInternalUri("module", "key")
+                mProviderHelper.getUri("module", "key"),
+                mProviderHelper.getInternalUri("module", "key")
         };
         for (Uri uri : workingUris) {
             getProviderMockContext().getContentResolver().insert(uri, fakeValues);
         }
 
         final Uri[] notWorkingUris = {
-                TrayProviderHelper.getUri(),
-                TrayProviderHelper.getUri("module"),
-                TrayProviderHelper.getInternalUri(),
-                TrayProviderHelper.getInternalUri("module"),
+                mProviderHelper.getUri(),
+                mProviderHelper.getUri("module"),
+                mProviderHelper.getInternalUri(),
+                mProviderHelper.getInternalUri("module"),
         };
 
         for (Uri badUri : notWorkingUris) {
@@ -138,14 +143,14 @@ public class TrayProviderTest extends TrayProviderTestCase {
         trayProvider.mDbHelper = mockDbHelper;
         final ContentValues values = new ContentValues();
         assertNull(trayProvider
-                .insert(TrayProviderHelper.getUri("module", "key"), values));
+                .insert(mProviderHelper.getUri("module", "key"), values));
 
         final TrayProvider spy = spy(trayProvider);
         when(spy.insertOrUpdate(TrayDBHelper.TABLE_NAME, values))
                 .thenThrow(new SQLiteException("some error"));
 
         trayProvider
-                .insert(TrayProviderHelper.getUri("module", "key"), values);
+                .insert(mProviderHelper.getUri("module", "key"), values);
 
     }
 
@@ -157,7 +162,7 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
         // null as table forces the internal SQLiteQueryBuilder to return null on a query
         // in reality this may happen for many other hard sql or database errors
-        final Uri uri = TrayProviderHelper.getUri();
+        final Uri uri = mProviderHelper.getUri();
         when(provider.getTable(uri)).thenReturn(null);
 
         final Cursor cursor = provider.query(uri, null, null, null, null);

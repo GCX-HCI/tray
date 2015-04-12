@@ -34,17 +34,23 @@ import java.util.List;
  */
 public class TrayProviderHelper {
 
-    final Context mContext;
+    private final Uri mContentUri;
+
+    private final Uri mContentUriInternal;
+
+    private final Context mContext;
 
     public TrayProviderHelper(@NonNull final Context context) {
         mContext = context;
+        mContentUri = TrayContract.generateContentUri(context);
+        mContentUriInternal = TrayContract.generateInternalContentUri(context);
     }
 
     /**
      * clears <b>all</b> Preferences saved. Module independent. Erases everything
      */
     public void clear() {
-        mContext.getContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
+        mContext.getContentResolver().delete(mContentUri, null, null);
     }
 
     /**
@@ -79,7 +85,7 @@ public class TrayProviderHelper {
                     .extendSelectionArgs(selectionArgs, new String[]{moduleName});
         }
 
-        mContext.getContentResolver().delete(TrayProvider.CONTENT_URI, selection, selectionArgs);
+        mContext.getContentResolver().delete(mContentUri, selection, selectionArgs);
     }
 
     /**
@@ -89,42 +95,48 @@ public class TrayProviderHelper {
      */
     @NonNull
     public List<TrayItem> getAll() {
-        return queryProvider(TrayProvider.CONTENT_URI);
+        return queryProvider(mContentUri);
     }
 
-    public static Uri getInternalUri() {
+    public Uri getContentUri() {
+        return mContentUri;
+    }
+
+    public Uri getContentUriInternal() {
+        return mContentUriInternal;
+    }
+
+    public Uri getInternalUri() {
         return getUri(null, null, true);
     }
 
-    public static Uri getInternalUri(final String module) {
+    public Uri getInternalUri(final String module) {
         return getUri(module, null, true);
     }
 
-    public static Uri getInternalUri(@Nullable final String module, @Nullable final String key) {
+    public Uri getInternalUri(@Nullable final String module, @Nullable final String key) {
         return getUri(module, key, true);
     }
 
-    public static Uri getUri() {
+    public Uri getUri() {
         return getUri(null, null);
     }
 
-    public static Uri getUri(final String module) {
+    public Uri getUri(final String module) {
         return getUri(module, null);
     }
 
-    public static Uri getUri(@Nullable final String module, @Nullable final String key) {
+    public Uri getUri(@Nullable final String module, @Nullable final String key) {
         return getUri(module, key, false);
     }
 
-    public static Uri getUri(@Nullable final String module, @Nullable final String key,
+    public Uri getUri(@Nullable final String module, @Nullable final String key,
             final boolean internal) {
         if (module == null && key != null) {
             throw new IllegalArgumentException(
                     "key without module is not valid. Look into the TryProvider for valid Uris");
         }
-        final Uri uri = internal
-                ? TrayProvider.CONTENT_URI_INTERNAL
-                : TrayProvider.CONTENT_URI;
+        final Uri uri = internal ? mContentUriInternal : mContentUri;
         final Uri.Builder builder = uri
                 .buildUpon();
         if (module != null) {
@@ -186,9 +198,7 @@ public class TrayProviderHelper {
             return;
         }
 
-        final Uri contentUri = internal
-                ? TrayProvider.CONTENT_URI_INTERNAL
-                : TrayProvider.CONTENT_URI;
+        final Uri contentUri = internal ? mContentUriInternal : mContentUri;
         final Uri uri = contentUri
                 .buildUpon()
                 .appendPath(module)

@@ -6,7 +6,7 @@
 
         <provider
             android:name="net.grandcentrix.tray.provider.TrayProvider"
-            android:authorities="${trayAuthority}"
+            android:authorities="@string/tray__authority"
             android:exported="false"
             android:multiprocess="false" />
 

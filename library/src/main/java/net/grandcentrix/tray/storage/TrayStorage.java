@@ -17,7 +17,6 @@
 package net.grandcentrix.tray.storage;
 
 import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.provider.TrayProvider;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
 
 import android.content.Context;
@@ -56,14 +55,15 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void clear() {
-        final Uri uri = TrayProvider.CONTENT_URI.buildUpon().appendPath(getModuleName()).build();
+        final Uri uri = mProviderHelper.getContentUri().buildUpon().appendPath(getModuleName())
+                .build();
         mContext.getContentResolver().delete(uri, null, null);
     }
 
     @Override
     @Nullable
     public TrayItem get(@NonNull final String key) {
-        final Uri uri = TrayProviderHelper.getUri(getModuleName(), key);
+        final Uri uri = mProviderHelper.getUri(getModuleName(), key);
         final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
         return prefs.size() == 1 ? prefs.get(0) : null;
     }
@@ -71,12 +71,13 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @NonNull
     @Override
     public Collection<TrayItem> getAll() {
-        return mProviderHelper.queryProvider(TrayProviderHelper.getUri(getModuleName()));
+        final Uri uri = mProviderHelper.getUri(getModuleName());
+        return mProviderHelper.queryProvider(uri);
     }
 
     @Override
     public int getVersion() {
-        final Uri internalUri = TrayProviderHelper.getInternalUri(getModuleName(), VERSION);
+        final Uri internalUri = mProviderHelper.getInternalUri(getModuleName(), VERSION);
         final List<TrayItem> trayItems = mProviderHelper.queryProvider(internalUri);
         if (trayItems.size() == 0) {
             // fallback, not found
@@ -117,7 +118,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
             throw new IllegalArgumentException(
                     "null is not valid. use clear to delete all preferences");
         }
-        final Uri uri = TrayProviderHelper.getUri(getModuleName(), key);
+        final Uri uri = mProviderHelper.getUri(getModuleName(), key);
         mContext.getContentResolver().delete(uri, null, null);
     }
 

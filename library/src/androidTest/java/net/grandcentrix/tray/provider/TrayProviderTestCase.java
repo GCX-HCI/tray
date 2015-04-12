@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.BuildConfig;
+import net.grandcentrix.tray.mock.MockProvider;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
@@ -99,13 +100,10 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
         }
     }
 
-    public static final String AUTHORITY = "net.grandcentrix.tray.test";
-
     private TrayIsolatedContext mIsolatedContext;
 
     public TrayProviderTestCase() {
-        super(TrayProvider.class, AUTHORITY);
-        TrayProvider.setAuthority(AUTHORITY);
+        super(TrayProvider.class, MockProvider.AUTHORITY);
     }
 
     /**
@@ -114,7 +112,7 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
      * @param expectedSize the number of items you expect
      */
     protected void assertDatabaseSize(final long expectedSize) {
-        assertDatabaseSize(TrayProvider.CONTENT_URI, expectedSize, true);
+        assertDatabaseSize(MockProvider.getContentUri(), expectedSize, true);
     }
 
     /**
@@ -144,20 +142,26 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
 
         System.setProperty("dexmaker.dexcache",
                 "/data/data/" + BuildConfig.APPLICATION_ID + ".test/cache");
-        getMockContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
-        getMockContentResolver().delete(TrayProvider.CONTENT_URI_INTERNAL, null, null);
-
-        assertDatabaseSize(0);
-        assertDatabaseSize(TrayProvider.CONTENT_URI_INTERNAL, 0, true);
+        cleanupProvider();
 
         mIsolatedContext = new TrayIsolatedContext(getMockContext().getContentResolver(),
                 getContext());
     }
 
+    private void cleanupProvider() {
+        TrayContract.setAuthority(MockProvider.AUTHORITY);
+        TrayProvider.setAuthority(MockProvider.AUTHORITY);
+        getMockContentResolver().delete(MockProvider.getContentUri(), null, null);
+        getMockContentResolver().delete(MockProvider.getInternalContentUri(), null, null);
+
+        assertDatabaseSize(0);
+        assertDatabaseSize(MockProvider.getInternalContentUri(), 0, true);
+    }
+
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        getMockContentResolver().delete(TrayProvider.CONTENT_URI, null, null);
+        cleanupProvider();
     }
 
     public TrayIsolatedContext getProviderMockContext() {

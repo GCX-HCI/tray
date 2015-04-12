@@ -16,15 +16,21 @@
 
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.R;
+
+import android.content.Context;
+import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 /**
  * Created by jannisveerkamp on 17.09.14.
  */
 @SuppressWarnings("unused")
-public interface TrayContract {
+public class TrayContract {
 
-    interface Preferences {
+    public interface Preferences {
 
         interface Columns extends BaseColumns {
 
@@ -46,9 +52,46 @@ public interface TrayContract {
         String BASE_PATH = "preferences";
     }
 
-    interface InternalPreferences extends Preferences {
+    public interface InternalPreferences extends Preferences {
 
         String BASE_PATH = "internal_preferences";
     }
 
+    private static String sTestAuthority;
+
+    @NonNull
+    public static Uri generateContentUri(@NonNull final Context context) {
+        return generateContentUri(context, Preferences.BASE_PATH);
+    }
+
+    /**
+     * use this only for tests and not in production
+     *
+     * @see TrayProvider#setAuthority(String)
+     */
+    public static void setAuthority(final String authority) {
+        sTestAuthority = authority;
+    }
+
+    @NonNull
+    /*package*/ static Uri generateInternalContentUri(@NonNull final Context context) {
+        return generateContentUri(context, InternalPreferences.BASE_PATH);
+    }
+
+    @NonNull
+    private static Uri generateContentUri(@NonNull final Context context, final String basepath) {
+
+        final String authority = getAuthority(context);
+        final Uri authorityUri = Uri.parse("content://" + authority);
+        //noinspection UnnecessaryLocalVariable
+        final Uri contentUri = Uri.withAppendedPath(authorityUri, basepath);
+        return contentUri;
+    }
+
+    @NonNull
+    private static String getAuthority(@NonNull final Context context) {
+        return TextUtils.isEmpty(sTestAuthority) ?
+                context.getString(R.string.tray__authority) :
+                sTestAuthority;
+    }
 }

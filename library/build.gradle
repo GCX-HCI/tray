@@ -21,10 +21,7 @@ android {
         versionCode 2
         versionName "0.4"
 
-        buildConfigField "String", "AUTHORITY", "\"${getReadAuthority()}\""
-        manifestPlaceholders = [
-                trayAuthority: getReadAuthority()
-        ]
+        resValue "string", "tray__authority", "com.example.preferences"
     }
 
     buildTypes {
@@ -78,20 +75,4 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     testCompile 'org.mockito:mockito-core:1.9.5'
     testCompile 'junit:junit:4.12'
-}
-
-String getReadAuthority() {
-    if (project.properties.containsKey("trayAuthority")) {
-        def authority = project.properties.get("trayAuthority")
-        if (authority.equals("com.example.preferences")) {
-            throw new Exception("com.example.preferences isn't a unique authority!!!\n" +
-                    "This will prevent your application from getting installed if another app " +
-                    "uses the same authority for Tray or any other ContentProvider.")
-        }
-        return authority
-    } else {
-        throw new Exception("define ext variable trayAuthority in your project build.gradle\n" +
-                "Example:\n" +
-                "ext.trayAuthority = \"com.example.preferences\"");
-    }
 }
