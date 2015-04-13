@@ -31,7 +31,6 @@ public class ImportTrayPreferences extends TrayModulePreferences {
 
     @Override
     protected void onCreate(final int initialVersion) {
-        migrate();
 
     }
 
