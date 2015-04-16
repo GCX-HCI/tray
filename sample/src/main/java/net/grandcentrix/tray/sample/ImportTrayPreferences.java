@@ -14,23 +14,29 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storage;
+package net.grandcentrix.tray.sample;
+
+import net.grandcentrix.tray.TrayModulePreferences;
+
+import android.content.Context;
 
 /**
- * Created by pascalwelsch on 11/20/14.
- * <p/>
- * storage is now separated in modules and easier to maintain. Could be done with different files,
- * databases...
+ * Created by pascalwelsch on 3/14/15.
  */
-public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
+public class ImportTrayPreferences extends TrayModulePreferences {
 
-    private String mModuleName;
-
-    public ModularizedStorage(final String moduleName) {
-        mModuleName = moduleName;
+    public ImportTrayPreferences(final Context context) {
+        super(context, "imported", 1);
     }
 
-    public String getModuleName() {
-        return mModuleName;
+    @Override
+    protected void onCreate(final int initialVersion) {
+
     }
+
+    @Override
+    protected void onUpgrade(final int oldVersion, final int newVersion) {
+
+    }
+
 }

@@ -16,27 +16,26 @@
 
 package net.grandcentrix.tray.mock;
 
-import net.grandcentrix.tray.provider.TrayContract;
+import net.grandcentrix.tray.TrayModulePreferences;
 
-import android.net.Uri;
+import android.content.Context;
 
 /**
- * Created by pascalwelsch on 4/5/15.
+ * Created by pascalwelsch on 2/26/15.
  */
-public class MockProvider {
+public class TestTrayModulePreferences extends TrayModulePreferences {
 
-    public static final String AUTHORITY = "net.grandcentrix.tray.test";
-
-    public static Uri getContentUri() {
-        return getContentUri(TrayContract.Preferences.BASE_PATH);
+    public TestTrayModulePreferences(final Context context, final String module) {
+        super(context, module, 1);
     }
 
-    public static Uri getInternalContentUri() {
-        return getContentUri(TrayContract.InternalPreferences.BASE_PATH);
+    @Override
+    protected void onCreate(final int newVersion) {
+
     }
 
-    private static Uri getContentUri(final String basepath) {
-        final Uri authorityUri = Uri.parse("content://" + AUTHORITY);
-        return Uri.withAppendedPath(authorityUri, basepath);
+    @Override
+    protected void onUpgrade(final int oldVersion, final int newVersion) {
+
     }
 }

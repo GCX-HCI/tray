@@ -20,21 +20,24 @@ import android.database.Cursor;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by jannisveerkamp on 17.09.14.
  */
 public class TrayItem {
 
-    private Date mCreated;
+    private final Date mCreated;
 
-    private String mKey;
+    private final String mKey;
 
-    private String mModule;
+    private final String mMigratedKey;
 
-    private Date mUpdated;
+    private final String mModule;
 
-    private String mValue;
+    private final Date mUpdated;
+
+    private final String mValue;
 
     /*package*/ TrayItem(final Cursor cursor) {
         mKey = cursor.getString(cursor.getColumnIndexOrThrow(
@@ -47,16 +50,18 @@ public class TrayItem {
                 TrayContract.Preferences.Columns.CREATED)));
         mUpdated = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
                 TrayContract.Preferences.Columns.UPDATED)));
+        mMigratedKey = cursor.getString(cursor.getColumnIndexOrThrow(
+                TrayContract.Preferences.Columns.MIGRATED_KEY));
     }
 
-    public TrayItem(final Date created, final String key, final String module,
-            final Date updated,
-            final String value) {
+    public TrayItem(final String module, final String key, final String migratedKey,
+            final String value, final Date created, final Date updated) {
         mCreated = created;
         mKey = key;
         mModule = module;
         mUpdated = updated;
         mValue = value;
+        mMigratedKey = migratedKey;
     }
 
     public Date created() {
@@ -67,13 +72,17 @@ public class TrayItem {
         return mKey;
     }
 
+    public String migratedKey() {
+        return mMigratedKey;
+    }
+
     public String module() {
         return mModule;
     }
 
     @Override
     public String toString() {
-        SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
+        SimpleDateFormat sf = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy", Locale.US);
 
         //noinspection StringBufferReplaceableByString
         return new StringBuilder()
@@ -87,6 +96,8 @@ public class TrayItem {
                 .append(sf.format(mCreated))
                 .append(", updated: ")
                 .append(sf.format(mUpdated))
+                .append(", migratedKey: ")
+                .append(mMigratedKey)
                 .toString();
     }
 

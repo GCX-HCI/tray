@@ -23,10 +23,12 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * Created by jannisveerkamp on 17.09.14.
  */
+@SuppressWarnings("unused")
 public class TrayContract {
 
     public interface Preferences {
@@ -44,21 +46,23 @@ public class TrayContract {
             String CREATED = TrayDBHelper.CREATED; // DATE
 
             String UPDATED = TrayDBHelper.UPDATED; // DATE
+
+            String MIGRATED_KEY = TrayDBHelper.MIGRATED_KEY;
         }
 
         String BASE_PATH = "preferences";
+    }
+
+    public interface InternalPreferences extends Preferences {
+
+        String BASE_PATH = "internal_preferences";
     }
 
     private static String sTestAuthority;
 
     @NonNull
     public static Uri generateContentUri(@NonNull final Context context) {
-
-        final String authority = getAuthority(context);
-        final Uri authorityUri = Uri.parse("content://" + authority);
-        final Uri contentUri = Uri.withAppendedPath(authorityUri, Preferences.BASE_PATH);
-
-        return contentUri;
+        return generateContentUri(context, Preferences.BASE_PATH);
     }
 
     /**
@@ -68,6 +72,41 @@ public class TrayContract {
      */
     public static void setAuthority(final String authority) {
         sTestAuthority = authority;
+    }
+
+    @NonNull
+    /*package*/ static Uri generateInternalContentUri(@NonNull final Context context) {
+        return generateContentUri(context, InternalPreferences.BASE_PATH);
+    }
+
+    private static void checkForDefaultAuthority(final @NonNull String authority) {
+        if (authority.equals("com.example.preferences")) {
+            Log.e("Tray", "Tray authority not defined\n"
+                    + "#########################################\n"
+                    + "#########################################\n"
+                    + "#########################################\n"
+                    + "Don't use the default authority from the tray library. Two apps with the same tray authority can't be installed on the same device!\n\n"
+                    + "Override the authority adding a string resource to your project with key: `tray__authority`.\n"
+                    + "The simples way is to add it via gradle:\n"
+                    + ".\n"
+                    + "defaultConfig {\n"
+                    + "resValue \"string\", \"tray__authority\", \"<your.app.package.tray>\"\n"
+                    + "}\n"
+                    + "#########################################\n"
+                    + "#########################################\n"
+                    + "#########################################");
+        }
+    }
+
+    @NonNull
+    private static Uri generateContentUri(@NonNull final Context context, final String basepath) {
+
+        final String authority = getAuthority(context);
+        checkForDefaultAuthority(authority);
+        final Uri authorityUri = Uri.parse("content://" + authority);
+        //noinspection UnnecessaryLocalVariable
+        final Uri contentUri = Uri.withAppendedPath(authorityUri, basepath);
+        return contentUri;
     }
 
     @NonNull

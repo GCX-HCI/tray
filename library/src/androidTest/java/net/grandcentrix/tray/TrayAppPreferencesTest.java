@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storage;
+package net.grandcentrix.tray;
 
-/**
- * Created by pascalwelsch on 11/20/14.
- * <p/>
- * storage is now separated in modules and easier to maintain. Could be done with different files,
- * databases...
- */
-public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
+import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
-    private String mModuleName;
+public class TrayAppPreferencesTest extends TrayProviderTestCase {
 
-    public ModularizedStorage(final String moduleName) {
-        mModuleName = moduleName;
+    public void testInstantiation() throws Exception {
+        new TrayAppPreferences(getProviderMockContext());
     }
 
-    public String getModuleName() {
-        return mModuleName;
+    public void testOnUpgrade() throws Exception {
+        final TrayAppPreferences appPreferences = new TrayAppPreferences(getProviderMockContext());
+        try {
+            appPreferences.onUpgrade(0, 1);
+            fail();
+        } catch (IllegalStateException e) {
+            // not implemented yet
+        }
     }
 }

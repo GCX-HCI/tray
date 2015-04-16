@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storage;
+package net.grandcentrix.tray.migration;
+
+import net.grandcentrix.tray.provider.TrayItem;
 
 /**
- * Created by pascalwelsch on 11/20/14.
- * <p/>
- * storage is now separated in modules and easier to maintain. Could be done with different files,
- * databases...
+ * Created by pascalwelsch on 3/14/15.
  */
-public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
+public interface TrayMigration extends Migration<TrayItem> {
 
-    private String mModuleName;
-
-    public ModularizedStorage(final String moduleName) {
-        mModuleName = moduleName;
-    }
-
-    public String getModuleName() {
-        return mModuleName;
-    }
 }

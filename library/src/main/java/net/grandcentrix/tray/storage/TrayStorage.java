@@ -17,7 +17,6 @@
 package net.grandcentrix.tray.storage;
 
 import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.provider.TrayProvider;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
 
 import android.content.Context;
@@ -37,10 +36,12 @@ import java.util.List;
  * provider.
  * <p/>
  * This class represents a simple key value storage solution based on a {@link
- * android.content.ContentProvider}. Replacing this class with a {@link java.util.HashMap} implementation for testing
- * works seamless.
+ * android.content.ContentProvider}. Replacing this class with a {@link java.util.HashMap}
+ * implementation for testing works seamless.
  */
 public class TrayStorage extends ModularizedStorage<TrayItem> {
+
+    public static final String VERSION = "version";
 
     private final Context mContext;
 
@@ -48,38 +49,66 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     public TrayStorage(@NonNull final Context context, @NonNull final String module) {
         super(module);
-        mContext = context;
+        mContext = context.getApplicationContext();
         mProviderHelper = new TrayProviderHelper(mContext);
     }
 
     @Override
     public void clear() {
-        final Uri uri = mProviderHelper.getContentUri().buildUpon().appendPath(getModule()).build();
+        final Uri uri = mProviderHelper.getUri().buildUpon().appendPath(getModuleName())
+                .build();
         mContext.getContentResolver().delete(uri, null, null);
     }
 
     @Override
     @Nullable
     public TrayItem get(@NonNull final String key) {
-        final Uri uri = mProviderHelper.getUri(getModule(), key);
+        final Uri uri = mProviderHelper.getUri(getModuleName(), key);
         final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
         return prefs.size() == 1 ? prefs.get(0) : null;
     }
 
+    @NonNull
     @Override
     public Collection<TrayItem> getAll() {
-        final Uri uri = mProviderHelper.getUri(getModule());
+        final Uri uri = mProviderHelper.getUri(getModuleName());
         return mProviderHelper.queryProvider(uri);
     }
 
     @Override
-    public void put(@NonNull final String key, @NonNull final Object o) {
-        //noinspection ConstantConditions
-        if (o == null) {
+    public int getVersion() {
+        final Uri internalUri = mProviderHelper.getInternalUri(getModuleName(), VERSION);
+        final List<TrayItem> trayItems = mProviderHelper.queryProvider(internalUri);
+        if (trayItems.size() == 0) {
+            // fallback, not found
+            return 0;
+        }
+        return Integer.valueOf(trayItems.get(0).value());
+    }
+
+    @Override
+    public void put(@NonNull final String key, @Nullable final Object data) {
+        put(key, null, data);
+    }
+
+    /**
+     * same as {@link #put(String, Object)} but with an additional migration key to save where the
+     * data came from. Putting data twice with the same {@param migraionKey} does not override the
+     * already saved data. This should prevent migrating data multiple times while the data my be
+     * edited with {@link #put(String, Object)}.
+     *
+     * @param key          where to save
+     * @param migrationKey where the data came from
+     * @param data         what to save
+     */
+    @Override
+    public void put(@NonNull final String key, @Nullable final String migrationKey,
+            @Nullable final Object data) {
+        if (data == null) {
             return;
         }
-        String value = String.valueOf(o);
-        mProviderHelper.persist(getModule(), key, value);
+        String value = String.valueOf(data);
+        mProviderHelper.persist(getModuleName(), key, migrationKey, value);
     }
 
     @Override
@@ -89,7 +118,12 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
             throw new IllegalArgumentException(
                     "null is not valid. use clear to delete all preferences");
         }
-        final Uri uri = mProviderHelper.getUri(getModule(), key);
+        final Uri uri = mProviderHelper.getUri(getModuleName(), key);
         mContext.getContentResolver().delete(uri, null, null);
+    }
+
+    @Override
+    public void setVersion(final int version) {
+        mProviderHelper.persistInternal(getModuleName(), VERSION, String.valueOf(version));
     }
 }

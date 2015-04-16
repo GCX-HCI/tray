@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storrage;
+package net.grandcentrix.tray.storage;
 
 import junit.framework.Assert;
 
-import net.grandcentrix.tray.provider.TrayContract;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
-import net.grandcentrix.tray.storage.TrayStorage;
 
 /**
  * Created by pascalwelsch on 11/21/14.
@@ -42,7 +40,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mStorage = new TrayStorage(getMockContext(), "test");
+        mStorage = new TrayStorage(getProviderMockContext(), "test");
     }
 
     @Override
@@ -53,7 +51,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
     public void testClear() throws Exception {
         final String MODULE2 = "test2";
-        final TrayStorage storage2 = new TrayStorage(getMockContext(), MODULE2);
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), MODULE2);
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
         assertDatabaseSize(2);
@@ -63,8 +61,18 @@ public class TrayStorageTest extends TrayProviderTestCase {
         assertDatabaseSize(trayProviderHelper.getUri(MODULE2), 1, true);
     }
 
+    public void testGet() throws Exception {
+        assertNull(mStorage.get("something"));
+
+        mStorage.put("test", "foo");
+        final TrayItem item = mStorage.get("test");
+        assertNotNull(item);
+        assertEquals("test", item.key());
+        assertEquals("foo", item.value());
+    }
+
     public void testGetAll() throws Exception {
-        final TrayStorage storage2 = new TrayStorage(getMockContext(), "test2");
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2");
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
         assertDatabaseSize(2);
@@ -77,7 +85,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testPutMultipleModules() throws Exception {
-        final TrayStorage storage2 = new TrayStorage(getMockContext(), "test2");
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2");
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
         assertDatabaseSize(2);
@@ -114,5 +122,13 @@ public class TrayStorageTest extends TrayProviderTestCase {
         } catch (IllegalArgumentException e) {
             // success
         }
+    }
+
+    public void testVersion() throws Exception {
+        // default version, not set yet
+        assertEquals(0, mStorage.getVersion());
+
+        mStorage.setVersion(25);
+        assertEquals(25, mStorage.getVersion());
     }
 }

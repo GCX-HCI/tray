@@ -16,16 +16,19 @@
 
 package net.grandcentrix.tray.provider;
 
-import junit.framework.Assert;
-
 import net.grandcentrix.tray.TrayAppPreferences;
-import net.grandcentrix.tray.TrayModulePreferences;
 import net.grandcentrix.tray.accessor.TrayPreference;
+import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
 import android.test.IsolatedContext;
 
 import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by pascalwelsch on 11/21/14.
@@ -52,7 +55,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mProviderHelper = new TrayProviderHelper(getMockContext());
+        mProviderHelper = new TrayProviderHelper(getProviderMockContext());
     }
 
     @Override
@@ -74,13 +77,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
 
     public void testClearBut() throws Exception {
         // We need a package name in this test, thus creating our own mock context
-        final IsolatedContext context = new IsolatedContext(
-                getMockContext().getContentResolver(), getMockContext()) {
-            @Override
-            public String getPackageName() {
-                return "package.test";
-            }
-        };
+        final IsolatedContext context = getProviderMockContext();
 
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
@@ -93,15 +90,15 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertDatabaseSize(8);
 
         mProviderHelper.clearBut(new TrayAppPreferences(context),
-                new TrayModulePreferences(context, MODULE_A),
-                new TrayModulePreferences(context, MODULE_B));
+                new TestTrayModulePreferences(context, MODULE_A),
+                new TestTrayModulePreferences(context, MODULE_B));
         assertDatabaseSize(6);
 
-        mProviderHelper.clearBut(new TrayModulePreferences(context, MODULE_A),
-                new TrayModulePreferences(context, MODULE_B));
+        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A),
+                new TestTrayModulePreferences(context, MODULE_B));
         assertDatabaseSize(4);
 
-        mProviderHelper.clearBut(new TrayModulePreferences(context, MODULE_A));
+        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A));
         assertDatabaseSize(2);
 
         mProviderHelper.clearBut((TrayPreference) null);
@@ -129,10 +126,10 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
         assertDatabaseSize(4);
 
-        mProviderHelper.clear(new TrayModulePreferences(getMockContext(), MODULE_A));
+        mProviderHelper.clear(new TestTrayModulePreferences(getProviderMockContext(), MODULE_A));
         assertDatabaseSize(2);
 
-        mProviderHelper.clear(new TrayModulePreferences(getMockContext(), MODULE_B));
+        mProviderHelper.clear(new TestTrayModulePreferences(getProviderMockContext(), MODULE_B));
         assertDatabaseSize(0);
 
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
@@ -151,7 +148,21 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertEquals(1, list.size());
         TrayItem itemA = list.get(0);
         assertNotNull(itemA.created());
-        assertEqualsWithin(start, itemA.created().getTime(), 100l);
+        assertEqualsWithin(start, itemA.created().getTime(), 50l);
+    }
+
+    public void testCreatedTimeDoesNotChange() throws Exception {
+        testCreatedTime();
+        final TrayItem insertedItem = mProviderHelper.getAll().get(0);
+        final long createdTime = insertedItem.created().getTime();
+
+        Thread.sleep(50);
+
+        // save again
+        mProviderHelper.persist(MODULE_A, KEY_A, STRING_B);
+        final long updatedCreatedTime = mProviderHelper.getAll().get(0).created().getTime();
+        assertEquals(createdTime, updatedCreatedTime);
+
     }
 
     public void testGetAll() throws Exception {
@@ -169,6 +180,16 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
         final List<TrayItem> all = mProviderHelper.getAll();
         assertEquals(4, all.size());
+    }
+
+    public void testGetUriWithoutModule() throws Exception {
+
+        try {
+            mProviderHelper.getUri(null, "key");
+            fail();
+        } catch (Exception e) {
+            assertTrue(e.getMessage().contains("module"));
+        }
     }
 
     public void testPersist() throws Exception {
@@ -208,6 +229,11 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertEquals(4, list.size());
     }
 
+    public void testQueryFailed() throws Exception {
+        buildQueryDatabase();
+
+    }
+
     public void testQueryModule() throws Exception {
         buildQueryDatabase();
         final List<TrayItem> list = mProviderHelper
@@ -215,6 +241,20 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertNotNull(list);
         assertEquals(2, list.size());
         assertNotSame(list.get(0).value(), list.get(1).value());
+    }
+
+    public void testQueryProviderWithUnregisteredProvider() throws Exception {
+        final Context context = mock(Context.class);
+        final ContentResolver contentResolver = mock(ContentResolver.class);
+        when(context.getContentResolver()).thenReturn(contentResolver);
+        final TrayProviderHelper trayProviderHelper = new TrayProviderHelper(context);
+        final Uri uri = trayProviderHelper.getUri();
+        try {
+            trayProviderHelper.queryProvider(uri);
+            fail();
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage().contains(uri.toString()));
+        }
     }
 
     public void testQuerySingle() throws Exception {
@@ -256,20 +296,6 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         final String testString = "test'blubb";
         specialCharTest(MODULE_A, testString);
         specialCharTest(testString, KEY_A);
-    }
-
-    private void specialCharTest(final String module, final String key) {
-        mProviderHelper.persist(module, key, STRING_A);
-        assertDatabaseSize(1);
-
-        final List<TrayItem> list = mProviderHelper
-                .queryProvider(mProviderHelper.getUri(module));
-        assertEquals(1, list.size());
-        assertEquals(module, list.get(0).module());
-        assertEquals(key, list.get(0).key());
-
-        mProviderHelper.clear();
-        assertDatabaseSize(0);
     }
 
     public void testUpdateChanges() throws Exception {
@@ -318,5 +344,19 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
         mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
         assertDatabaseSize(4);
+    }
+
+    private void specialCharTest(final String module, final String key) {
+        mProviderHelper.persist(module, key, STRING_A);
+        assertDatabaseSize(1);
+
+        final List<TrayItem> list = mProviderHelper
+                .queryProvider(mProviderHelper.getUri(module));
+        assertEquals(1, list.size());
+        assertEquals(module, list.get(0).module());
+        assertEquals(key, list.get(0).key());
+
+        mProviderHelper.clear();
+        assertDatabaseSize(0);
     }
 }

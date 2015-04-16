@@ -17,9 +17,12 @@
 package net.grandcentrix.tray.sample;
 
 import net.grandcentrix.tray.TrayAppPreferences;
+import net.grandcentrix.tray.migration.SharedPreferencesImport;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -33,17 +36,36 @@ public class SampleActivity extends Activity implements View.OnClickListener {
 
     public static final String STARTUP_COUNT = "startup_count";
 
+    private static final String SHARED_PREF_NAME = "shared_pref";
+
+    private static final String SHARED_PREF_KEY = "shared_pref_key";
+
+    private static final String TRAY_PREF_KEY = "importedData";
+
     private TrayAppPreferences mAppPrefs;
 
+    private ImportTrayPreferences mImportPreference;
+
+    private SharedPreferences mSharedPreferences;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateSharedPrefInfo();
+    }
+
+    @SuppressWarnings("Annotator")
     @Override
     public void onClick(final View view) {
         switch (view.getId()) {
             case R.id.reset:
-                mAppPrefs.remove(STARTUP_COUNT);
-                //restart activity
-                final Intent intent = new Intent(this, SampleActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                resetAndRestart();
+                break;
+            case R.id.write_shared_pref:
+                writeInSharedPref();
+                break;
+            case R.id.import_shared_pref:
+                importSharedPref();
                 break;
             default:
                 Toast.makeText(this, "not implemented", Toast.LENGTH_SHORT).show();
@@ -57,6 +79,9 @@ public class SampleActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.sample);
 
         mAppPrefs = new TrayAppPreferences(this);
+        mImportPreference = new ImportTrayPreferences(this);
+        mSharedPreferences = getSharedPreferences(SHARED_PREF_NAME,
+                Context.MODE_MULTI_PROCESS);
         int startupCount = mAppPrefs.getInt(STARTUP_COUNT, 0);
 
         if (savedInstanceState == null) {
@@ -64,9 +89,52 @@ public class SampleActivity extends Activity implements View.OnClickListener {
         }
 
         final TextView text = (TextView) findViewById(android.R.id.text1);
-        text.setText(getString(R.string.launched_x_times, startupCount));
+        text.setText(getString(R.string.sample_launched_x_times, startupCount));
 
         final Button resetBtn = (Button) findViewById(R.id.reset);
         resetBtn.setOnClickListener(this);
+
+        final Button writeSharedPref = (Button) findViewById(R.id.write_shared_pref);
+        writeSharedPref.setOnClickListener(this);
+
+        final Button importInTray = (Button) findViewById(R.id.import_shared_pref);
+        importInTray.setOnClickListener(this);
+    }
+
+    private void importSharedPref() {
+        final SharedPreferencesImport sharedPreferencesImport =
+                new SharedPreferencesImport(this, SampleActivity.SHARED_PREF_NAME,
+                        SampleActivity.SHARED_PREF_KEY, TRAY_PREF_KEY);
+        mImportPreference.migrate(sharedPreferencesImport);
+        updateSharedPrefInfo();
+    }
+
+    /**
+     * resets the startup count and restarts the activity
+     */
+    private void resetAndRestart() {
+        mAppPrefs.remove(STARTUP_COUNT);
+        //restart activity
+        final Intent intent = new Intent(this, SampleActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    private void updateSharedPrefInfo() {
+        final TextView info = (TextView) findViewById(R.id.shared_pref_info);
+        final String sharedPrefData = mSharedPreferences.getString(SHARED_PREF_KEY, "null");
+        final String trayData = mImportPreference.getString(TRAY_PREF_KEY, "null");
+
+        info.setText(
+                "SharedPref Data: " + sharedPrefData + "\n"
+                        + "Tray Data: " + trayData);
+    }
+
+    private void writeInSharedPref() {
+        final String data = "SOM3 D4T4 " + (System.currentTimeMillis() % 100000);
+        mSharedPreferences.edit()
+                .putString(SHARED_PREF_KEY, data)
+                .apply();
+        updateSharedPrefInfo();
     }
 }

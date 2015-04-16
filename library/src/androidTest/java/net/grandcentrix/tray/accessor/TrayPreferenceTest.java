@@ -16,16 +16,15 @@
 
 package net.grandcentrix.tray.accessor;
 
+import junit.framework.TestCase;
+
 import net.grandcentrix.tray.mock.MockModularizedStorage;
 
-import android.test.AndroidTestCase;
+public class TrayPreferenceTest extends TestCase {
 
-/**
- * Created by pascalwelsch on 11/21/14.
- */
-public class TrayModuleAccessorTest extends AndroidTestCase {
+    private static final String KEY = "key";
 
-    final String KEY = "foo";
+    private static final String WRONG_KEY = "wrong_key";
 
     final boolean TEST_BOOL = true;
 
@@ -37,26 +36,29 @@ public class TrayModuleAccessorTest extends AndroidTestCase {
 
     final String TEST_STRING = "fooBar";
 
-    final String WRONG_KEY = "bar";
-
     private TrayPreference mTrayAccessor;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mTrayAccessor = new TrayPreference(new MockModularizedStorage("test")) {
-        };
-    }
+        mTrayAccessor = new TrayPreference(new MockModularizedStorage("test"), 1) {
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        mTrayAccessor = null;
+            @Override
+            protected void onCreate(final int newVersion) {
+
+            }
+
+            @Override
+            protected void onUpgrade(final int oldVersion, final int newVersion) {
+
+            }
+        };
+
     }
 
     public void testBoolean() throws Exception {
         mTrayAccessor.put(KEY, TEST_BOOL);
-        assertEquals(true, mTrayAccessor.getBoolean(KEY, false));
+        assertEquals(TEST_BOOL, mTrayAccessor.getBoolean(KEY, false));
         assertEquals(false, mTrayAccessor.getBoolean(WRONG_KEY, false));
     }
 
@@ -83,4 +85,5 @@ public class TrayModuleAccessorTest extends AndroidTestCase {
         assertEquals(TEST_STRING, mTrayAccessor.getString(KEY, ""));
         assertEquals("", mTrayAccessor.getString(WRONG_KEY, ""));
     }
+
 }

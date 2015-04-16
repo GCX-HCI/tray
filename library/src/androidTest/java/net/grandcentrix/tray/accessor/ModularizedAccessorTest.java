@@ -16,44 +16,31 @@
 
 package net.grandcentrix.tray.accessor;
 
-import net.grandcentrix.tray.mock.MockModularizedStringStorage;
+import junit.framework.TestCase;
 
-import android.test.AndroidTestCase;
+import net.grandcentrix.tray.mock.MockModularizedStorage;
+import net.grandcentrix.tray.provider.TrayItem;
+import net.grandcentrix.tray.storage.ModularizedStorage;
 
 /**
  * Created by pascalwelsch on 11/20/14.
  */
-public class ModularizedAccessorTest extends AndroidTestCase {
+public class ModularizedAccessorTest extends TestCase {
 
-    public class MockModuleAccessor extends Preference<String> {
+    private class MockTrayPreference extends TrayPreference {
 
-        public MockModuleAccessor(final String name) {
-            super(new MockModularizedStringStorage(name));
+        public MockTrayPreference() {
+            super(new MockModularizedStorage("ModularizedAccessorTest"), 1);
         }
 
         @Override
-        public boolean getBoolean(final String key, final boolean defaultValue) {
-            return Boolean.parseBoolean(getStorage().get(key));
+        protected void onCreate(final int newVersion) {
+
         }
 
         @Override
-        public float getFloat(final String key, final float defaultValue) {
-            return Float.parseFloat(getStorage().get(key));
-        }
+        protected void onUpgrade(final int oldVersion, final int newVersion) {
 
-        @Override
-        public int getInt(final String key, final int defaultValue) {
-            return Integer.parseInt(getStorage().get(key));
-        }
-
-        @Override
-        public long getLong(final String key, final long defaultValue) {
-            return Long.parseLong(getStorage().get(key));
-        }
-
-        @Override
-        public String getString(final String key, final String defaultValue) {
-            return getStorage().get(key);
         }
     }
 
@@ -66,8 +53,6 @@ public class ModularizedAccessorTest extends AndroidTestCase {
     final String TEST_KEY = "foo";
 
     final long TEST_LONG = Long.MAX_VALUE - 123l;
-
-    final String TEST_MODULE = "common";
 
     final String TEST_STRING = "fooBar";
 
@@ -82,31 +67,40 @@ public class ModularizedAccessorTest extends AndroidTestCase {
     }
 
     public void testBoolean() throws Exception {
-        final MockModuleAccessor accessor = new MockModuleAccessor(TEST_MODULE);
+        final MockTrayPreference accessor = new MockTrayPreference();
         accessor.put(TEST_KEY, TEST_BOOL);
         assertEquals(TEST_BOOL, accessor.getBoolean(TEST_KEY, false));
     }
 
     public void testFloat() throws Exception {
-        final MockModuleAccessor accessor = new MockModuleAccessor(TEST_MODULE);
+        final MockTrayPreference accessor = new MockTrayPreference();
         accessor.put(TEST_KEY, TEST_FLOAT);
         assertEquals(TEST_FLOAT, accessor.getFloat(TEST_KEY, -1f));
     }
 
+    public void testGetModularizedStorage() throws Exception {
+        final MockTrayPreference mockTrayPreference = new MockTrayPreference();
+        final ModularizedStorage<TrayItem> modularizedStorage = mockTrayPreference
+                .getModularizedStorage();
+        assertNotNull(modularizedStorage);
+        assertEquals(mockTrayPreference.getStorage(), mockTrayPreference.getModularizedStorage());
+
+    }
+
     public void testInt() throws Exception {
-        final MockModuleAccessor accessor = new MockModuleAccessor(TEST_MODULE);
+        final MockTrayPreference accessor = new MockTrayPreference();
         accessor.put(TEST_KEY, TEST_INT);
         assertEquals(TEST_INT, accessor.getInt(TEST_KEY, -1));
     }
 
     public void testLong() throws Exception {
-        final MockModuleAccessor accessor = new MockModuleAccessor(TEST_MODULE);
+        final MockTrayPreference accessor = new MockTrayPreference();
         accessor.put(TEST_KEY, TEST_LONG);
         assertEquals(TEST_LONG, accessor.getLong(TEST_KEY, -1l));
     }
 
     public void testString() throws Exception {
-        final MockModuleAccessor accessor = new MockModuleAccessor(TEST_MODULE);
+        final MockTrayPreference accessor = new MockTrayPreference();
         accessor.put(TEST_KEY, TEST_STRING);
         assertEquals(TEST_STRING, accessor.getString(TEST_KEY, "unknown"));
     }

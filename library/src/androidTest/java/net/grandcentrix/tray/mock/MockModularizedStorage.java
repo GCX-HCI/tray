@@ -19,6 +19,9 @@ package net.grandcentrix.tray.mock;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.storage.ModularizedStorage;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,7 +31,9 @@ import java.util.HashMap;
  */
 public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
 
-    private HashMap<String, TrayItem> data = new HashMap<>();
+    private HashMap<String, TrayItem> mData = new HashMap<>();
+
+    private int mVersion = 0;
 
     public MockModularizedStorage(final String module) {
         super(module);
@@ -36,28 +41,46 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void clear() {
-        data.clear();
+        mData.clear();
     }
 
     @Override
-    public TrayItem get(final String key) {
-        return data.get(key);
+    public TrayItem get(@NonNull final String key) {
+        return mData.get(key);
     }
 
+    @NonNull
     @Override
     public Collection<TrayItem> getAll() {
-        return data.values();
+        return mData.values();
     }
 
     @Override
-    public void put(final String key, final Object o) {
-        final String value = String.valueOf(o);
-        final TrayItem item = new TrayItem(new Date(), key, getModule(), new Date(), value);
-        data.put(key, item);
+    public int getVersion() {
+        return mVersion;
     }
 
     @Override
-    public void remove(final String key) {
-        data.remove(key);
+    public void put(@NonNull final String key, @Nullable final String migrationKey,
+            final Object data) {
+        final String value = String.valueOf(data);
+        final TrayItem item = new TrayItem(getModuleName(), key, migrationKey, value, new Date(),
+                new Date());
+        this.mData.put(key, item);
+    }
+
+    @Override
+    public void put(@NonNull final String key, final Object data) {
+        put(key, null, data);
+    }
+
+    @Override
+    public void remove(@NonNull final String key) {
+        mData.remove(key);
+    }
+
+    @Override
+    public void setVersion(final int version) {
+        this.mVersion = version;
     }
 }

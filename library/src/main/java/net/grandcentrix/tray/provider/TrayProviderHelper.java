@@ -17,7 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.accessor.TrayPreference;
-import net.grandcentrix.tray.util.ProviderHelper;
+import net.grandcentrix.tray.util.SqliteHelper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -34,13 +34,16 @@ import java.util.List;
  */
 public class TrayProviderHelper {
 
-    final Context mContext;
-
     private final Uri mContentUri;
+
+    private final Uri mContentUriInternal;
+
+    private final Context mContext;
 
     public TrayProviderHelper(@NonNull final Context context) {
         mContext = context;
         mContentUri = TrayContract.generateContentUri(context);
+        mContentUriInternal = TrayContract.generateInternalContentUri(context);
     }
 
     /**
@@ -54,17 +57,12 @@ public class TrayProviderHelper {
      * clears the stated modules
      */
     public void clear(TrayPreference... modules) {
-        if (modules == null) {
-            return;
-        }
-
         for (TrayPreference module : modules) {
             if (module == null) {
                 continue;
             }
             module.clear();
         }
-
     }
 
     /**
@@ -73,11 +71,6 @@ public class TrayProviderHelper {
      * @param modules modules excluded when deleting preferences
      */
     public void clearBut(TrayPreference... modules) {
-        if (modules == null) {
-            clear();
-            return;
-        }
-
         String selection = null;
         String[] selectionArgs = new String[]{};
 
@@ -85,10 +78,10 @@ public class TrayProviderHelper {
             if (module == null) {
                 continue;
             }
-            String moduleName = module.getModularizedStorage().getModule();
-            selection = ProviderHelper
+            String moduleName = module.getModularizedStorage().getModuleName();
+            selection = SqliteHelper
                     .extendSelection(selection, TrayContract.Preferences.Columns.MODULE + " != ?");
-            selectionArgs = ProviderHelper
+            selectionArgs = SqliteHelper
                     .extendSelectionArgs(selectionArgs, new String[]{moduleName});
         }
 
@@ -100,12 +93,21 @@ public class TrayProviderHelper {
      *
      * @return all Preferences as list.
      */
+    @NonNull
     public List<TrayItem> getAll() {
         return queryProvider(mContentUri);
     }
 
-    public Uri getContentUri() {
-        return mContentUri;
+    public Uri getInternalUri() {
+        return getUri(null, null, true);
+    }
+
+    public Uri getInternalUri(final String module) {
+        return getUri(module, null, true);
+    }
+
+    public Uri getInternalUri(@Nullable final String module, @Nullable final String key) {
+        return getUri(module, key, true);
     }
 
     public Uri getUri() {
@@ -117,11 +119,17 @@ public class TrayProviderHelper {
     }
 
     public Uri getUri(@Nullable final String module, @Nullable final String key) {
+        return getUri(module, key, false);
+    }
+
+    public Uri getUri(@Nullable final String module, @Nullable final String key,
+            final boolean internal) {
         if (module == null && key != null) {
             throw new IllegalArgumentException(
                     "key without module is not valid. Look into the TryProvider for valid Uris");
         }
-        final Uri.Builder builder = mContentUri
+        final Uri uri = internal ? mContentUriInternal : mContentUri;
+        final Uri.Builder builder = uri
                 .buildUpon();
         if (module != null) {
             builder.appendPath(module);
@@ -137,21 +145,23 @@ public class TrayProviderHelper {
      */
     public void persist(@NonNull final String module, @NonNull final String key,
             @NonNull final String value) {
-        //noinspection ConstantConditions
-        if (value == null) {
-            return;
-        }
-
-        final Uri uri = mContentUri
-                .buildUpon()
-                .appendPath(module)
-                .appendPath(key)
-                .build();
-        ContentValues values = new ContentValues();
-        values.put(TrayContract.Preferences.Columns.VALUE, value);
-        mContext.getContentResolver().insert(uri, values);
+        persist(module, key, null, value);
     }
 
+    /**
+     * saves the value into the database combined with a previousKey.
+     */
+    public void persist(@NonNull final String module, @NonNull final String key,
+            @Nullable final String previousKey, @NonNull final String value) {
+        persist(module, key, previousKey, value, false);
+    }
+
+    public void persistInternal(@NonNull final String module, @NonNull final String key,
+            @NonNull final String value) {
+        persist(module, key, null, value, true);
+    }
+
+    @NonNull
     public List<TrayItem> queryProvider(@NonNull final Uri uri)
             throws IllegalStateException {
         final Cursor cursor = mContext.getContentResolver().query(uri, null, null, null, null);
@@ -161,13 +171,34 @@ public class TrayProviderHelper {
             throw new IllegalStateException(
                     "could not access stored data with uri " + uri
                             + ". Is the provider registered in the manifest of your application?");
+            //todo test with tray mock context
         }
+
         final ArrayList<TrayItem> list = new ArrayList<>();
-        for (boolean hasItem = cursor.moveToFirst(); hasItem;
-                hasItem = cursor.moveToNext()) {
+        for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
             list.add(new TrayItem(cursor));
         }
         cursor.close();
         return list;
+    }
+
+    private void persist(@NonNull final String module, @NonNull final String key,
+            @Nullable final String previousKey, @NonNull final String value,
+            final boolean internal) {
+        //noinspection ConstantConditions
+        if (value == null) {
+            return;
+        }
+
+        final Uri contentUri = internal ? mContentUriInternal : mContentUri;
+        final Uri uri = contentUri
+                .buildUpon()
+                .appendPath(module)
+                .appendPath(key)
+                .build();
+        ContentValues values = new ContentValues();
+        values.put(TrayContract.Preferences.Columns.VALUE, value);
+        values.put(TrayContract.Preferences.Columns.MIGRATED_KEY, previousKey);
+        mContext.getContentResolver().insert(uri, values);
     }
 }

@@ -16,21 +16,14 @@
 
 package net.grandcentrix.tray.storage;
 
-/**
- * Created by pascalwelsch on 11/20/14.
- * <p/>
- * storage is now separated in modules and easier to maintain. Could be done with different files,
- * databases...
- */
-public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
+import junit.framework.TestCase;
 
-    private String mModuleName;
+import net.grandcentrix.tray.mock.MockModularizedStorage;
 
-    public ModularizedStorage(final String moduleName) {
-        mModuleName = moduleName;
-    }
+public class ModularizedStorageTest extends TestCase {
 
-    public String getModuleName() {
-        return mModuleName;
+    public void testGetModule() throws Exception {
+        final MockModularizedStorage storage = new MockModularizedStorage("test");
+        assertEquals("test", storage.getModuleName());
     }
 }

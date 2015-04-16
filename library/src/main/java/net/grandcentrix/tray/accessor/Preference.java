@@ -16,24 +16,57 @@
 
 package net.grandcentrix.tray.accessor;
 
+import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.storage.PreferenceStorage;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Collection;
 
 /**
+ * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}. The
+ * access to this storage defines the {@link PreferenceAccessor} interface.
+ * <p/>
  * Created by pascalwelsch on 11/20/14.
- *
- * A Preference has a interface to interact and a storage to save the data.
  */
 public abstract class Preference<T> implements PreferenceAccessor<T> {
 
+    private static final String TAG = Preference.class.getSimpleName();
+
     private PreferenceStorage<T> mStorage;
 
-    public Preference(final PreferenceStorage<T> storage) {
+    public Preference(final PreferenceStorage<T> storage, final int version) {
         mStorage = storage;
+
+        changeVersion(version);
     }
+
+    /**
+     * Called when this Preference is created for the first time. This is where the initial
+     * migration from other data source should happen.
+     *
+     * @param initialVersion the version set in the constructor, always > 0
+     */
+    protected abstract void onCreate(final int initialVersion);
+
+    /**
+     * works inverse to the {@link #onUpgrade(int, int)} method
+     */
+    protected void onDowngrade(final int oldVersion, final int newVersion) {
+        throw new IllegalStateException("Can't downgrade from version " +
+                oldVersion + " to " + newVersion);
+    }
+
+    /**
+     * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
+     * over time.
+     * <p/>
+     * Once the version in the constructor is increased the next constructor call to this Preference
+     * will trigger an upgrade.
+     */
+    protected abstract void onUpgrade(final int oldVersion, final int newVersion);
 
     @Override
     public void clear() {
@@ -47,7 +80,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
 
     @Nullable
     @Override
-    public T getPref(final String key) {
+    public T getPref(@NonNull final String key) {
         return mStorage.get(key);
     }
 
@@ -55,34 +88,108 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
         return mStorage;
     }
 
+    public static boolean isDataTypeSupported(final Object data) {
+        return data instanceof Integer
+                || data instanceof String
+                || data instanceof Long
+                || data instanceof Float
+                || data instanceof Boolean
+                || data == null;
+    }
+
+    /**
+     * Migrates data into this preference.
+     */
+    @SafeVarargs
+    public final void migrate(Migration<T>... migrations) {
+        for (Migration<T> migration : migrations) {
+
+            if (!migration.shouldMigrate()) {
+                continue;
+            }
+
+            final Object data = migration.getData();
+
+            final boolean supportedDataType = Preference.isDataTypeSupported(data);
+            if (!supportedDataType) {
+                Log.w(TAG, "could not migrate " + migration.getPreviousKey()
+                        + " because the datatype" + data.getClass().getSimpleName() + "is invalid");
+                migration.onPostMigrate(null);
+                continue;
+            }
+            final String key = migration.getTrayKey();
+            final String migrationKey = migration.getPreviousKey();
+            // save into tray
+            getStorage().put(key, migrationKey, data);
+
+            // return the saved data.
+            final T trayItem = getStorage().get(key);
+            migration.onPostMigrate(trayItem);
+        }
+    }
+
     @Override
-    public void put(final String key, final String value) {
+    public void put(@NonNull final String key, final String value) {
         getStorage().put(key, value);
     }
 
     @Override
-    public void put(final String key, final int value) {
+    public void put(@NonNull final String key, final int value) {
         getStorage().put(key, value);
     }
 
     @Override
-    public void put(final String key, final float value) {
+    public void put(@NonNull final String key, final float value) {
         getStorage().put(key, value);
     }
 
     @Override
-    public void put(final String key, final long value) {
+    public void put(@NonNull final String key, final long value) {
         getStorage().put(key, value);
     }
 
     @Override
-    public void put(final String key, final boolean value) {
+    public void put(@NonNull final String key, final boolean value) {
         getStorage().put(key, value);
     }
 
-    @Override
-    public void remove(final String key) {
+    public void remove(@NonNull final String key) {
         mStorage.remove(key);
     }
 
+    /**
+     * Changes the version of this preferences. checks for version changes and calls the correct
+     * handling methods.
+     * <pre>
+     * <ul>
+     * <li>{@link #onCreate(int)} when there is no previous version</li>
+     * <li>{@link #onUpgrade(int, int)} for an increasing version</li>
+     * <li>{@link #onDowngrade(int, int)} for a decreasing version</li>
+     * </ul>
+     * </pre>
+     * compareable to the mechanism in  {@link android.database.sqlite.SQLiteOpenHelper#getWritableDatabase()}
+     */
+    // TODO PW is public useful?
+    /*package*/
+    synchronized void changeVersion(final int newVersion) {
+        if (newVersion < 1) {
+            // negative versions are illegal.
+            // 0 is reserved to detect the initial state
+            throw new IllegalArgumentException("Version must be >= 1, was " + newVersion);
+        }
+
+        final int version = getStorage().getVersion();
+        if (version != newVersion) {
+            if (version == 0) {
+                onCreate(newVersion);
+            } else {
+                if (version > newVersion) {
+                    onDowngrade(version, newVersion);
+                } else {
+                    onUpgrade(version, newVersion);
+                }
+            }
+        }
+        getStorage().setVersion(newVersion);
+    }
 }
