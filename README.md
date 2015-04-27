@@ -64,6 +64,8 @@ final MyModulePreference myModulePreference = new MyModulePreference(getContext(
 myModulePreference.put(MyModulePreference.KEY_IS_FIRST_LAUNCH, false);
 ```
 
+See the [sample project](https://github.com/grandcentrix/tray/tree/master/sample) for more a demo
+
 `// TOOD add clear sample`
 
 ### Migrate from SharedPreferences to Tray
@@ -71,6 +73,8 @@ myModulePreference.put(MyModulePreference.KEY_IS_FIRST_LAUNCH, false);
 `// TODO`
 
 ## Getting Started
+
+Follow the instructions below and look into the [sample project](https://github.com/grandcentrix/tray/tree/master/sample) for help.
 
 ### Add Tray to your project
 
