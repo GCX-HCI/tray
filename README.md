@@ -21,6 +21,8 @@ Tray solves this problem with a [`ContentProvider`](http://developer.android.com
 
 ## Usage
 
+Simple tutorial how to use Tray in your project instead of the SharedPreferences
+
 ### Save and read preferences
 
 ```java
@@ -37,6 +39,8 @@ Log.v(TAG, "value: " + value); // value: lorem ipsum
 final String defaultValue = appPreferences.getString("key2", "default");
 Log.v(TAG, "value: " + defaultValue); // value: default
 ```
+
+No `Editor`, no `commit()` or `apply()` :wink:
 
 ### Create your own preference module
 
@@ -59,6 +63,12 @@ public class MyModulePreference extends TrayModulePreferences {
 final MyModulePreference myModulePreference = new MyModulePreference(getContext());
 myModulePreference.put(MyModulePreference.KEY_IS_FIRST_LAUNCH, false);
 ```
+
+`// TOOD add clear sample`
+
+### Migrate from SharedPreferences to Tray
+
+`// TODO`
 
 ## Getting Started
 
