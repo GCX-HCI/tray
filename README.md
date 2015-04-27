@@ -113,6 +113,13 @@ Clean your project afterwards to genaterate the `/build/generated/res/generated/
 
 Changing the authority from one version to another app version is no problem! Tray always uses the same database.
 
+## Project state
+
+Tray is currently in active development by [grandcentrix](http://www.grandcentrix.net/). We decided to go open source after reaching 100% test coverage.
+[grandcentrix](http://www.grandcentrix.net/) uses Tray in producation in two apps without problems. 
+
+Before version 1.0 we'd like to have some feedback.
+
 ## ContentProvider is overkill
 
 At first, it was the simpst way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us.
@@ -128,14 +135,15 @@ Tray is ready to use without showblockers! Here are some nice to have features:
 - no support to save `Set<String>`. Is someone using this?
 - more metadata fields: (i.e. app version code/name)
 
-[grandcentrix](http://www.grandcentrix.net/) uses Tray in producation in two apps without problems.
-
 ## Versions
 
 ##### Version 0.9 `27.04.15`
 - initial public release
 
-##### Lots of internal releases
+##### Version 0.2 - 0.8
+- Refactoring
+- 100% Testing
+- Bugfixing
 
 ##### Version 0.1 `17.09.14`
 - first working prototype
@@ -145,7 +153,6 @@ Tray is ready to use without showblockers! Here are some nice to have features:
 
 - Pascal Welsch - https://github.com/passsy
 - Jannis Veerkamp - https://github.com/jannisveerkamp
-
 
 # License
 
