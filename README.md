@@ -134,6 +134,16 @@ Tray is currently in active development by [grandcentrix](http://www.grandcentri
 
 Before version 1.0 we'd like to have some feedback.
 
+## Testcoverage 100%
+
+Tray has 100% test coverage and we'll try to keep it at that level for stable releases.
+
+You can run the coverage report with `./gradlew createDebugCoverageReport`. You'll find the output in `library/build/outputs/coverage/debug/index.html` which looks like this:
+
+![coverage report](http://i.imgur.com/V4OQsiY.png)
+
+Those ~120 tests will help us indicate bugs in the future before we publish them. Don't think the code is 100% bug free based on the test coverage.
+
 ## ContentProvider is overkill
 
 At first, it was the simpst way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us.
