@@ -153,7 +153,7 @@ That said, yes the performance isn't as good as the SharedPreferences. But the p
 
 ## Missing Features
 
-Tray is ready to use without showblockers! Here are some nice to have features:
+Tray is ready to use without showblockers! But here are some nice to have features for the future:
 - maven integration
 - saving `null` doesn't work
 - no support to save `Set<String>`. Is someone using this?
