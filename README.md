@@ -6,7 +6,7 @@ If you have read the documentation of the [`SharedPreferences`](http://developer
 
 **Sometimes _later_ becomes _never_!**
 
-Tray solves this problem with a [`ContentProvider`](http://developer.android.com/reference/android/content/ContentProvider.html) based storage. Tray also provides a advanced API which makes it super easy to access and maintain your data with upgrade and migrate mechanisms. Welcome to SharedPreferences 2.0 aka Tray.
+Tray solves this problem with a [`ContentProvider`](http://developer.android.com/reference/android/content/ContentProvider.html) based storage. Tray also provides an advanced API which makes it super easy to access and maintain your data with upgrade and migrate mechanisms. Welcome to SharedPreferences 2.0 aka Tray.
 
 ## Features
 
