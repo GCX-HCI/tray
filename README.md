@@ -131,7 +131,7 @@ Changing the authority from one version to another app version is no problem! Tr
 ## Project state
 
 Tray is currently in active development by [grandcentrix](http://www.grandcentrix.net/). We decided to go open source after reaching 100% test coverage.
-[grandcentrix](http://www.grandcentrix.net/) uses Tray in producation in two apps without problems. 
+[grandcentrix](http://www.grandcentrix.net/) uses Tray in production in two apps without problems. 
 
 Before version 1.0 we'd like to have some feedback.
 
