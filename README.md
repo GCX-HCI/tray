@@ -18,6 +18,7 @@ Tray solves this problem with a [`ContentProvider`](http://developer.android.com
 - update and migrate your data from one app version to next one with versioned Preferences and a [`onUpgrade()`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/accessor/Preference.java#L69) method
 - Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/migration/SharedPreferencesImport.java)
 - **tray is 100% unit tested!**
+- 0 lint warnings/errors
 
 ## Usage
 
