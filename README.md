@@ -85,39 +85,21 @@ See the [sample project](https://github.com/grandcentrix/tray/tree/master/sample
 
 `// TODO`
 
-## Getting Started
+## Getting Started [![Download](https://api.bintray.com/packages/passsy/maven/net.grandcentrix.tray/images/download.svg) ](https://bintray.com/passsy/maven/net.grandcentrix.tray/_latestVersion)
 
-Follow the instructions below and look into the [sample project](https://github.com/grandcentrix/tray/tree/master/sample) for help.
+##### Add Tray to your project
 
-### Add Tray to your project
-
-#### Maven
-
-**Sorry, Maven integration is missing. We are working on it for the final 1.0 release!**
-
-#### As module
-
-Add the library as module to your project *(protip: git submodule)* and add tray as dependency to the `build.gradle` of your app.
+Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/)
 
 ```java
+
 dependencies {
-    ...
-    compile project(':tray:library')     //if your module is named tray
+    compile 'net.grandcentrix.tray:tray:0.9'
 }
-```
-
-Don't forget to add the module to the `settings.gradle`
-```java
-include ':tray:library'
-```
-
-### Set the authority
-
-Tray is based on a ContentProvider. A ContentProvider needs a **unique** authority. When you use the same authority for multiple apps you will be unable to install the app due to a authority conflict with the error message:
 
 ```
-Failure [INSTALL_FAILED_CONFLICTING_PROVIDER]
-```
+
+##### Set the authority
 
 To set the authority you need to override the string resource of the library with `resValue` in your `build.gradle`
 ```java
@@ -136,6 +118,13 @@ Clean your project afterwards to genaterate the `/build/generated/res/generated/
 ```xml
     <!-- Values from default config. -->
     <item name="tray__authority" type="string">your.app.id.tray</item>
+```
+
+
+Tray is based on a ContentProvider. A ContentProvider needs a **unique** authority. When you use the same authority for multiple apps you will be unable to install the app due to a authority conflict with the error message:
+
+```
+Failure [INSTALL_FAILED_CONFLICTING_PROVIDER]
 ```
 
 Changing the authority from one version to another app version is no problem! Tray always uses the same database.
@@ -174,7 +163,6 @@ That said, yes the performance isn't as good as the SharedPreferences. But the p
 ## Missing Features
 
 Tray is ready to use without showblockers! But here are some nice to have features for the future:
-- maven integration (high priority)
 - saving `null` doesn't work
 - Reactive wrapper to observe values 
 - no support to save `Set<String>`. Is someone using this?
