@@ -54,7 +54,17 @@ public class MyModulePreference extends TrayModulePreferences {
     public static String KEY_IS_FIRST_LAUNCH = "first_launch";
 
     public MyModulePreference(final Context context) {
-        super(context, "myModule");
+        super(context, "myModule", 1);
+    }
+
+    @Override
+    protected void onCreate(final int initialVersion) {
+
+    }
+
+    @Override
+    protected void onUpgrade(final int oldVersion, final int newVersion) {
+
     }
 }
 ```
