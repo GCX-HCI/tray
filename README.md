@@ -1,5 +1,7 @@
 # Tray - a SharedPreferences replacement for Android
 
+[![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat)](https://github.com/avast/android-styled-dialogs/blob/master/LICENSE.txt)
+
 If you have read the documentation of the [`SharedPreferences`](http://developer.android.com/reference/android/content/SharedPreferences.html) you might have seen this:
 
 >Note: currently this class does not support use across multiple processes. This will be added later.
@@ -154,6 +156,13 @@ You can run the coverage report with `./gradlew createDebugCoverageReport`. You'
 ![coverage report](http://i.imgur.com/V4OQsiY.png)
 
 Those ~120 tests will help us indicate bugs in the future before we publish them. Don't think the code is 100% bug free based on the test coverage.
+
+## Build state
+
+Branch  | Status
+------------- | -------------
+[`master`](https://github.com/grandcentrix/tray/tree/master) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray)
+[`develop`](https://github.com/grandcentrix/tray/tree/develop) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=develop)](https://travis-ci.org/grandcentrix/tray)
 
 ## ContentProvider is overkill
 
