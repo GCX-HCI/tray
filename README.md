@@ -1,6 +1,6 @@
 # Tray - a SharedPreferences replacement for Android
 
-[![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat)](https://github.com/avast/android-styled-dialogs/blob/master/LICENSE.txt)
+[![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat)](https://github.com/grandcentrix/tray/blob/master/LICENSE.txt)
 
 If you have read the documentation of the [`SharedPreferences`](http://developer.android.com/reference/android/content/SharedPreferences.html) you might have seen this:
 
