@@ -120,7 +120,6 @@ Clean your project afterwards to genaterate the `/build/generated/res/generated/
     <item name="tray__authority" type="string">your.app.id.tray</item>
 ```
 
-
 Tray is based on a ContentProvider. A ContentProvider needs a **unique** authority. When you use the same authority for multiple apps you will be unable to install the app due to a authority conflict with the error message:
 
 ```
@@ -129,12 +128,16 @@ Failure [INSTALL_FAILED_CONFLICTING_PROVIDER]
 
 Changing the authority from one version to another app version is no problem! Tray always uses the same database.
 
+If you are using different applicationIds for different buildTypes of flavors read [this](https://blog.grandcentrix.net/how-to-install-different-app-variants-on-one-android-device/) article.
+
 ## Project state
 
 Tray is currently in active development by [grandcentrix](http://www.grandcentrix.net/). We decided to go open source after reaching 100% test coverage.
 [grandcentrix](http://www.grandcentrix.net/) uses Tray in production in two apps without problems. 
 
 Before version 1.0 we'd like to have some feedback.
+
+You can follow the development in the [`develop`](https://github.com/grandcentrix/tray/tree/develop) branch.
 
 ## Testcoverage 100%
 
