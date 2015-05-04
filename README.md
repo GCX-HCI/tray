@@ -1,5 +1,7 @@
 # Tray - a SharedPreferences replacement for Android
 
+[![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat)](https://github.com/grandcentrix/tray/blob/master/LICENSE.txt)
+
 If you have read the documentation of the [`SharedPreferences`](http://developer.android.com/reference/android/content/SharedPreferences.html) you might have seen this:
 
 >Note: currently this class does not support use across multiple processes. This will be added later.
@@ -83,39 +85,21 @@ See the [sample project](https://github.com/grandcentrix/tray/tree/master/sample
 
 `// TODO`
 
-## Getting Started
+## Getting Started [![Download](https://api.bintray.com/packages/passsy/maven/Tray/images/download.svg) ](https://bintray.com/passsy/maven/net.grandcentrix.tray/_latestVersion)
 
-Follow the instructions below and look into the [sample project](https://github.com/grandcentrix/tray/tree/master/sample) for help.
+##### Add Tray to your project
 
-### Add Tray to your project
-
-#### Maven
-
-**Sorry, Maven integration is missing. We are working on it for the final 1.0 release!**
-
-#### As module
-
-Add the library as module to your project *(protip: git submodule)* and add tray as dependency to the `build.gradle` of your app.
+Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/)
 
 ```java
+
 dependencies {
-    ...
-    compile project(':tray:library')     //if your module is named tray
+    compile 'net.grandcentrix.tray:tray:0.9'
 }
-```
-
-Don't forget to add the module to the `settings.gradle`
-```java
-include ':tray:library'
-```
-
-### Set the authority
-
-Tray is based on a ContentProvider. A ContentProvider needs a **unique** authority. When you use the same authority for multiple apps you will be unable to install the app due to a authority conflict with the error message:
 
 ```
-Failure [INSTALL_FAILED_CONFLICTING_PROVIDER]
-```
+
+##### Set the authority
 
 To set the authority you need to override the string resource of the library with `resValue` in your `build.gradle`
 ```java
@@ -136,7 +120,15 @@ Clean your project afterwards to genaterate the `/build/generated/res/generated/
     <item name="tray__authority" type="string">your.app.id.tray</item>
 ```
 
+Tray is based on a ContentProvider. A ContentProvider needs a **unique** authority. When you use the same authority for multiple apps you will be unable to install the app due to a authority conflict with the error message:
+
+```
+Failure [INSTALL_FAILED_CONFLICTING_PROVIDER]
+```
+
 Changing the authority from one version to another app version is no problem! Tray always uses the same database.
+
+If you are using different applicationIds for different buildTypes of flavors read [this](https://blog.grandcentrix.net/how-to-install-different-app-variants-on-one-android-device/) article.
 
 ## Project state
 
@@ -144,6 +136,8 @@ Tray is currently in active development by [grandcentrix](http://www.grandcentri
 [grandcentrix](http://www.grandcentrix.net/) uses Tray in production in two apps without problems. 
 
 Before version 1.0 we'd like to have some feedback.
+
+You can follow the development in the [`develop`](https://github.com/grandcentrix/tray/tree/develop) branch.
 
 ## Testcoverage 100%
 
@@ -155,6 +149,13 @@ You can run the coverage report with `./gradlew createDebugCoverageReport`. You'
 
 Those ~120 tests will help us indicate bugs in the future before we publish them. Don't think the code is 100% bug free based on the test coverage.
 
+## Build state
+
+Branch  | Status
+------------- | -------------
+[`master`](https://github.com/grandcentrix/tray/tree/master) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray)
+[`develop`](https://github.com/grandcentrix/tray/tree/develop) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=develop)](https://travis-ci.org/grandcentrix/tray)
+
 ## ContentProvider is overkill
 
 At first, it was the simpst way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us.
@@ -165,7 +166,6 @@ That said, yes the performance isn't as good as the SharedPreferences. But the p
 ## Missing Features
 
 Tray is ready to use without showblockers! But here are some nice to have features for the future:
-- maven integration (high priority)
 - saving `null` doesn't work
 - Reactive wrapper to observe values 
 - no support to save `Set<String>`. Is someone using this?
