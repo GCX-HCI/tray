@@ -83,7 +83,7 @@ See the [sample project](https://github.com/grandcentrix/tray/tree/master/sample
 
 `// TODO`
 
-## Getting Started
+## Getting Started [![Download](https://api.bintray.com/packages/passsy/maven/net.grandcentrix.tray/images/download.svg) ](https://bintray.com/passsy/maven/net.grandcentrix.tray/_latestVersion)
 
 ##### Add Tray to your project
 
