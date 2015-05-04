@@ -154,7 +154,6 @@ That said, yes the performance isn't as good as the SharedPreferences. But the p
 ## Missing Features
 
 Tray is ready to use without showblockers! But here are some nice to have features for the future:
-- maven integration (high priority)
 - saving `null` doesn't work
 - Reactive wrapper to observe values 
 - no support to save `Set<String>`. Is someone using this?
