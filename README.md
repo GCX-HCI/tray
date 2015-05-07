@@ -47,7 +47,7 @@ No `Editor`, no `commit()` or `apply()` :wink:
 
 ### Create your own preference module
 
-It's recommended to bundle preferences in groups, so called modules instead of putting everyting in one global module. If you where using `SharedPreferences` before, you might have used different files to group your preferences. Extending the `TrayModulePreferences` and put all Keys inside this class is a recommended way to keep your code clean.
+It's recommended to bundle preferences in groups, so called modules instead of putting everyting in one global module. If you were using `SharedPreferences` before, you might have used different files to group your preferences. Extending the `TrayModulePreferences` and put all Keys inside this class is a recommended way to keep your code clean.
 
 ```java
 // create a preference accessor for a module
@@ -113,7 +113,7 @@ android {
 }
 ```
 
-Clean your project afterwards to genaterate the `/build/generated/res/generated/BUILDTYPE/values/generated.xml` which should then contain the following value:
+Clean your project afterwards to generate the `/build/generated/res/generated/BUILDTYPE/values/generated.xml` which should then contain the following value:
 
 ```xml
     <!-- Values from default config. -->
