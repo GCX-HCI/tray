@@ -152,12 +152,12 @@ public class TrayProviderHelper {
      * saves the value into the database combined with a previousKey.
      */
     public void persist(@NonNull final String module, @NonNull final String key,
-            @Nullable final String previousKey, @NonNull final String value) {
+            @Nullable final String previousKey, @Nullable final String value) {
         persist(module, key, previousKey, value, false);
     }
 
     public void persistInternal(@NonNull final String module, @NonNull final String key,
-            @NonNull final String value) {
+            @Nullable final String value) {
         persist(module, key, null, value, true);
     }
 
@@ -183,12 +183,8 @@ public class TrayProviderHelper {
     }
 
     private void persist(@NonNull final String module, @NonNull final String key,
-            @Nullable final String previousKey, @NonNull final String value,
+            @Nullable final String previousKey, @Nullable final String value,
             final boolean internal) {
-        //noinspection ConstantConditions
-        if (value == null) {
-            return;
-        }
 
         final Uri contentUri = internal ? mContentUriInternal : mContentUri;
         final Uri uri = contentUri
