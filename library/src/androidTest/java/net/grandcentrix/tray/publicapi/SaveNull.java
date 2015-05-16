@@ -1,6 +1,7 @@
 package net.grandcentrix.tray.publicapi;
 
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
+import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
 /**
@@ -10,10 +11,6 @@ public class SaveNull extends TrayProviderTestCase {
 
     public static final String KEY = "key";
 
-    public static final String VALUE = "value";
-
-    public static final String DEFAULT_VALUE = "default";
-
     private TestTrayModulePreferences mPref;
 
     @Override
@@ -22,28 +19,31 @@ public class SaveNull extends TrayProviderTestCase {
         mPref = new TestTrayModulePreferences(getProviderMockContext(), "publictest");
     }
 
-    public void testSaveNull() throws Exception {
-        assertEquals(DEFAULT_VALUE, mPref.getString(KEY, DEFAULT_VALUE));
-        mPref.put(KEY, null);
-        assertEquals(null, mPref.getString(KEY, DEFAULT_VALUE));
+    public void testDeleteNull() throws Exception {
+        testSaveNullAsString();
+        mPref.remove(KEY);
+        assertEquals("default", mPref.getString(KEY, "default"));
     }
 
     public void testOverrideWithNull() throws Exception {
-        mPref.put(KEY, VALUE);
-        assertEquals(VALUE, mPref.getString(KEY, DEFAULT_VALUE));
+        mPref.put(KEY, "value");
+        assertEquals("value", mPref.getString(KEY));
         mPref.put(KEY, null);
-        assertEquals(null, mPref.getString(KEY, DEFAULT_VALUE));
+        assertEquals(null, mPref.getString(KEY));
     }
 
-    public void testDeleteNull() throws Exception {
-        testSaveNull();
-        mPref.remove(KEY);
-        assertEquals(DEFAULT_VALUE, mPref.getString(KEY, DEFAULT_VALUE));
+    public void testSaveNullAsString() throws Exception {
+        assertEquals("default", mPref.getString(KEY, "default"));
+        mPref.put(KEY, null);
+        final TrayItem pref = mPref.getPref(KEY);
+        assertNotNull(pref);
+        assertEquals(null, pref.value());
+        assertEquals(null, mPref.getString(KEY));
     }
 
     public void testUpdateNull() throws Exception {
-        testSaveNull();
+        testSaveNullAsString();
         mPref.put(KEY, "otherValue");
-        assertEquals("otherValue", mPref.getString(KEY, DEFAULT_VALUE));
+        assertEquals("otherValue", mPref.getString(KEY, "default"));
     }
 }
