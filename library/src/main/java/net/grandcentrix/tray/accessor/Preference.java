@@ -16,6 +16,7 @@
 
 package net.grandcentrix.tray.accessor;
 
+import net.grandcentrix.tray.TrayException;
 import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.storage.PreferenceStorage;
 

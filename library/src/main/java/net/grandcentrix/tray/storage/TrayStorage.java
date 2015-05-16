@@ -104,10 +104,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
             @Nullable final Object data) {
-        if (data == null) {
-            return;
-        }
-        String value = String.valueOf(data);
+        String value = data == null ? null : String.valueOf(data);
         mProviderHelper.persist(getModuleName(), key, migrationKey, value);
     }
 

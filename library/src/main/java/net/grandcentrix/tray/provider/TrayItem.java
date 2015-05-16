@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -105,6 +106,7 @@ public class TrayItem {
         return mUpdated;
     }
 
+    @Nullable
     public String value() {
         return mValue;
     }

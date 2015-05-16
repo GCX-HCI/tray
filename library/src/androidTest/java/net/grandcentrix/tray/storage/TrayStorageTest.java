@@ -94,7 +94,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
     public void testPutNullValue() throws Exception {
         //noinspection ConstantConditions
         mStorage.put(TEST_KEY, null);
-        assertDatabaseSize(0);
+        assertDatabaseSize(1);
     }
 
     public void testRemove() throws Exception {
