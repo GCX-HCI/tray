@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}. The
  * access to this storage defines the {@link PreferenceAccessor} interface.
- * <p/>
+ * <p>
  * Created by pascalwelsch on 11/20/14.
  */
 public abstract class Preference<T> implements PreferenceAccessor<T> {
@@ -47,7 +47,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
      * Called when this Preference is created for the first time. This is where the initial
      * migration from other data source should happen.
      *
-     * @param initialVersion the version set in the constructor, always > 0
+     * @param initialVersion the version set in the constructor, always &gt; 0
      */
     protected abstract void onCreate(final int initialVersion);
 
@@ -62,7 +62,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
     /**
      * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
      * over time.
-     * <p/>
+     * <p>
      * Once the version in the constructor is increased the next constructor call to this Preference
      * will trigger an upgrade.
      */

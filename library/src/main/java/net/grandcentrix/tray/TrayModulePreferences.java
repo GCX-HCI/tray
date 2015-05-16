@@ -23,14 +23,14 @@ import android.content.Context;
 
 /**
  * Created by pascalwelsch on 11/20/14.
- * <p/>
+ * <p>
  * A {@link net.grandcentrix.tray.accessor.Preference} where the module name depends on the
  * developer. Extending this class should be preferred compared to the usage of the {@link
  * net.grandcentrix.tray.TrayAppPreferences}.
- * <p/>
+ * <p>
  * This class gives the developer the opportunity to remove whole modules without knowing each
  * single preference key.
- * <p/>
+ * <p>
  * Communicates with the {@link net.grandcentrix.tray.storage.TrayStorage} to store the preferences
  * into a {@link android.content.ContentProvider}
  */

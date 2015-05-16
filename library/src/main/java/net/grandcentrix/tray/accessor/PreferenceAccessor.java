@@ -23,7 +23,7 @@ import java.util.Collection;
 
 /**
  * Created by pascalwelsch on 11/20/14.
- * <p/>
+ * <p>
  * Access interface to interact with preferences.
  */
 public interface PreferenceAccessor<T> {

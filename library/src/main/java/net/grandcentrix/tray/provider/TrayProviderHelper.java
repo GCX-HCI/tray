@@ -55,6 +55,8 @@ public class TrayProviderHelper {
 
     /**
      * clears the stated modules
+     *
+     * @param modules which modules to clear
      */
     public void clear(TrayPreference... modules) {
         for (TrayPreference module : modules) {
@@ -142,6 +144,10 @@ public class TrayProviderHelper {
 
     /**
      * saves the value into the database.
+     *
+     * @param module module name
+     * @param key    key for mapping
+     * @param value  data to save
      */
     public void persist(@NonNull final String module, @NonNull final String key,
             @NonNull final String value) {
@@ -150,17 +156,34 @@ public class TrayProviderHelper {
 
     /**
      * saves the value into the database combined with a previousKey.
+     *
+     * @param module      module name
+     * @param key         key for mapping
+     * @param previousKey key used before migration
+     * @param value       data to save
      */
     public void persist(@NonNull final String module, @NonNull final String key,
             @Nullable final String previousKey, @NonNull final String value) {
         persist(module, key, previousKey, value, false);
     }
 
+    /**
+     * saves data internally, not accessible with public api
+     * @param module module name
+     * @param key key for mapping
+     * @param value data to save
+     */
     public void persistInternal(@NonNull final String module, @NonNull final String key,
             @NonNull final String value) {
         persist(module, key, null, value, true);
     }
 
+    /**
+     * sends a query for TrayItems to the provider
+     * @param uri path to data
+     * @return list of items
+     * @throws IllegalStateException something is wrong with the provider/database
+     */
     @NonNull
     public List<TrayItem> queryProvider(@NonNull final Uri uri)
             throws IllegalStateException {
@@ -182,6 +205,15 @@ public class TrayProviderHelper {
         return list;
     }
 
+    /**
+     *
+     *
+     * @param module module name
+     * @param key key for mapping
+     * @param value data to save
+     * @param previousKey key before the migration
+     * @param internal where to save
+     */
     private void persist(@NonNull final String module, @NonNull final String key,
             @Nullable final String previousKey, @NonNull final String value,
             final boolean internal) {
