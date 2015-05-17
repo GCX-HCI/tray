@@ -41,6 +41,10 @@ public class SqliteHelper {
     /**
      * combines selection a and selection b to (a) AND (b). handles all cases if a or b are
      * <code>null</code> or <code>""</code>
+     *
+     * @param selection      base selection
+     * @param selectionToAdd this selection will connected with AND
+     * @return combined selection
      */
     public static String extendSelection(@Nullable String selection,
             @Nullable String selectionToAdd) {
@@ -66,6 +70,10 @@ public class SqliteHelper {
 
     /**
      * alternative arguments for {@link #extendSelectionArgs(String[], List)}
+     *
+     * @param selectionArgs    base selection args
+     * @param newSelectionArgs will be concatenated
+     * @return concatenated selection args
      */
     public static String[] extendSelectionArgs(@Nullable String[] selectionArgs,
             @Nullable String[] newSelectionArgs) {
@@ -80,6 +88,10 @@ public class SqliteHelper {
      * #extendSelection(String, String)}.
      * <p>
      * <code>[a, b] , [c] -&gt; [a, b ,c]</code>
+     *
+     * @param selectionArgs    base selection args
+     * @param newSelectionArgs will be concatenated
+     * @return concatenated selection args
      */
     public static String[] extendSelectionArgs(@Nullable String[] selectionArgs,
             @Nullable List<String> newSelectionArgs) {
@@ -98,6 +110,10 @@ public class SqliteHelper {
 
     /**
      * alternative arguments for {@link #extendSelectionArgs(String[], List)}
+     *
+     * @param selectionArg     base selection arg
+     * @param newSelectionArgs will be concatenated
+     * @return concatenated selection args
      */
     public static String[] extendSelectionArgs(@Nullable String selectionArg,
             @Nullable String[] newSelectionArgs) {
@@ -118,7 +134,6 @@ public class SqliteHelper {
      *                               selectionArgs for the param selection
      * @param values                 the values to insert
      * @param excludeFieldsForUpdate contentValues keys which should be deleted before the update
-     *
      * @return 1 for insert, 0 for update and -1 if something goes wrong
      */
     public static int insertOrUpdate(@Nullable SQLiteDatabase sqlDb, String table,

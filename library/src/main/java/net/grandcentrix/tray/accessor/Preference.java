@@ -53,6 +53,8 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
 
     /**
      * works inverse to the {@link #onUpgrade(int, int)} method
+     * @param oldVersion version before downgrade
+     * @param newVersion version to downgrade to, always &gt; 0
      */
     protected void onDowngrade(final int oldVersion, final int newVersion) {
         throw new IllegalStateException("Can't downgrade from version " +
@@ -65,6 +67,8 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
      * <p>
      * Once the version in the constructor is increased the next constructor call to this Preference
      * will trigger an upgrade.
+     * @param oldVersion version before upgrade, always &gt; 0
+     * @param newVersion version after upgrade
      */
     protected abstract void onUpgrade(final int oldVersion, final int newVersion);
 
@@ -99,6 +103,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
 
     /**
      * Migrates data into this preference.
+     * @param migrations migrations will be migrated into this preference
      */
     @SafeVarargs
     public final void migrate(Migration<T>... migrations) {
