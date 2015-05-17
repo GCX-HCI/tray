@@ -29,12 +29,12 @@ import java.util.List;
 
 /**
  * Created by pascalwelsch on 11/20/14.
- * <p/>
+ * <p>
  * Implements the functionality between the {@link net.grandcentrix.tray.accessor.TrayPreference}
  * and the {@link net.grandcentrix.tray.provider.TrayProvider}. Uses functions of the {@link
  * net.grandcentrix.tray.provider.TrayProviderHelper} for simple and unified access to the
  * provider.
- * <p/>
+ * <p>
  * This class represents a simple key value storage solution based on a {@link
  * android.content.ContentProvider}. Replacing this class with a {@link java.util.HashMap}
  * implementation for testing works seamless.
@@ -93,7 +93,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     /**
      * same as {@link #put(String, Object)} but with an additional migration key to save where the
-     * data came from. Putting data twice with the same {@param migraionKey} does not override the
+     * data came from. Putting data twice with the same param migraionKey does not override the
      * already saved data. This should prevent migrating data multiple times while the data my be
      * edited with {@link #put(String, Object)}.
      *

@@ -18,7 +18,7 @@ package net.grandcentrix.tray.storage;
 
 /**
  * Created by pascalwelsch on 11/20/14.
- * <p/>
+ * <p>
  * storage is now separated in modules and easier to maintain. Could be done with different files,
  * databases...
  */

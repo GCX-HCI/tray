@@ -25,18 +25,17 @@ import android.content.Context;
 import java.util.List;
 
 /**
- * Created by Jannis Veerkamp & Pascal Welsch on 17.09.14.
- * <p/>
+ * Created by Jannis Veerkamp &amp; Pascal Welsch on 17.09.14.
+ * <p>
  * This class works as root library class and first interaction point.
- * <p/>
+ * <p>
  * Use this library like you would use the {@link android.content.SharedPreferences}, but this works
  * in a multiprocess environment. Saving information in a SyncAdapter#onPerformSync() cycle and
  * reading the information instant in the ui thread is possible.
- * <p/>
+ * <p>
  * This library works with a {@link android.content.ContentProvider} to persist all data. This
  * requires you to add the provider to the manifest of your app.
- * <p/>
- * <p/>
+ * <p>
  * The {@link android.content.SharedPreferences} uses files to group different preferences. This
  * library uses so called modules. It's common to create a new class extending {@link
  * TrayModulePreferences} for every new module. For simple Apps and the most common preferences is
