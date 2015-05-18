@@ -20,10 +20,10 @@ import android.content.Context;
 
 /**
  * Created by pascalwelsch on 11/20/14.
- * <p/>
+ * <p>
  * Default implementation of the {@link net.grandcentrix.tray.accessor.TrayPreference} which uses
  * the app package name as module name.
- * <p/>
+ * <p>
  * Use this {@link net.grandcentrix.tray.accessor.PreferenceAccessor} to save your preferences of
  * your app independent of a single app module. It's not a good practice to put all preferences in a
  * single module. Extend the {@link TrayModulePreferences} and gain the functionality to remove all

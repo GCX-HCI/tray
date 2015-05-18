@@ -41,6 +41,10 @@ public class SqliteHelper {
     /**
      * combines selection a and selection b to (a) AND (b). handles all cases if a or b are
      * <code>null</code> or <code>""</code>
+     *
+     * @param selection      base selection
+     * @param selectionToAdd this selection will connected with AND
+     * @return combined selection
      */
     public static String extendSelection(@Nullable String selection,
             @Nullable String selectionToAdd) {
@@ -66,6 +70,10 @@ public class SqliteHelper {
 
     /**
      * alternative arguments for {@link #extendSelectionArgs(String[], List)}
+     *
+     * @param selectionArgs    base selection args
+     * @param newSelectionArgs will be concatenated
+     * @return concatenated selection args
      */
     public static String[] extendSelectionArgs(@Nullable String[] selectionArgs,
             @Nullable String[] newSelectionArgs) {
@@ -78,8 +86,12 @@ public class SqliteHelper {
     /**
      * combines the selectionArgs analog to the selection itself with {@link
      * #extendSelection(String, String)}.
-     * <p/>
-     * <code>[a, b] , [c] -> [a, b ,c]</code>
+     * <p>
+     * <code>[a, b] , [c] -&gt; [a, b ,c]</code>
+     *
+     * @param selectionArgs    base selection args
+     * @param newSelectionArgs will be concatenated
+     * @return concatenated selection args
      */
     public static String[] extendSelectionArgs(@Nullable String[] selectionArgs,
             @Nullable List<String> newSelectionArgs) {
@@ -98,6 +110,10 @@ public class SqliteHelper {
 
     /**
      * alternative arguments for {@link #extendSelectionArgs(String[], List)}
+     *
+     * @param selectionArg     base selection arg
+     * @param newSelectionArgs will be concatenated
+     * @return concatenated selection args
      */
     public static String[] extendSelectionArgs(@Nullable String selectionArg,
             @Nullable String[] newSelectionArgs) {
@@ -111,11 +127,11 @@ public class SqliteHelper {
      * Tries to insert the values. If it fails because the item already exists it tries to update
      * the item.
      *
-     * @param sqlDb                  database to work with. has to be writeable
+     * @param sqlDb                  database to work with. has to be writable
      * @param table                  the table to insert
      * @param selection              selection to detect a already inserted item
      * @param selectionArgs          keys of the contentValues. there values will be used as the
-     *                               selectionArgs for the {@param selection}
+     *                               selectionArgs for the param selection
      * @param values                 the values to insert
      * @param excludeFieldsForUpdate contentValues keys which should be deleted before the update
      * @return 1 for insert, 0 for update and -1 if something goes wrong

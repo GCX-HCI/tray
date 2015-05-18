@@ -26,10 +26,10 @@ public interface Migration<T> {
 
     /**
      * gets the data from the old data store.
-     * <p/>
+     * <p>
      * Only primitive types are supported. See {@link net.grandcentrix.tray.accessor.Preference#isDataTypeSupported(Object)}
-     * <p/>
-     * called after {@link #shouldMigrate()} and before {@link #onPostMigrate(T)}
+     * <p>
+     * called after {@link #shouldMigrate()} and before {@link #onPostMigrate(Object)}
      *
      * @return the data in a valid primitive format
      */
@@ -53,7 +53,7 @@ public interface Migration<T> {
      * this is a good point to delete the old data to free space and prevent accidentally import
      * later which could override newer data saved into Tray after the last import
      *
-     * @param importedItem the imported item in tray. <cod>null</cod> if the import did not work. A
+     * @param importedItem the imported item in tray. <code>null</code> if the import did not work. A
      *                     invalid data type my be the reason
      */
     void onPostMigrate(@Nullable final T importedItem);
@@ -61,9 +61,9 @@ public interface Migration<T> {
     /**
      * called before {@link #getData()}. This is a good point to check if the data which should be
      * migrated is available. If not, return true if you want to cancel the import.
-     * <p/>
+     * <p>
      * This check is very important, because the migration data should be deleted in {@link
-     * #onPostMigrate(T)}. When starting this migration a second time this method should return
+     * #onPostMigrate(Object)}. When starting this migration a second time this method should return
      * {@code true}, to skip the migration, or the previous written data will be overridden with the
      * value from {@link #getData()} which should be {@code null} after the first migration
      *

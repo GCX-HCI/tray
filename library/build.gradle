@@ -1,14 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
+apply plugin: 'bintray-release'
 
-def final String VERSION_NAME = "0.9"
-def final int VERSION_CODE = 3
-
-ext {
-    PUBLISH_GROUP_ID = 'net.grandcentrix.tray'
-    PUBLISH_ARTIFACT_ID = 'tray'
-    PUBLISH_VERSION = VERSION_NAME
-}
+def final String VERSION_NAME = "0.9.1"
+def final int VERSION_CODE = 4
 
 android {
     compileSdkVersion 22
@@ -38,6 +33,10 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -49,4 +48,13 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-apply from: 'android-release-aar.gradle'
+// usage:
+// ./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
+publish {
+    userOrg = 'grandcentrix'
+    groupId = 'net.grandcentrix.tray'
+    artifactId = 'tray'
+    publishVersion = VERSION_NAME
+    description = 'Tray - a SharedPreferences replacement for Android'
+    website = 'https://github.com/grandcentrix/tray'
+}

@@ -25,51 +25,17 @@ import android.content.Context;
 import java.util.List;
 
 /**
- * Created by Jannis Veerkamp & Pascal Welsch on 17.09.14.
- * <p/>
+ * Created by Jannis Veerkamp &amp; Pascal Welsch on 17.09.14.
+ * <p>
  * This class works as root library class and first interaction point.
- * <p/>
+ * <p>
  * Use this library like you would use the {@link android.content.SharedPreferences}, but this works
  * in a multiprocess environment. Saving information in a SyncAdapter#onPerformSync() cycle and
  * reading the information instant in the ui thread is possible.
- * <p/>
+ * <p>
  * This library works with a {@link android.content.ContentProvider} to persist all data. This
  * requires you to add the provider to the manifest of your app.
- * <p/>
- * <pre>
- * {@code
- * <provider
- *      android:name="net.grandcentrix.tray.provider.TrayProvider"
- *      android:authorities="net.grandcentrix.tray.test"
- *      android:exported="false"
- *      android:multiprocess="false" />
- * }
- *
- * <ul>
- *     <li>authorities: add your own authority. The authority has to be unique. Include your app
- * package name</li>
- *     <li>exported: should be false. You don't want to give access to your data to other apps</li>
- *     <li>muliprocess: requires <b>false</b>. This makes the communication between processes
- * working. So it becomes a singleton and queues read and write requests</li>
- * </ul>
- * </pre>
- * <p/>
- * After adding the provider you have to add a property for the Authority of the internal
- * ContentProvider for Tray to your build.gradle.
- * <pre>
- * {@code
- * ext {
- *         trayAuthority = "net.grandcentrix.tray.test"
- *     }
- * }
- * </pre>
- * Not adding this property results in a build error: Error: Could not find property 'trayAuthority'
- * on project ':Tray:library'.
- * <p/>
- * This main class gives you access to global functions, deleting and retrieving all saved data.
- * These functions are only imporant in special cases. For the daily business using a {@link
- * net.grandcentrix.tray.accessor.PreferenceAccessor} is enough.
- * <p/>
+ * <p>
  * The {@link android.content.SharedPreferences} uses files to group different preferences. This
  * library uses so called modules. It's common to create a new class extending {@link
  * TrayModulePreferences} for every new module. For simple Apps and the most common preferences is
