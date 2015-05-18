@@ -173,7 +173,7 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Versions
 
-##### Version 0.9.1 `27.04.15`
+##### Version 0.9.1 `18.05.15`
 - saving `null` with `mPref.put(KEY, null)` works now
 - access to preference with throwing methods instead of default value (throws ItemNotFoundException). Example: `mPref.getString(KEY);` instead of `mPref.getString(KEY, "defaultValue");`
 - WrongTypeException when accessing a preference with a different type and the data isn't parsable. Float (`10.1f`) -> String works, String (`"10.1"`) -> Float works, String (`"test"`) -> Float throws!
