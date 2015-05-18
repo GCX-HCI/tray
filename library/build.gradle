@@ -51,9 +51,9 @@ dependencies {
 // usage:
 // ./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
 publish {
-    userOrg = 'grandcentrix'
+    userOrg = 'passsy'
     groupId = 'net.grandcentrix.tray'
-    artifactId = 'tray'
+    artifactId = 'Tray'
     publishVersion = VERSION_NAME
     description = 'Tray - a SharedPreferences replacement for Android'
     website = 'https://github.com/grandcentrix/tray'
