@@ -23,13 +23,20 @@ import java.util.Collection;
 
 /**
  * Created by pascalwelsch on 11/20/14.
- * <p/>
+ * <p>
  * Access interface to interact with preferences.
  */
 public interface PreferenceAccessor<T> {
 
+    /**
+     * clears all data in this preference. Access with {@code get} methods will return {@link
+     * ItemNotFoundException} or the {@code defaultValue}
+     */
     void clear();
 
+    /**
+     * @return all data stored in the preference
+     */
     Collection<T> getAll();
 
     // TODO for version 1.1
@@ -41,13 +48,84 @@ public interface PreferenceAccessor<T> {
     // TODO for version 1.1
     // int getSize();
 
-    boolean getBoolean(@NonNull String key, boolean defaultValue);
+    /**
+     * returns true if <code>true</code> or String "true" is saved. All other values will be parsed
+     * as <code>false</code>
+     * <p>
+     * Is able to parse everything, so {@link WrongTypeException} is not used here
+     *
+     * @param key the key to map the value
+     * @return value saved for the given key
+     * @throws ItemNotFoundException if data could not be mapped to the param key
+     * @see #getBoolean(String, boolean)
+     */
+    boolean getBoolean(@NonNull final String key) throws ItemNotFoundException;
 
-    float getFloat(@NonNull String key, float defaultValue);
+    /**
+     * returns true if <code>true</code> or String "true" is saved. All other values will be parsed
+     * as <code>false</code>. If no entry for the key is found the param defaultValue is used.
+     *
+     * @param key          the key to map the value
+     * @param defaultValue used if no entry is found for the key
+     * @return the found value or the param defaultValue
+     * @see #getBoolean(String)
+     */
+    boolean getBoolean(@NonNull final String key, final boolean defaultValue);
 
-    int getInt(@NonNull String key, int defaultValue);
+    /**
+     * @param key the key to map the value
+     * @return float value for param key
+     * @throws ItemNotFoundException if data could not be mapped to the param key
+     * @throws WrongTypeException    data was saved with a different format and could not be parsed
+     *                               to {@link Float}
+     */
+    float getFloat(@NonNull final String key) throws ItemNotFoundException, WrongTypeException;
 
-    long getLong(@NonNull String key, long defaultValue);
+    /**
+     * @param key          the key to map the value
+     * @param defaultValue if no data is stored for param key
+     * @return float value for param key, or the param defaultValue
+     * @throws WrongTypeException data was saved with a different format and could not be parsed to
+     *                            {@link Float}
+     */
+    float getFloat(@NonNull final String key, final float defaultValue) throws WrongTypeException;
+
+    /**
+     * @param key the key to map the value
+     * @return int value for param key
+     * @throws ItemNotFoundException if data could not be mapped to the param key
+     * @throws WrongTypeException    data was saved with a different format and could not be parsed
+     *                               to {@link Integer}
+     */
+    int getInt(@NonNull final String key) throws ItemNotFoundException, WrongTypeException;
+
+
+    /**
+     * @param key          the key to map the value
+     * @param defaultValue if no data is stored for param key
+     * @return int value for param key, or the param defaultValue
+     * @throws WrongTypeException data was saved with a different format and could not be parsed to
+     *                            {@link Integer}
+     */
+    int getInt(@NonNull final String key, final int defaultValue) throws WrongTypeException;
+
+    /**
+     * @param key the key to map the value
+     * @return long value for param key
+     * @throws ItemNotFoundException the key to map the value
+     * @throws WrongTypeException    data was saved with a different format and could not be parsed
+     *                               to {@link Long}
+     */
+    long getLong(@NonNull final String key) throws ItemNotFoundException, WrongTypeException;
+
+    /**
+     * @param key          the key to map the value
+     * @param defaultValue if no data is stored for param key
+     * @return long value for param key, or the param defaultValue
+     * @throws WrongTypeException data was saved with a different format and could not be parsed to
+     *                            {@link Long}
+     */
+    long getLong(@NonNull final String key, final long defaultValue) throws WrongTypeException;
 
     /**
      * Get a preference by its key
@@ -56,19 +134,73 @@ public interface PreferenceAccessor<T> {
      * @return Returns the preference if found or null if it doesn't exist
      */
     @Nullable
-    T getPref(@NonNull String key);
+    T getPref(@NonNull final String key);
 
-    String getString(@NonNull String key, String defaultValue);
+    /**
+     * Gets the String value of any data saved
+     *
+     * @param key the key to map the value
+     * @return the data as String
+     * @throws ItemNotFoundException when no data is found for the given param key
+     */
+    @Nullable
+    String getString(@NonNull final String key) throws ItemNotFoundException;
 
-    void put(@NonNull String key, String value);
+    /**
+     * Gets the String value of any data saved
+     *
+     * @param key          the key to map the value
+     * @param defaultValue if no data is stored for param key
+     * @return the data as String, or the param defaultValue
+     */
+    @Nullable
+    String getString(@NonNull final String key, @Nullable final String defaultValue);
 
-    void put(@NonNull String key, int value);
+    /**
+     * saves a {@link String} mapped to param key. String is the only data type which allows
+     * {@code null} as param value
+     *
+     * @param key   the key to map the value
+     * @param value the data to save
+     */
+    void put(@NonNull final String key, @Nullable final String value);
 
-    void put(@NonNull String key, float value);
+    /**
+     * saves a {@link Integer} mapped to param key
+     *
+     * @param key   the key to map the value
+     * @param value the data to save
+     */
+    void put(@NonNull final String key, final int value);
 
-    void put(@NonNull String key, long value);
+    /**
+     * saves a {@link Float} mapped to param key
+     *
+     * @param key   the key to map the value
+     * @param value the data to save
+     */
+    void put(@NonNull final String key, final float value);
 
-    void put(@NonNull String key, boolean value);
+    /**
+     * saves a {@link Long} mapped to param key
+     *
+     * @param key   the key to map the value
+     * @param value the data to save
+     */
+    void put(@NonNull final String key, final long value);
 
-    void remove(@NonNull String key);
+    /**
+     * saves a {@link Boolean} mapped to param key
+     *
+     * @param key   the key to map the value
+     * @param value the data to save
+     */
+    void put(@NonNull final String key, final boolean value);
+
+    /**
+     * removes the data associated with param key
+     *
+     * @param key the key to map the value
+     */
+    void remove(@NonNull final String key);
 }

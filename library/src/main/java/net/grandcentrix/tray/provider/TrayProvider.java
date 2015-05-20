@@ -97,7 +97,7 @@ public class TrayProvider extends ContentProvider {
 
     /**
      * @param uri localtion of the data
-     * @return correct sqlite table for the given {@param uri}
+     * @return correct sqlite table for the given uri
      */
     public String getTable(final Uri uri) {
         if (uri == null) {

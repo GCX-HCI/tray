@@ -200,7 +200,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     public void testPersistNull() throws Exception {
         //noinspection ConstantConditions
         mProviderHelper.persist(MODULE_A, KEY_A, null);
-        assertDatabaseSize(0);
+        assertDatabaseSize(1);
     }
 
     public void testPersistOverride() {

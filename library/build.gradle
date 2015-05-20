@@ -1,5 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
+apply plugin: 'bintray-release'
+
+def final String VERSION_NAME = "0.9.1"
+def final int VERSION_CODE = 4
 
 android {
     compileSdkVersion 22
@@ -8,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 3
-        versionName "0.9"
+        versionCode VERSION_CODE
+        versionName VERSION_NAME
 
         resValue "string", "tray__authority", "com.example.preferences"
     }
@@ -29,13 +33,29 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:20.0.0'
+    compile 'com.android.support:support-annotations:22.0.0'
 
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
     testCompile 'org.mockito:mockito-core:1.9.5'
     testCompile 'junit:junit:4.12'
+}
+
+// usage:
+// ./gradlew clean build bintrayUpload -PbintrayUser=BINTRAY_USERNAME -PbintrayKey=BINTRAY_KEY -PdryRun=false
+publish {
+    userOrg = 'passsy'
+    groupId = 'net.grandcentrix.tray'
+    artifactId = 'tray'
+    uploadName = 'Tray'
+    publishVersion = VERSION_NAME
+    description = 'Tray - a SharedPreferences replacement for Android'
+    website = 'https://github.com/grandcentrix/tray'
 }

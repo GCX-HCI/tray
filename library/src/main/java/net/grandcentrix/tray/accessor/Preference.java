@@ -16,6 +16,7 @@
 
 package net.grandcentrix.tray.accessor;
 
+import net.grandcentrix.tray.TrayException;
 import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.storage.PreferenceStorage;
 
@@ -28,7 +29,7 @@ import java.util.Collection;
 /**
  * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}. The
  * access to this storage defines the {@link PreferenceAccessor} interface.
- * <p/>
+ * <p>
  * Created by pascalwelsch on 11/20/14.
  */
 public abstract class Preference<T> implements PreferenceAccessor<T> {
@@ -47,12 +48,14 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
      * Called when this Preference is created for the first time. This is where the initial
      * migration from other data source should happen.
      *
-     * @param initialVersion the version set in the constructor, always > 0
+     * @param initialVersion the version set in the constructor, always &gt; 0
      */
     protected abstract void onCreate(final int initialVersion);
 
     /**
      * works inverse to the {@link #onUpgrade(int, int)} method
+     * @param oldVersion version before downgrade
+     * @param newVersion version to downgrade to, always &gt; 0
      */
     protected void onDowngrade(final int oldVersion, final int newVersion) {
         throw new IllegalStateException("Can't downgrade from version " +
@@ -62,9 +65,11 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
     /**
      * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
      * over time.
-     * <p/>
+     * <p>
      * Once the version in the constructor is increased the next constructor call to this Preference
      * will trigger an upgrade.
+     * @param oldVersion version before upgrade, always &gt; 0
+     * @param newVersion version after upgrade
      */
     protected abstract void onUpgrade(final int oldVersion, final int newVersion);
 
@@ -99,6 +104,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
 
     /**
      * Migrates data into this preference.
+     * @param migrations migrations will be migrated into this preference
      */
     @SafeVarargs
     public final void migrate(Migration<T>... migrations) {
