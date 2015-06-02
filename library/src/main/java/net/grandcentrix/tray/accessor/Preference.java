@@ -192,7 +192,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
     /**
      * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
      * over time.
-     * <p/>
+     * <p>
      * Once the version in the constructor is increased the next constructor call to this
      * Preference
      * will trigger an upgrade.
