@@ -94,7 +94,7 @@ Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studi
 ```java
 
 dependencies {
-    compile 'net.grandcentrix.tray:tray:0.9.1'
+    compile 'net.grandcentrix.tray:tray:0.9.2'
 }
 
 ```
@@ -172,6 +172,9 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 - more metadata fields: (i.e. app version code/name)
 
 ## Versions
+
+##### Version 0.9.2 `02.06.15`
+- `getContext()` is working in `TrayModulePreference#onCreate`
 
 ##### Version 0.9.1 `18.05.15`
 - saving `null` with `mPref.put(KEY, null)` works now
