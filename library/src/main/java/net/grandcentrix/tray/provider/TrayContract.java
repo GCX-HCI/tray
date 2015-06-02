@@ -67,8 +67,8 @@ public class TrayContract {
 
     /**
      * use this only for tests and not in production
-     * @param authority the new authority for Tray
      *
+     * @param authority the new authority for Tray
      * @see TrayProvider#setAuthority(String)
      */
     public static void setAuthority(final String authority) {

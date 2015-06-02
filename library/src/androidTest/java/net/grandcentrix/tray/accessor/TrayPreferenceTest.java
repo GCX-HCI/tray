@@ -38,24 +38,6 @@ public class TrayPreferenceTest extends TestCase {
 
     private TrayPreference mTrayAccessor;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mTrayAccessor = new TrayPreference(new MockModularizedStorage("test"), 1) {
-
-            @Override
-            protected void onCreate(final int newVersion) {
-
-            }
-
-            @Override
-            protected void onUpgrade(final int oldVersion, final int newVersion) {
-
-            }
-        };
-
-    }
-
     public void testBoolean() throws Exception {
         mTrayAccessor.put(KEY, TEST_BOOL);
         assertEquals(TEST_BOOL, mTrayAccessor.getBoolean(KEY, false));
@@ -84,6 +66,24 @@ public class TrayPreferenceTest extends TestCase {
         mTrayAccessor.put(KEY, TEST_STRING);
         assertEquals(TEST_STRING, mTrayAccessor.getString(KEY, ""));
         assertEquals("", mTrayAccessor.getString(WRONG_KEY, ""));
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mTrayAccessor = new TrayPreference(new MockModularizedStorage("test"), 1) {
+
+            @Override
+            protected void onCreate(final int newVersion) {
+
+            }
+
+            @Override
+            protected void onUpgrade(final int oldVersion, final int newVersion) {
+
+            }
+        };
+
     }
 
 }

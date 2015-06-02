@@ -37,18 +37,6 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
     private TrayStorage mStorage;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mStorage = new TrayStorage(getProviderMockContext(), "test");
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        mStorage = null;
-    }
-
     public void testClear() throws Exception {
         final String MODULE2 = "test2";
         final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), MODULE2);
@@ -130,5 +118,17 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
         mStorage.setVersion(25);
         assertEquals(25, mStorage.getVersion());
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mStorage = new TrayStorage(getProviderMockContext(), "test");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        mStorage = null;
     }
 }

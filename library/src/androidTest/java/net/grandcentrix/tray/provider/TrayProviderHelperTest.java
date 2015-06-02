@@ -51,19 +51,6 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
 
     private TrayProviderHelper mProviderHelper;
 
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mProviderHelper = new TrayProviderHelper(getProviderMockContext());
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        mProviderHelper = null;
-    }
-
     public void testClear() throws Exception {
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
@@ -329,6 +316,18 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertNotNull(itemA.created());
         assertNotNull(itemA.updateTime());
         assertEquals(itemA.updateTime(), itemA.created());
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mProviderHelper = new TrayProviderHelper(getProviderMockContext());
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        mProviderHelper = null;
     }
 
     private void assertEqualsWithin(long expected, long value, long fudgeFactor) {

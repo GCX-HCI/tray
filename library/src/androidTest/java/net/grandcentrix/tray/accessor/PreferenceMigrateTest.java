@@ -87,19 +87,6 @@ public class PreferenceMigrateTest extends TestCase {
 
     private MockSimplePreference mTrayPreference;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        System.setProperty("dexmaker.dexcache",
-                "/data/data/" + BuildConfig.APPLICATION_ID + ".test/cache");
-        mDataStore = new HashMap<>();
-        mDataStore.put(OLD_KEY, DATA);
-        assertEquals(1, mDataStore.size());
-
-        mTrayPreference = new MockSimplePreference(1);
-        assertEquals(0, mTrayPreference.getAll().size());
-    }
-
     public void testMigrateTwice() throws Exception {
         final Migration migration = new TestMigration(NEW_KEY, OLD_KEY);
         mTrayPreference.migrate(migration);
@@ -182,6 +169,19 @@ public class PreferenceMigrateTest extends TestCase {
 
         // not imported
         assertEquals(1, mDataStore.size());
+        assertEquals(0, mTrayPreference.getAll().size());
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        System.setProperty("dexmaker.dexcache",
+                "/data/data/" + BuildConfig.APPLICATION_ID + ".test/cache");
+        mDataStore = new HashMap<>();
+        mDataStore.put(OLD_KEY, DATA);
+        assertEquals(1, mDataStore.size());
+
+        mTrayPreference = new MockSimplePreference(1);
         assertEquals(0, mTrayPreference.getAll().size());
     }
 }

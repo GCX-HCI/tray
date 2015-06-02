@@ -31,6 +31,10 @@ public class MockSimplePreference extends TrayPreference {
         super(storage, version);
     }
 
+    public MockModularizedStorage getModularizedStorage() {
+        return (MockModularizedStorage) getStorage();
+    }
+
     @Override
     protected void onCreate(final int newVersion) {
 
@@ -39,9 +43,5 @@ public class MockSimplePreference extends TrayPreference {
     @Override
     protected void onUpgrade(final int oldVersion, final int newVersion) {
 
-    }
-
-    public MockModularizedStorage getModularizedStorage() {
-        return (MockModularizedStorage) getStorage();
     }
 }

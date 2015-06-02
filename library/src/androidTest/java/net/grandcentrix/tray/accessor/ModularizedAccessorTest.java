@@ -56,16 +56,6 @@ public class ModularizedAccessorTest extends TestCase {
 
     final String TEST_STRING = "fooBar";
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     public void testBoolean() throws Exception {
         final MockTrayPreference accessor = new MockTrayPreference();
         accessor.put(TEST_KEY, TEST_BOOL);
@@ -103,5 +93,15 @@ public class ModularizedAccessorTest extends TestCase {
         final MockTrayPreference accessor = new MockTrayPreference();
         accessor.put(TEST_KEY, TEST_STRING);
         assertEquals(TEST_STRING, accessor.getString(TEST_KEY, "unknown"));
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 }

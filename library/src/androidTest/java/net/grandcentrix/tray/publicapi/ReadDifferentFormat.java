@@ -14,12 +14,6 @@ public class ReadDifferentFormat extends TrayProviderTestCase {
 
     private TestTrayModulePreferences mPref;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mPref = new TestTrayModulePreferences(getProviderMockContext(), "publictest");
-    }
-
     public void testReadBooleanAsWrongType() throws Exception {
         mPref.put(KEY, true);
         assertEquals(true, mPref.getBoolean(KEY));
@@ -118,6 +112,12 @@ public class ReadDifferentFormat extends TrayProviderTestCase {
             assertTrue(e.getMessage().contains("Integer"));
             assertTrue(e.getMessage().contains("null"));
         }
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mPref = new TestTrayModulePreferences(getProviderMockContext(), "publictest");
     }
 
 }
