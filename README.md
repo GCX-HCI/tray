@@ -47,7 +47,7 @@ No `Editor`, no `commit()` or `apply()` :wink:
 
 ### Create your own preference module
 
-It's recommended to bundle preferences in groups, so called modules instead of putting everyting in one global module. If you where using `SharedPreferences` before, you might have used different files to group your preferences. Extending the `TrayModulePreferences` and put all Keys inside this class is a recommended way to keep your code clean.
+It's recommended to bundle preferences in groups, so called modules instead of putting everyting in one global module. If you were using `SharedPreferences` before, you might have used different files to group your preferences. Extending the `TrayModulePreferences` and put all Keys inside this class is a recommended way to keep your code clean.
 
 ```java
 // create a preference accessor for a module
@@ -85,7 +85,7 @@ See the [sample project](https://github.com/grandcentrix/tray/tree/master/sample
 
 `// TODO`
 
-## Getting Started [![Download](https://api.bintray.com/packages/passsy/maven/Tray/images/download.svg) ](https://bintray.com/passsy/maven/net.grandcentrix.tray/_latestVersion)
+## Getting Started [![Download](https://api.bintray.com/packages/passsy/maven/Tray/images/download.svg) ](https://bintray.com/passsy/maven/Tray/_latestVersion)
 
 ##### Add Tray to your project
 
@@ -94,7 +94,7 @@ Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studi
 ```java
 
 dependencies {
-    compile 'net.grandcentrix.tray:tray:0.9'
+    compile 'net.grandcentrix.tray:tray:0.9.1'
 }
 
 ```
@@ -113,7 +113,7 @@ android {
 }
 ```
 
-Clean your project afterwards to genaterate the `/build/generated/res/generated/BUILDTYPE/values/generated.xml` which should then contain the following value:
+Clean your project afterwards to generate the `/build/generated/res/generated/BUILDTYPE/values/generated.xml` which should then contain the following value:
 
 ```xml
     <!-- Values from default config. -->
@@ -172,6 +172,12 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 - more metadata fields: (i.e. app version code/name)
 
 ## Versions
+
+##### Version 0.9.1 `18.05.15`
+- saving `null` with `mPref.put(KEY, null)` works now
+- access to preference with throwing methods instead of default value (throws ItemNotFoundException). Example: `mPref.getString(KEY);` instead of `mPref.getString(KEY, "defaultValue");`
+- WrongTypeException when accessing a preference with a different type and the data isn't parsable. Float (`10.1f`) -> String works, String (`"10.1"`) -> Float works, String (`"test"`) -> Float throws!
+- javadoc in now included in aar
 
 ##### Version 0.9 `27.04.15`
 - initial public release

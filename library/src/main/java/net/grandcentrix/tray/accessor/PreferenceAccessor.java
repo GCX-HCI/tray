@@ -51,31 +51,31 @@ public interface PreferenceAccessor<T> {
     /**
      * returns true if <code>true</code> or String "true" is saved. All other values will be parsed
      * as <code>false</code>
-     * <p/>
+     * <p>
      * Is able to parse everything, so {@link WrongTypeException} is not used here
      *
      * @param key the key to map the value
      * @return value saved for the given key
-     * @throws ItemNotFoundException if data could not be mapped to the {@param key}
+     * @throws ItemNotFoundException if data could not be mapped to the param key
      * @see #getBoolean(String, boolean)
      */
     boolean getBoolean(@NonNull final String key) throws ItemNotFoundException;
 
     /**
      * returns true if <code>true</code> or String "true" is saved. All other values will be parsed
-     * as <code>false</code>. If no entry for the key is found the {@param defaultValue} is used.
+     * as <code>false</code>. If no entry for the key is found the param defaultValue is used.
      *
      * @param key          the key to map the value
      * @param defaultValue used if no entry is found for the key
-     * @return the found value or the {@param defaultValue}
+     * @return the found value or the param defaultValue
      * @see #getBoolean(String)
      */
     boolean getBoolean(@NonNull final String key, final boolean defaultValue);
 
     /**
      * @param key the key to map the value
-     * @return float value for {@param key}
-     * @throws ItemNotFoundException if data could not be mapped to the {@param key}
+     * @return float value for param key
+     * @throws ItemNotFoundException if data could not be mapped to the param key
      * @throws WrongTypeException    data was saved with a different format and could not be parsed
      *                               to {@link Float}
      */
@@ -83,8 +83,8 @@ public interface PreferenceAccessor<T> {
 
     /**
      * @param key          the key to map the value
-     * @param defaultValue if no data is stored for {@param key}
-     * @return float value for {@param key}, or the {@param defaultValue}
+     * @param defaultValue if no data is stored for param key
+     * @return float value for param key, or the param defaultValue
      * @throws WrongTypeException data was saved with a different format and could not be parsed to
      *                            {@link Float}
      */
@@ -92,8 +92,8 @@ public interface PreferenceAccessor<T> {
 
     /**
      * @param key the key to map the value
-     * @return int value for {@param key}
-     * @throws ItemNotFoundException if data could not be mapped to the {@param key}
+     * @return int value for param key
+     * @throws ItemNotFoundException if data could not be mapped to the param key
      * @throws WrongTypeException    data was saved with a different format and could not be parsed
      *                               to {@link Integer}
      */
@@ -102,8 +102,8 @@ public interface PreferenceAccessor<T> {
 
     /**
      * @param key          the key to map the value
-     * @param defaultValue if no data is stored for {@param key}
-     * @return int value for {@param key}, or the {@param defaultValue}
+     * @param defaultValue if no data is stored for param key
+     * @return int value for param key, or the param defaultValue
      * @throws WrongTypeException data was saved with a different format and could not be parsed to
      *                            {@link Integer}
      */
@@ -111,7 +111,7 @@ public interface PreferenceAccessor<T> {
 
     /**
      * @param key the key to map the value
-     * @return long value for {@param key}
+     * @return long value for param key
      * @throws ItemNotFoundException the key to map the value
      * @throws WrongTypeException    data was saved with a different format and could not be parsed
      *                               to {@link Long}
@@ -120,8 +120,8 @@ public interface PreferenceAccessor<T> {
 
     /**
      * @param key          the key to map the value
-     * @param defaultValue if no data is stored for {@param key}
-     * @return long value for {@param key}, or the {@param defaultValue}
+     * @param defaultValue if no data is stored for param key
+     * @return long value for param key, or the param defaultValue
      * @throws WrongTypeException data was saved with a different format and could not be parsed to
      *                            {@link Long}
      */
@@ -141,7 +141,7 @@ public interface PreferenceAccessor<T> {
      *
      * @param key the key to map the value
      * @return the data as String
-     * @throws ItemNotFoundException when no data is found for the given {@param key}
+     * @throws ItemNotFoundException when no data is found for the given param key
      */
     @Nullable
     String getString(@NonNull final String key) throws ItemNotFoundException;
@@ -150,16 +150,15 @@ public interface PreferenceAccessor<T> {
      * Gets the String value of any data saved
      *
      * @param key          the key to map the value
-     * @param defaultValue if no data is stored for {@param key}
-     * @return the data as String, or the {@param defaultValue}
-     * @throws ItemNotFoundException when no data is found for the given {@param key}
+     * @param defaultValue if no data is stored for param key
+     * @return the data as String, or the param defaultValue
      */
     @Nullable
     String getString(@NonNull final String key, @Nullable final String defaultValue);
 
     /**
-     * saves a {@link String} mapped to {@param key}. String is the only data type which allows
-     * {@code null} as {@param value}
+     * saves a {@link String} mapped to param key. String is the only data type which allows
+     * {@code null} as param value
      *
      * @param key   the key to map the value
      * @param value the data to save
@@ -167,7 +166,7 @@ public interface PreferenceAccessor<T> {
     void put(@NonNull final String key, @Nullable final String value);
 
     /**
-     * saves a {@link Integer} mapped to {@param key}
+     * saves a {@link Integer} mapped to param key
      *
      * @param key   the key to map the value
      * @param value the data to save
@@ -175,7 +174,7 @@ public interface PreferenceAccessor<T> {
     void put(@NonNull final String key, final int value);
 
     /**
-     * saves a {@link Float} mapped to {@param key}
+     * saves a {@link Float} mapped to param key
      *
      * @param key   the key to map the value
      * @param value the data to save
@@ -183,7 +182,7 @@ public interface PreferenceAccessor<T> {
     void put(@NonNull final String key, final float value);
 
     /**
-     * saves a {@link Long} mapped to {@param key}
+     * saves a {@link Long} mapped to param key
      *
      * @param key   the key to map the value
      * @param value the data to save
@@ -191,7 +190,7 @@ public interface PreferenceAccessor<T> {
     void put(@NonNull final String key, final long value);
 
     /**
-     * saves a {@link Boolean} mapped to {@param key}
+     * saves a {@link Boolean} mapped to param key
      *
      * @param key   the key to map the value
      * @param value the data to save
@@ -199,7 +198,7 @@ public interface PreferenceAccessor<T> {
     void put(@NonNull final String key, final boolean value);
 
     /**
-     * removes the data associated with {@param key}
+     * removes the data associated with param key
      *
      * @param key the key to map the value
      */
