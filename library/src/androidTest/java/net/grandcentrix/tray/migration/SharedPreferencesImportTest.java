@@ -34,14 +34,6 @@ public class SharedPreferencesImportTest extends TrayProviderTestCase {
 
     private SharedPreferences mSharedPrefs;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mSharedPrefs = getContext()
-                .getSharedPreferences(SHARED_PREF_NAME, Context.MODE_MULTI_PROCESS);
-        mSharedPrefs.edit().clear().commit();
-    }
-
     public void testConstruct() throws Exception {
         final SharedPreferencesImport sharedPreferencesImport = new SharedPreferencesImport(
                 getContext(), SHARED_PREF_NAME, "sharedPrefKey", "trayKey");
@@ -125,5 +117,13 @@ public class SharedPreferencesImportTest extends TrayProviderTestCase {
 
         mSharedPrefs.edit().putString("key", "data").commit();
         assertEquals(true, sharedPreferencesImport.shouldMigrate());
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mSharedPrefs = getContext()
+                .getSharedPreferences(SHARED_PREF_NAME, Context.MODE_MULTI_PROCESS);
+        mSharedPrefs.edit().clear().commit();
     }
 }

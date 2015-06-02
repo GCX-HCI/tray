@@ -169,9 +169,10 @@ public class TrayProviderHelper {
 
     /**
      * saves data internally, not accessible with public api
+     *
      * @param module module name
-     * @param key key for mapping
-     * @param value data to save
+     * @param key    key for mapping
+     * @param value  data to save
      */
     public void persistInternal(@NonNull final String module, @NonNull final String key,
             @Nullable final String value) {
@@ -180,6 +181,7 @@ public class TrayProviderHelper {
 
     /**
      * sends a query for TrayItems to the provider
+     *
      * @param uri path to data
      * @return list of items
      * @throws IllegalStateException something is wrong with the provider/database
@@ -206,13 +208,11 @@ public class TrayProviderHelper {
     }
 
     /**
-     *
-     *
-     * @param module module name
-     * @param key key for mapping
-     * @param value data to save
+     * @param module      module name
+     * @param key         key for mapping
+     * @param value       data to save
      * @param previousKey key before the migration
-     * @param internal where to save
+     * @param internal    where to save
      */
     private void persist(@NonNull final String module, @NonNull final String key,
             @Nullable final String previousKey, @Nullable final String value,

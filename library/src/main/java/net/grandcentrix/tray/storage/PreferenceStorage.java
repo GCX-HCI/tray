@@ -73,12 +73,14 @@ public interface PreferenceStorage<T> {
 
     /**
      * removes the item with the given key
+     *
      * @param key mapping key for the stored object
      */
     void remove(@NonNull final String key);
 
     /**
      * sets the version of this storage
+     *
      * @param version should be &gt; 0
      */
     void setVersion(final int version);

@@ -25,7 +25,8 @@ import android.content.Context;
  * the app package name as module name.
  * <p>
  * Use this {@link net.grandcentrix.tray.accessor.PreferenceAccessor} to save your preferences of
- * your app independent of a single app module. It's not a good practice to put all preferences in a
+ * your app independent of a single app module. It's not a good practice to put all preferences in
+ * a
  * single module. Extend the {@link TrayModulePreferences} and gain the functionality to remove all
  * data of a single module. This could help keeping the saved data as small as possible across app
  * upgrades.

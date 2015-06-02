@@ -29,7 +29,8 @@ import java.util.List;
  * <p>
  * This class works as root library class and first interaction point.
  * <p>
- * Use this library like you would use the {@link android.content.SharedPreferences}, but this works
+ * Use this library like you would use the {@link android.content.SharedPreferences}, but this
+ * works
  * in a multiprocess environment. Saving information in a SyncAdapter#onPerformSync() cycle and
  * reading the information instant in the ui thread is possible.
  * <p>

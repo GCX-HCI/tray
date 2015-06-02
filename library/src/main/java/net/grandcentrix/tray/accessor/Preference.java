@@ -16,7 +16,6 @@
 
 package net.grandcentrix.tray.accessor;
 
-import net.grandcentrix.tray.TrayException;
 import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.storage.PreferenceStorage;
 
@@ -27,8 +26,8 @@ import android.util.Log;
 import java.util.Collection;
 
 /**
- * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}. The
- * access to this storage defines the {@link PreferenceAccessor} interface.
+ * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}.
+ * The access to this storage defines the {@link PreferenceAccessor} interface.
  * <p>
  * Created by pascalwelsch on 11/20/14.
  */
@@ -38,40 +37,20 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
 
     private PreferenceStorage<T> mStorage;
 
+    public static boolean isDataTypeSupported(final Object data) {
+        return data instanceof Integer
+                || data instanceof String
+                || data instanceof Long
+                || data instanceof Float
+                || data instanceof Boolean
+                || data == null;
+    }
+
     public Preference(final PreferenceStorage<T> storage, final int version) {
         mStorage = storage;
 
         changeVersion(version);
     }
-
-    /**
-     * Called when this Preference is created for the first time. This is where the initial
-     * migration from other data source should happen.
-     *
-     * @param initialVersion the version set in the constructor, always &gt; 0
-     */
-    protected abstract void onCreate(final int initialVersion);
-
-    /**
-     * works inverse to the {@link #onUpgrade(int, int)} method
-     * @param oldVersion version before downgrade
-     * @param newVersion version to downgrade to, always &gt; 0
-     */
-    protected void onDowngrade(final int oldVersion, final int newVersion) {
-        throw new IllegalStateException("Can't downgrade from version " +
-                oldVersion + " to " + newVersion);
-    }
-
-    /**
-     * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
-     * over time.
-     * <p>
-     * Once the version in the constructor is increased the next constructor call to this Preference
-     * will trigger an upgrade.
-     * @param oldVersion version before upgrade, always &gt; 0
-     * @param newVersion version after upgrade
-     */
-    protected abstract void onUpgrade(final int oldVersion, final int newVersion);
 
     @Override
     public void clear() {
@@ -93,17 +72,9 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
         return mStorage;
     }
 
-    public static boolean isDataTypeSupported(final Object data) {
-        return data instanceof Integer
-                || data instanceof String
-                || data instanceof Long
-                || data instanceof Float
-                || data instanceof Boolean
-                || data == null;
-    }
-
     /**
      * Migrates data into this preference.
+     *
      * @param migrations migrations will be migrated into this preference
      */
     @SafeVarargs
@@ -198,4 +169,36 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
         }
         getStorage().setVersion(newVersion);
     }
+
+    /**
+     * Called when this Preference is created for the first time. This is where the initial
+     * migration from other data source should happen.
+     *
+     * @param initialVersion the version set in the constructor, always &gt; 0
+     */
+    protected abstract void onCreate(final int initialVersion);
+
+    /**
+     * works inverse to the {@link #onUpgrade(int, int)} method
+     *
+     * @param oldVersion version before downgrade
+     * @param newVersion version to downgrade to, always &gt; 0
+     */
+    protected void onDowngrade(final int oldVersion, final int newVersion) {
+        throw new IllegalStateException("Can't downgrade from version " +
+                oldVersion + " to " + newVersion);
+    }
+
+    /**
+     * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
+     * over time.
+     * <p/>
+     * Once the version in the constructor is increased the next constructor call to this
+     * Preference
+     * will trigger an upgrade.
+     *
+     * @param oldVersion version before upgrade, always &gt; 0
+     * @param newVersion version after upgrade
+     */
+    protected abstract void onUpgrade(final int oldVersion, final int newVersion);
 }

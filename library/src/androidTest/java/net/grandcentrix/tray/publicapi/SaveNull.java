@@ -13,12 +13,6 @@ public class SaveNull extends TrayProviderTestCase {
 
     private TestTrayModulePreferences mPref;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mPref = new TestTrayModulePreferences(getProviderMockContext(), "publictest");
-    }
-
     public void testDeleteNull() throws Exception {
         testSaveNullAsString();
         mPref.remove(KEY);
@@ -45,5 +39,11 @@ public class SaveNull extends TrayProviderTestCase {
         testSaveNullAsString();
         mPref.put(KEY, "otherValue");
         assertEquals("otherValue", mPref.getString(KEY, "default"));
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mPref = new TestTrayModulePreferences(getProviderMockContext(), "publictest");
     }
 }

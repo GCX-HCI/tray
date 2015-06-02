@@ -11,12 +11,6 @@ import android.test.AndroidTestCase;
  */
 public class TrayContractTest extends AndroidTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        TrayContract.setAuthority(null);
-    }
-
     public void testConstruction() throws Exception {
         new TrayContract();
     }
@@ -37,6 +31,12 @@ public class TrayContractTest extends AndroidTestCase {
         TrayContract.setAuthority("blubb");
         uri = TrayContract.generateInternalContentUri(Mockito.mock(Context.class));
         assertEquals("content://blubb/internal_preferences", uri.toString());
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        TrayContract.setAuthority(null);
     }
 
 
