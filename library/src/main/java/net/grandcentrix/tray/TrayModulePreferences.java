@@ -36,14 +36,11 @@ import android.content.Context;
  */
 public abstract class TrayModulePreferences extends TrayPreference {
 
-    private final Context mContext;
-
     public TrayModulePreferences(final Context context, final String module, final int version) {
         super(new TrayStorage(context, module), version);
-        mContext = context.getApplicationContext();
     }
 
     protected Context getContext() {
-        return mContext;
+        return ((TrayStorage) getStorage()).getContext();
     }
 }
