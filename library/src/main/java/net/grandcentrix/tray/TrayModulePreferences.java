@@ -17,9 +17,13 @@
 package net.grandcentrix.tray;
 
 import net.grandcentrix.tray.accessor.TrayPreference;
+import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.storage.TrayStorage;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+
+import java.util.Collection;
 
 /**
  * Created by pascalwelsch on 11/20/14.
@@ -36,8 +40,28 @@ import android.content.Context;
  */
 public abstract class TrayModulePreferences extends TrayPreference {
 
-    public TrayModulePreferences(final Context context, final String module, final int version) {
+    public TrayModulePreferences(@NonNull final Context context, @NonNull final String module,
+            final int version) {
         super(new TrayStorage(context, module), version);
+    }
+
+    /**
+     * imports all data from an old storage. Use this if you have changed the module name
+     * <p>
+     * Call this in {@link #onCreate(int)}. The created and updated fields of the old {@link
+     * TrayItem}s will be lost. The old data gets deleted completely.
+     *
+     * @param oldName the name of the old preference
+     */
+    public void oldName(final String oldName) {
+        final TrayStorage oldStorage = new TrayStorage(getContext(), oldName);
+        final Collection<TrayItem> items = oldStorage.getAll();
+        if (items.size() > 0) {
+            for (final TrayItem trayItem : items) {
+                getStorage().put(trayItem.key(), trayItem.migratedKey(), trayItem.value());
+            }
+            oldStorage.wipe();
+        }
     }
 
     protected Context getContext() {

@@ -59,7 +59,23 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void clear() {
-        final Uri uri = mProviderHelper.getUri().buildUpon().appendPath(getModuleName())
+        final Uri uri = mProviderHelper.getUri().buildUpon()
+                .appendPath(getModuleName())
+                .build();
+        mContext.getContentResolver().delete(uri, null, null);
+    }
+
+    /**
+     * clear the data inside the preference and all evidence this preference has ever existed
+     * <p>
+     * also cleans internal information like the version for this preference
+     *
+     * @see #clear()
+     */
+    public void wipe() {
+        clear();
+        final Uri uri = mProviderHelper.getInternalUri().buildUpon()
+                .appendPath(getModuleName())
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
     }

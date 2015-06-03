@@ -47,7 +47,7 @@ public class TrayProviderHelper {
     }
 
     /**
-     * clears <b>all</b> Preferences saved. Module independent. Erases everything
+     * clears <b>all</b> Preferences saved. Module independent. Erases all preference data
      */
     public void clear() {
         mContext.getContentResolver().delete(mContentUri, null, null);
