@@ -158,7 +158,8 @@ Branch  | Status
 
 ## ContentProvider is overkill
 
-At first, it was the simpst way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us.
+At first, it was the simpst way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us. [more informations](https://github.com/grandcentrix/tray/issues/28#issuecomment-108282253)
+
 If you have found a better solution implement the [`ModularizedStorage`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/storage/ModularizedStorage.java) and contribute to this project! We would appreciate it.
 
 That said, yes the performance isn't as good as the SharedPreferences. But the performance is good enough to save/access single key value pairs synchron. If you want to save more you should think about a simple database.
