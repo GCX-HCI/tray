@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.mock;
 
 import net.grandcentrix.tray.TrayModulePreferences;
+import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.storage.PreferenceStorage;
 
@@ -25,7 +26,7 @@ import android.content.Context;
 /**
  * Created by pascalwelsch on 2/26/15.
  */
-public class TestTrayModulePreferences extends TrayModulePreferences {
+public class TestTrayModulePreferences extends TrayPreferences {
 
     public TestTrayModulePreferences(final Context context, final String module) {
         super(context, module, 1);

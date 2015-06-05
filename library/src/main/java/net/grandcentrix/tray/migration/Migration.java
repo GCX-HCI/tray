@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray.migration;
 
+import net.grandcentrix.tray.accessor.Preferences;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -27,7 +29,7 @@ public interface Migration<T> {
     /**
      * gets the data from the old data store.
      * <p>
-     * Only primitive types are supported. See {@link net.grandcentrix.tray.accessor.Preference#isDataTypeSupported(Object)}
+     * Only primitive types are supported. See {@link Preferences#isDataTypeSupported(Object)}
      * <p>
      * called after {@link #shouldMigrate()} and before {@link #onPostMigrate(Object)}
      *

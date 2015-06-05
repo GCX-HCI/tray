@@ -40,10 +40,11 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
-    public void annexModule(final ModularizedStorage<TrayItem> oldStorage) {
+    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
         for (final TrayItem trayItem : oldStorage.getAll()) {
             mData.put(trayItem.key(), trayItem);
         }
+        oldStorage.wipe();
     }
 
     @Override
@@ -54,6 +55,7 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void wipe() {
         mData.clear();
+        mVersion = 0;
     }
 
     @Override

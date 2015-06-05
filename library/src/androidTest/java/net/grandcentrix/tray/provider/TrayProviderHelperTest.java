@@ -16,8 +16,11 @@
 
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.AppPreferences;
 import net.grandcentrix.tray.TrayAppPreferences;
-import net.grandcentrix.tray.accessor.TrayPreference;
+import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.accessor.ModularizedTrayPreferences;
+import net.grandcentrix.tray.accessor.Preferences;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
 import android.content.ContentResolver;
@@ -76,7 +79,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B);
         assertDatabaseSize(8);
 
-        mProviderHelper.clearBut(new TrayAppPreferences(context),
+        mProviderHelper.clearBut(new AppPreferences(context),
                 new TestTrayModulePreferences(context, MODULE_A),
                 new TestTrayModulePreferences(context, MODULE_B));
         assertDatabaseSize(6);
@@ -88,42 +91,22 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A));
         assertDatabaseSize(2);
 
-        mProviderHelper.clearBut((TrayPreference) null);
+        mProviderHelper.clearBut((TrayPreferences) null);
         assertDatabaseSize(0);
 
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
         mProviderHelper.persist(context.getPackageName(), KEY_A, STRING_A);
         mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B);
-        mProviderHelper.clearBut(new TrayAppPreferences(context));
+        mProviderHelper.clearBut(new AppPreferences(context));
         assertDatabaseSize(2);
 
         // Also test empty values (= clear everything)
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
 
-        mProviderHelper.clearBut((TrayPreference) null);
+        mProviderHelper.clearBut((TrayPreferences) null);
         assertDatabaseSize(0);
-    }
-
-    public void testClearModules() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
-        assertDatabaseSize(4);
-
-        mProviderHelper.clear(new TestTrayModulePreferences(getProviderMockContext(), MODULE_A));
-        assertDatabaseSize(2);
-
-        mProviderHelper.clear(new TestTrayModulePreferences(getProviderMockContext(), MODULE_B));
-        assertDatabaseSize(0);
-
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-
-        mProviderHelper.clear((TrayPreference) null);
-        assertDatabaseSize(2);
     }
 
     public void testCreatedTime() throws Exception {

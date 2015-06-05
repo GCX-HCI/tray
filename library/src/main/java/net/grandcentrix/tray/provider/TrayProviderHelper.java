@@ -16,7 +16,8 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.accessor.TrayPreference;
+import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.accessor.Preferences;
 import net.grandcentrix.tray.util.SqliteHelper;
 
 import android.content.ContentValues;
@@ -54,29 +55,15 @@ public class TrayProviderHelper {
     }
 
     /**
-     * clears the stated modules
-     *
-     * @param modules which modules to clear
-     */
-    public void clear(TrayPreference... modules) {
-        for (TrayPreference module : modules) {
-            if (module == null) {
-                continue;
-            }
-            module.clear();
-        }
-    }
-
-    /**
-     * clears <b>all</b> Preferences saved but the modules stated.
+     * clears <b>all</b> {@link TrayPreferences} but the modules stated.
      *
      * @param modules modules excluded when deleting preferences
      */
-    public void clearBut(TrayPreference... modules) {
+    public void clearBut(TrayPreferences... modules) {
         String selection = null;
         String[] selectionArgs = new String[]{};
 
-        for (final TrayPreference module : modules) {
+        for (final TrayPreferences module : modules) {
             if (module == null) {
                 continue;
             }
@@ -196,7 +183,6 @@ public class TrayProviderHelper {
             throw new IllegalStateException(
                     "could not access stored data with uri " + uri
                             + ". Is the provider registered in the manifest of your application?");
-            //todo test with tray mock context
         }
 
         final ArrayList<TrayItem> list = new ArrayList<>();
@@ -205,6 +191,14 @@ public class TrayProviderHelper {
         }
         cursor.close();
         return list;
+    }
+
+    /**
+     * wipes all data, including meta data for the preferences like the current version number.
+     */
+    public void wipe() {
+        clear();
+        mContext.getContentResolver().delete(mContentUriInternal, null, null);
     }
 
     /**

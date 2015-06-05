@@ -35,29 +35,39 @@ public class PreferenceTest extends TestCase {
     public void testCheckIfDataTypIsSupported() throws Exception {
 
         // supported
-        assertTrue(Preference.isDataTypeSupported("string"));
-        assertTrue(Preference.isDataTypeSupported(1));
-        assertTrue(Preference.isDataTypeSupported(1f));
-        assertTrue(Preference.isDataTypeSupported(1l));
-        assertTrue(Preference.isDataTypeSupported(true));
+        assertTrue(Preferences.isDataTypeSupported("string"));
+        assertTrue(Preferences.isDataTypeSupported(1));
+        assertTrue(Preferences.isDataTypeSupported(1f));
+        assertTrue(Preferences.isDataTypeSupported(1l));
+        assertTrue(Preferences.isDataTypeSupported(true));
 
-        assertTrue(Preference.isDataTypeSupported(new String("string")));
-        assertTrue(Preference.isDataTypeSupported(new Integer(1)));
-        assertTrue(Preference.isDataTypeSupported(new Float(1f)));
-        assertTrue(Preference.isDataTypeSupported(new Long(1l)));
-        assertTrue(Preference.isDataTypeSupported(new Boolean(true)));
+        assertTrue(Preferences.isDataTypeSupported(new String("string")));
+        assertTrue(Preferences.isDataTypeSupported(new Integer(1)));
+        assertTrue(Preferences.isDataTypeSupported(new Float(1f)));
+        assertTrue(Preferences.isDataTypeSupported(new Long(1l)));
+        assertTrue(Preferences.isDataTypeSupported(new Boolean(true)));
 
-        assertTrue(Preference.isDataTypeSupported(null));
+        assertTrue(Preferences.isDataTypeSupported(null));
 
         // not supported
-        assertFalse(Preference.isDataTypeSupported(new Object()));
-        assertFalse(Preference.isDataTypeSupported(new Date()));
-        assertFalse(Preference.isDataTypeSupported(1d));
-        assertFalse(Preference.isDataTypeSupported(new Double(1d)));
+        assertFalse(Preferences.isDataTypeSupported(new Object()));
+        assertFalse(Preferences.isDataTypeSupported(new Date()));
+        assertFalse(Preferences.isDataTypeSupported(1d));
+        assertFalse(Preferences.isDataTypeSupported(new Double(1d)));
+    }
+
+    public void testOnUpgrade() throws Exception {
+        final MockSimplePreferences appPreferences = new MockSimplePreferences(1);
+        try {
+            appPreferences.onUpgrade(0, 1);
+            fail();
+        } catch (IllegalStateException e) {
+            // not implemented yet
+        }
     }
 
     public void testClear() throws Exception {
-        final MockSimplePreference mockPreference = new MockSimplePreference(1);
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
         mockPreference.put("a", "a");
         mockPreference.put("b", "b");
         assertEquals(mockPreference.getAll().size(), 2);
@@ -67,7 +77,7 @@ public class PreferenceTest extends TestCase {
     }
 
     public void testGetAll() throws Exception {
-        final MockSimplePreference mockPreference = new MockSimplePreference(1);
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
         final Collection<TrayItem> all = mockPreference.getAll();
         assertNotNull(all);
         assertEquals(0, all.size());
@@ -81,19 +91,19 @@ public class PreferenceTest extends TestCase {
     }
 
     public void testGetPref() throws Exception {
-        final MockSimplePreference mockPreference = new MockSimplePreference(1);
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
         mockPreference.put("key", "value");
         final TrayItem item = mockPreference.getPref("key");
         assertNotNull(item);
         assertEquals("key", item.key());
         assertEquals("value", item.value());
-        assertEquals(mockPreference.getModularizedStorage().getModuleName(), item.module());
+        assertEquals(mockPreference.getName(), item.module());
         assertEquals(item.created(), item.updateTime());
     }
 
     public void testInstantiation() throws Exception {
         final HashMap<String, String> map = new HashMap<>();
-        new MockSimplePreference(1) {
+        new MockSimplePreferences(1) {
             @Override
             protected void onCreate(final int newVersion) {
                 super.onCreate(newVersion);
@@ -103,10 +113,17 @@ public class PreferenceTest extends TestCase {
         assertTrue(map.containsKey("create"));
     }
 
+    public void testWipe() throws Exception {
+        final MockSimplePreferences preferences = new MockSimplePreferences(1);
+        assertEquals(1, preferences.getVersion());
+        preferences.wipe();
+        assertEquals(0, preferences.getVersion());
+    }
+
     public void testLowVersion() throws Exception {
         int version = 0;
         try {
-            new MockSimplePreference(version);
+            new MockSimplePreferences(version);
             fail();
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains(String.valueOf(version)));
@@ -114,7 +131,7 @@ public class PreferenceTest extends TestCase {
 
         version = -1000;
         try {
-            new MockSimplePreference(version);
+            new MockSimplePreferences(version);
             fail();
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains(String.valueOf(version)));
@@ -123,9 +140,9 @@ public class PreferenceTest extends TestCase {
 
     public void testOnDowngradeShouldFail() throws Exception {
         final MockModularizedStorage storage = new MockModularizedStorage("blubb");
-        new MockSimplePreference(storage, 2);
+        new MockSimplePreferences(storage, 2);
         try {
-            new MockSimplePreference(storage, 1);
+            new MockSimplePreferences(storage, 1);
             fail();
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage().contains("downgrade"));
@@ -133,7 +150,7 @@ public class PreferenceTest extends TestCase {
     }
 
     public void testPut() throws Exception {
-        final MockSimplePreference pref = new MockSimplePreference(1);
+        final MockSimplePreferences pref = new MockSimplePreferences(1);
         // String
         pref.put("a", "a");
         assertEquals("a", pref.getString("a", ""));
@@ -156,7 +173,7 @@ public class PreferenceTest extends TestCase {
     }
 
     public void testRemove() throws Exception {
-        final MockSimplePreference mockPreference = new MockSimplePreference(1);
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
         mockPreference.put("test", "test");
         mockPreference.put("foo", "foo");
 
@@ -179,7 +196,7 @@ public class PreferenceTest extends TestCase {
 
     public void testVersionChange() throws Exception {
         final HashMap<String, String> map = new HashMap<>();
-        final MockSimplePreference mockPreference = new MockSimplePreference(1) {
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(1) {
             @Override
             protected void onCreate(final int newVersion) {
                 super.onCreate(newVersion);

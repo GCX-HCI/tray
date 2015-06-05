@@ -19,7 +19,6 @@ package net.grandcentrix.tray.accessor;
 import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.storage.PreferenceStorage;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -32,11 +31,11 @@ import java.util.Collection;
  * <p>
  * Created by pascalwelsch on 11/20/14.
  */
-public abstract class Preference<T> implements PreferenceAccessor<T> {
+public abstract class Preferences<T, S extends PreferenceStorage<T>> implements PreferenceAccessor<T> {
 
-    private static final String TAG = Preference.class.getSimpleName();
+    private static final String TAG = Preferences.class.getSimpleName();
 
-    private PreferenceStorage<T> mStorage;
+    private S mStorage;
 
     public static boolean isDataTypeSupported(final Object data) {
         return data instanceof Integer
@@ -47,7 +46,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
                 || data == null;
     }
 
-    public Preference(final PreferenceStorage<T> storage, final int version) {
+    public Preferences(final S storage, final int version) {
         mStorage = storage;
 
         changeVersion(version);
@@ -59,22 +58,26 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
     }
 
     @Override
+    public void wipe() {
+        mStorage.wipe();
+    }
+
+    @Override
     public Collection<T> getAll() {
         return mStorage.getAll();
+    }
+
+    /**
+     * @return the version of this preference
+     */
+    public int getVersion() {
+        return mStorage.getVersion();
     }
 
     @Nullable
     @Override
     public T getPref(@NonNull final String key) {
         return mStorage.get(key);
-    }
-
-    /**
-     * @return true if this storage contains preferences or has ever contained data. Will be false
-     * after calling {@link #wipe()}
-     */
-    public boolean isInitialized() {
-        return mStorage.getVersion() > 0;
     }
 
     /**
@@ -92,7 +95,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
 
             final Object data = migration.getData();
 
-            final boolean supportedDataType = Preference.isDataTypeSupported(data);
+            final boolean supportedDataType = Preferences.isDataTypeSupported(data);
             if (!supportedDataType) {
                 Log.w(TAG, "could not migrate " + migration.getPreviousKey()
                         + " because the datatype" + data.getClass().getSimpleName() + "is invalid");
@@ -105,8 +108,8 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
             getStorage().put(key, migrationKey, data);
 
             // return the saved data.
-            final T trayItem = getStorage().get(key);
-            migration.onPostMigrate(trayItem);
+            final T item = getStorage().get(key);
+            migration.onPostMigrate(item);
         }
     }
 
@@ -175,7 +178,7 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
         getStorage().setVersion(newVersion);
     }
 
-    protected PreferenceStorage<T> getStorage() {
+    protected S getStorage() {
         return mStorage;
     }
 
@@ -185,7 +188,9 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
      *
      * @param initialVersion the version set in the constructor, always &gt; 0
      */
-    protected abstract void onCreate(final int initialVersion);
+    protected void onCreate(final int initialVersion) {
+
+    }
 
     /**
      * works inverse to the {@link #onUpgrade(int, int)} method
@@ -209,5 +214,8 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
      * @param oldVersion version before upgrade, always &gt; 0
      * @param newVersion version after upgrade
      */
-    protected abstract void onUpgrade(final int oldVersion, final int newVersion);
+    protected void onUpgrade(final int oldVersion, final int newVersion) {
+        throw new IllegalStateException("Can't upgrade database from version " +
+                oldVersion + " to " + newVersion + ", not implemented.");
+    }
 }

@@ -41,6 +41,6 @@ public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
      *
      * @param oldStorage the old preference
      */
-    public abstract void annexModule(final ModularizedStorage<T> oldStorage);
+    public abstract void annex(final ModularizedStorage<T> oldStorage);
 
 }

@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
- * Implements the functionality between the {@link net.grandcentrix.tray.accessor.TrayPreference}
+ * Implements the functionality between the {@link net.grandcentrix.tray.TrayPreferences}
  * and the {@link net.grandcentrix.tray.provider.TrayProvider}. Uses functions of the {@link
  * net.grandcentrix.tray.provider.TrayProviderHelper} for simple and unified access to the
  * provider.
@@ -150,7 +150,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
-    public void annexModule(final ModularizedStorage<TrayItem> oldStorage) {
+    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
         for (final TrayItem trayItem : oldStorage.getAll()) {
             put(trayItem);
         }
