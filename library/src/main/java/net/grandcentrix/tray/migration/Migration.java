@@ -53,7 +53,8 @@ public interface Migration<T> {
      * this is a good point to delete the old data to free space and prevent accidentally import
      * later which could override newer data saved into Tray after the last import
      *
-     * @param importedItem the imported item in tray. <code>null</code> if the import did not work. A
+     * @param importedItem the imported item in tray. <code>null</code> if the import did not work.
+     *                     A
      *                     invalid data type my be the reason
      */
     void onPostMigrate(@Nullable final T importedItem);
@@ -63,8 +64,10 @@ public interface Migration<T> {
      * migrated is available. If not, return true if you want to cancel the import.
      * <p>
      * This check is very important, because the migration data should be deleted in {@link
-     * #onPostMigrate(Object)}. When starting this migration a second time this method should return
-     * {@code true}, to skip the migration, or the previous written data will be overridden with the
+     * #onPostMigrate(Object)}. When starting this migration a second time this method should
+     * return
+     * {@code true}, to skip the migration, or the previous written data will be overridden with
+     * the
      * value from {@link #getData()} which should be {@code null} after the first migration
      *
      * @return true if the import should be canceled

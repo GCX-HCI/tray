@@ -42,13 +42,13 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static class TrayIsolatedContext extends IsolatedContext {
 
-        private final Context mTargetContext;
-
         boolean mHasMockResolver = false;
 
-        private HashMap<String, ContentProvider> mProviders = new HashMap<>();
-
         IsolatedContext innerContext = new IsolatedContext(getContentResolver(), this);
+
+        private final Context mTargetContext;
+
+        private HashMap<String, ContentProvider> mProviders = new HashMap<>();
 
         public TrayIsolatedContext(final ContentResolver resolver, final Context targetContext) {
             super(resolver, targetContext);
@@ -107,6 +107,10 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
         super(TrayProvider.class, MockProvider.AUTHORITY);
     }
 
+    public TrayIsolatedContext getProviderMockContext() {
+        return mIsolatedContext;
+    }
+
     /**
      * checks the database size by querying the given {@param contentUri}
      *
@@ -154,10 +158,6 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
     protected void tearDown() throws Exception {
         super.tearDown();
         cleanupProvider();
-    }
-
-    public TrayIsolatedContext getProviderMockContext() {
-        return mIsolatedContext;
     }
 
     private void cleanupProvider() {

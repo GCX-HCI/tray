@@ -8,57 +8,57 @@
     <LinearLayout
         android:id="@+id/launch_counter"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <TextView
-            android:text="@string/launch_counter"
-            android:layout_width="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Headline"
-            android:layout_height="wrap_content" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/launch_counter" />
 
         <TextView
-            android:text="@string/launch_counter_decription"
-            android:layout_width="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layout_height="wrap_content" />
+            android:text="@string/launch_counter_decription" />
 
         <TextView
             android:id="@android:id/text1"
             android:layout_width="wrap_content"
-            tools:text="X times launched"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:text="X times launched" />
 
         <Button
+            android:id="@+id/reset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sample_reset"
-            android:id="@+id/reset" />
+            android:text="@string/sample_reset" />
 
     </LinearLayout>
 
 
     <LinearLayout
-        android:layout_below="@id/launch_counter"
-        android:orientation="vertical"
         android:id="@+id/shared_preference_import"
-        android:layout_marginTop="25dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/launch_counter"
+        android:layout_marginTop="25dp"
+        android:orientation="vertical">
 
         <TextView
-            android:text="@string/sharedprefs_import"
-            android:layout_width="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Headline"
-            android:layout_height="wrap_content" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sharedprefs_import" />
 
         <TextView
-            android:text="@string/sharedprefs_import_description"
-            android:layout_width="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layout_height="wrap_content" />
+            android:text="@string/sharedprefs_import_description" />
 
         <TextView
             android:id="@+id/shared_pref_info"
@@ -66,16 +66,16 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/write_shared_pref"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sample_write_shared_pref"
-            android:id="@+id/write_shared_pref" />
+            android:text="@string/sample_write_shared_pref" />
 
         <Button
+            android:id="@+id/import_shared_pref"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sample_import_sharedpref_in_tray"
-            android:id="@+id/import_shared_pref" />
+            android:text="@string/sample_import_sharedpref_in_tray" />
 
 
     </LinearLayout>

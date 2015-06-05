@@ -53,6 +53,10 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         mProviderHelper = new TrayProviderHelper(mContext);
     }
 
+    public Context getContext() {
+        return mContext;
+    }
+
     @Override
     public void clear() {
         final Uri uri = mProviderHelper.getUri().buildUpon().appendPath(getModuleName())

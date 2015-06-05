@@ -31,20 +31,6 @@ public class TrayTest extends TrayProviderTestCase {
 
     private TrayModulePreferences mTrayModulePref;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mTrayModulePref = new TestTrayModulePreferences(getProviderMockContext(), "module");
-        mTray = new Tray(getProviderMockContext());
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        mTrayModulePref = null;
-        mTray = null;
-    }
-
     public void testClear() throws Exception {
         final TrayModulePreferences module2 =
                 new TestTrayModulePreferences(getProviderMockContext(), "module2");
@@ -105,5 +91,19 @@ public class TrayTest extends TrayProviderTestCase {
 
         final Collection<TrayItem> all = mTray.getAll();
         assertEquals(4, all.size());
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mTrayModulePref = new TestTrayModulePreferences(getProviderMockContext(), "module");
+        mTray = new Tray(getProviderMockContext());
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        mTrayModulePref = null;
+        mTray = null;
     }
 }

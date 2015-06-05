@@ -48,12 +48,6 @@ public class SampleActivity extends Activity implements View.OnClickListener {
 
     private SharedPreferences mSharedPreferences;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        updateSharedPrefInfo();
-    }
-
     @SuppressWarnings("Annotator")
     @Override
     public void onClick(final View view) {
@@ -99,6 +93,12 @@ public class SampleActivity extends Activity implements View.OnClickListener {
 
         final Button importInTray = (Button) findViewById(R.id.import_shared_pref);
         importInTray.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateSharedPrefInfo();
     }
 
     private void importSharedPref() {
