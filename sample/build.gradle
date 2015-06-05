@@ -24,8 +24,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'net.grandcentrix.tray:tray:0.9.1'
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    //compile 'net.grandcentrix.tray:tray:0.9.1'
     // for development
-    // compile project(':library')
+    compile project(':library')
 }

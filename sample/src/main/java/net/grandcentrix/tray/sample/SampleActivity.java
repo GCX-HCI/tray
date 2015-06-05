@@ -16,33 +16,36 @@
 
 package net.grandcentrix.tray.sample;
 
-import net.grandcentrix.tray.TrayAppPreferences;
+import net.grandcentrix.tray.AppPreferences;
 import net.grandcentrix.tray.migration.SharedPreferencesImport;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.UUID;
+
 /**
  * Created by pascalwelsch on 2/7/15.
  */
-public class SampleActivity extends Activity implements View.OnClickListener {
+public class SampleActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String STARTUP_COUNT = "startup_count";
 
-    private static final String SHARED_PREF_NAME = "shared_pref";
+    public static final String SHARED_PREF_NAME = "shared_pref";
 
     private static final String SHARED_PREF_KEY = "shared_pref_key";
 
     private static final String TRAY_PREF_KEY = "importedData";
 
-    private TrayAppPreferences mAppPrefs;
+    private AppPreferences mAppPrefs;
 
     private ImportTrayPreferences mImportPreference;
 
@@ -67,20 +70,33 @@ public class SampleActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sample);
 
-        mAppPrefs = new TrayAppPreferences(this);
-        mImportPreference = new ImportTrayPreferences(this);
+        mAppPrefs = new AppPreferences(this);
         mSharedPreferences = getSharedPreferences(SHARED_PREF_NAME,
                 Context.MODE_MULTI_PROCESS);
         int startupCount = mAppPrefs.getInt(STARTUP_COUNT, 0);
 
+        if (startupCount == 0) {
+            // save some "old" preferences which get migrated into the ImportTrayPreferences.
+            // this works only the very first time ImportTrayPreferences gets created. You need to
+            // wipe (clean is not enough) ImportTrayPreferences or delete the app data to retrigger
+            // the call to ImportTrayPreferences#onCreate()
+            mSharedPreferences.edit()
+                    .putString("userToken", UUID.randomUUID().toString())
+                    .putString("gcmToken", UUID.randomUUID().toString())
+                    .commit();
+        }
+
         if (savedInstanceState == null) {
             mAppPrefs.put(STARTUP_COUNT, ++startupCount);
         }
+
+        mImportPreference = new ImportTrayPreferences(this);
 
         final TextView text = (TextView) findViewById(android.R.id.text1);
         text.setText(getString(R.string.sample_launched_x_times, startupCount));
