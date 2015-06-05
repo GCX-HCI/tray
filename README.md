@@ -94,7 +94,7 @@ Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studi
 ```java
 
 dependencies {
-    compile 'net.grandcentrix.tray:tray:0.9.1'
+    compile 'net.grandcentrix.tray:tray:0.9.2'
 }
 
 ```
@@ -151,14 +151,15 @@ Those ~120 tests will help us indicate bugs in the future before we publish them
 
 ## Build state
 
-Branch  | Status
-------------- | -------------
-[`master`](https://github.com/grandcentrix/tray/tree/master) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray)
-[`develop`](https://github.com/grandcentrix/tray/tree/develop) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=develop)](https://travis-ci.org/grandcentrix/tray)
+Branch | Status | Coverage
+------------- | ------------- | -------------
+[`master`](https://github.com/grandcentrix/tray/tree/master) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) | ![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=master)
+[`develop`](https://github.com/grandcentrix/tray/tree/develop) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=develop)](https://travis-ci.org/grandcentrix/tray) | ![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=develop)
 
 ## ContentProvider is overkill
 
-At first, it was the simpst way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us.
+At first, it was the simpst way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us. see [more informations](https://github.com/grandcentrix/tray/issues/28#issuecomment-108282253)
+
 If you have found a better solution implement the [`ModularizedStorage`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/storage/ModularizedStorage.java) and contribute to this project! We would appreciate it.
 
 That said, yes the performance isn't as good as the SharedPreferences. But the performance is good enough to save/access single key value pairs synchron. If you want to save more you should think about a simple database.
@@ -172,6 +173,9 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 - more metadata fields: (i.e. app version code/name)
 
 ## Versions
+
+##### Version 0.9.2 `02.06.15`
+- `getContext()` is working in `TrayModulePreference#onCreate`
 
 ##### Version 0.9.1 `18.05.15`
 - saving `null` with `mPref.put(KEY, null)` works now
