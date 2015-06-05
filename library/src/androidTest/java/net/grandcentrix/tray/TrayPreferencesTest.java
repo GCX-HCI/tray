@@ -31,4 +31,16 @@ public class TrayPreferencesTest extends TrayProviderTestCase {
         assertEquals(1, prefs.getAll().size());
         assertEquals(0, others.getAll().size());
     }
+
+
+    public void testInstantiation() throws Exception {
+        new TrayPreferences(getProviderMockContext(), "test", 1) {
+
+        };
+    }
+
+
+    public void testLegacyInstantiation() throws Exception {
+        new TrayModulePreferences(getProviderMockContext(), "test", 1);
+    }
 }
