@@ -23,8 +23,6 @@ import net.grandcentrix.tray.storage.TrayStorage;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import java.util.Collection;
-
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
@@ -51,17 +49,11 @@ public abstract class TrayModulePreferences extends TrayPreference {
      * Call this in {@link #onCreate(int)}. The created and updated fields of the old {@link
      * TrayItem}s will be lost. The old data gets deleted completely.
      *
-     * @param oldName the name of the old preference
+     * @param oldModuleName the name of the old preference
      */
-    public void oldName(final String oldName) {
-        final TrayStorage oldStorage = new TrayStorage(getContext(), oldName);
-        final Collection<TrayItem> items = oldStorage.getAll();
-        if (items.size() > 0) {
-            for (final TrayItem trayItem : items) {
-                getStorage().put(trayItem.key(), trayItem.migratedKey(), trayItem.value());
-            }
-            oldStorage.wipe();
-        }
+    protected void annexModule(final String oldModuleName) {
+        final TrayStorage oldStorage = new TrayStorage(getContext(), oldModuleName);
+        getModularizedStorage().annexModule(oldStorage);
     }
 
     protected Context getContext() {

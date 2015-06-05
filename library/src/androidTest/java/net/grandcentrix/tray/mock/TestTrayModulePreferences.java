@@ -17,6 +17,8 @@
 package net.grandcentrix.tray.mock;
 
 import net.grandcentrix.tray.TrayModulePreferences;
+import net.grandcentrix.tray.provider.TrayItem;
+import net.grandcentrix.tray.storage.PreferenceStorage;
 
 import android.content.Context;
 
@@ -37,5 +39,9 @@ public class TestTrayModulePreferences extends TrayModulePreferences {
     @Override
     protected void onUpgrade(final int oldVersion, final int newVersion) {
 
+    }
+
+    public PreferenceStorage<TrayItem> getInternalStorage() {
+        return getStorage();
     }
 }

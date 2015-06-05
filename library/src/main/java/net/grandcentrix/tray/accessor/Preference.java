@@ -19,6 +19,7 @@ package net.grandcentrix.tray.accessor;
 import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.storage.PreferenceStorage;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -68,8 +69,12 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
         return mStorage.get(key);
     }
 
-    public PreferenceStorage<T> getStorage() {
-        return mStorage;
+    /**
+     * @return true if this storage contains preferences or has ever contained data. Will be false
+     * after calling {@link #wipe()}
+     */
+    public boolean isInitialized() {
+        return mStorage.getVersion() > 0;
     }
 
     /**
@@ -168,6 +173,10 @@ public abstract class Preference<T> implements PreferenceAccessor<T> {
             }
         }
         getStorage().setVersion(newVersion);
+    }
+
+    protected PreferenceStorage<T> getStorage() {
+        return mStorage;
     }
 
     /**

@@ -15,20 +15,20 @@ public class RenamePreference extends TrayProviderTestCase {
                 getProviderMockContext(), "oldOne");
         oldOne.put("key", "value");
         assertEquals(1, oldOne.getAll().size());
-        assertEquals(1, oldOne.getStorage().getVersion());
+        assertEquals(1, oldOne.getInternalStorage().getVersion());
 
         final TestTrayModulePreferences newOne = new TestTrayModulePreferences(
                 getProviderMockContext(), "newOne") {
             @Override
             protected void onCreate(final int newVersion) {
                 super.onCreate(newVersion);
-                oldName("oldOne");
+                annexModule("oldOne");
             }
         };
         assertEquals(1, newOne.getAll().size());
         assertEquals(0, oldOne.getAll().size());
 
         // TestTrayModulePreferences default version is 1. 0 means all metadata is deleted
-        assertEquals(0, oldOne.getStorage().getVersion());
+        assertEquals(0, oldOne.getInternalStorage().getVersion());
     }
 }

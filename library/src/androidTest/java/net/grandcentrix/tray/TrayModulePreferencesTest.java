@@ -16,6 +16,7 @@
 
 package net.grandcentrix.tray;
 
+import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
 public class TrayModulePreferencesTest extends TrayProviderTestCase {
@@ -37,5 +38,33 @@ public class TrayModulePreferencesTest extends TrayProviderTestCase {
 
         assertEquals(getProviderMockContext().getApplicationContext(),
                 modulePreferences.getContext());
+    }
+
+    public void testAnnexModule() throws Exception {
+        final TrayModulePreferences modulePreferences = new TrayModulePreferences(
+                getProviderMockContext(), "test", 1) {
+
+            @Override
+            protected void onCreate(final int newVersion) {
+
+            }
+
+            @Override
+            protected void onUpgrade(final int oldVersion, final int newVersion) {
+
+            }
+        };
+        assertEquals(0, modulePreferences.getAll().size());
+        modulePreferences.annexModule("nothing");
+        assertEquals(0, modulePreferences.getAll().size());
+
+        final TrayModulePreferences oldPrefs = new TestTrayModulePreferences(
+                getProviderMockContext(), "old");
+        oldPrefs.put("key", "value");
+        assertEquals(1, oldPrefs.getAll().size());
+
+        modulePreferences.annexModule("old");
+        assertEquals(1, modulePreferences.getAll().size());
+        assertEquals(0, oldPrefs.getAll().size());
     }
 }

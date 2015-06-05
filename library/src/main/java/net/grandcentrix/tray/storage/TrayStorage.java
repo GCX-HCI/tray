@@ -107,6 +107,11 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
+    public void put(final TrayItem item) {
+        mProviderHelper.persist(getModuleName(), item.key(), item.migratedKey(), item.value());
+    }
+
+    @Override
     public void put(@NonNull final String key, @Nullable final Object data) {
         put(key, null, data);
     }
@@ -142,5 +147,13 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void setVersion(final int version) {
         mProviderHelper.persistInternal(getModuleName(), VERSION, String.valueOf(version));
+    }
+
+    @Override
+    public void annexModule(final ModularizedStorage<TrayItem> oldStorage) {
+        for (final TrayItem trayItem : oldStorage.getAll()) {
+            put(trayItem);
+        }
+        oldStorage.wipe();
     }
 }

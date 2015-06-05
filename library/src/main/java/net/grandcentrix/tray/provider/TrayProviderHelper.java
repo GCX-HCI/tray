@@ -80,7 +80,7 @@ public class TrayProviderHelper {
             if (module == null) {
                 continue;
             }
-            String moduleName = module.getModularizedStorage().getModuleName();
+            String moduleName = module.getName();
             selection = SqliteHelper
                     .extendSelection(selection, TrayContract.Preferences.Columns.MODULE + " != ?");
             selectionArgs = SqliteHelper

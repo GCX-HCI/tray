@@ -34,6 +34,11 @@ public abstract class TrayPreference extends Preference<TrayItem> {
     }
 
     @Override
+    public void wipe() {
+
+    }
+
+    @Override
     public boolean getBoolean(@NonNull final String key, final boolean defaultValue) {
         try {
             return getBoolean(key);
@@ -108,10 +113,6 @@ public abstract class TrayPreference extends Preference<TrayItem> {
         }
     }
 
-    public ModularizedStorage<TrayItem> getModularizedStorage() {
-        return (ModularizedStorage<TrayItem>) super.getStorage();
-    }
-
     @Override
     public String getString(@NonNull final String key) throws ItemNotFoundException {
         final TrayItem pref = getPref(key);
@@ -129,6 +130,14 @@ public abstract class TrayPreference extends Preference<TrayItem> {
         } catch (ItemNotFoundException e) {
             return defaultValue;
         }
+    }
+
+    public String getName() {
+        return getModularizedStorage().getModuleName();
+    }
+
+    protected ModularizedStorage<TrayItem> getModularizedStorage() {
+        return (ModularizedStorage<TrayItem>) super.getStorage();
     }
 
     /**
