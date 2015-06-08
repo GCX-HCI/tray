@@ -147,6 +147,8 @@ You can run the coverage report with `./gradlew createDebugCoverageReport`. You'
 
 ![coverage report](http://i.imgur.com/V4OQsiY.png)
 
+You can check the coverage report at [codecov.io](https://codecov.io/github/grandcentrix/tray?branch=master)
+
 Those ~120 tests will help us indicate bugs in the future before we publish them. Don't think the code is 100% bug free based on the test coverage.
 
 ## Build state
