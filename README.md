@@ -153,8 +153,8 @@ Those ~120 tests will help us indicate bugs in the future before we publish them
 
 Branch | Status | Coverage
 ------------- | ------------- | -------------
-[`master`](https://github.com/grandcentrix/tray/tree/master) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) | ![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=master)
-[`develop`](https://github.com/grandcentrix/tray/tree/develop) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=develop)](https://travis-ci.org/grandcentrix/tray) | ![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=develop)
+[`master`](https://github.com/grandcentrix/tray/tree/master) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) | [![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=master)](https://codecov.io/github/grandcentrix/tray?branch=master)
+[`develop`](https://github.com/grandcentrix/tray/tree/develop) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=develop)](https://travis-ci.org/grandcentrix/tray) | [![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=develop)](https://codecov.io/github/grandcentrix/tray?branch=develop)
 
 ## ContentProvider is overkill
 
