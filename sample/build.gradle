@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 'android-MNC'
     buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "net.grandcentrix.tray.sample"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 'MNC'
         versionCode 1
         versionName "1.1"
 

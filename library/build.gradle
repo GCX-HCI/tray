@@ -6,12 +6,12 @@ def final String VERSION_NAME = "0.10.0"
 def final int VERSION_CODE = 6
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 'android-MNC'
     buildToolsVersion "21.1.2"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 'MNC'
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
