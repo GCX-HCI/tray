@@ -52,7 +52,9 @@ public class TrayProvider extends ContentProvider {
 
     private static UriMatcher sURIMatcher;
 
-    TrayDBHelper mDbHelper;
+    TrayDBHelper mUserDbHelper;
+
+    TrayDBHelper mDeviceDbHelper;
 
     @Override
     public int delete(final Uri uri, String selection, String[] selectionArgs) {
@@ -80,7 +82,7 @@ public class TrayProvider extends ContentProvider {
                 throw new IllegalArgumentException("Delete is not supported for Uri: " + uri);
         }
 
-        final int rows = getWritableDatabase()
+        final int rows = getWritableDatabase(uri)
                 .delete(getTable(uri), selection, selectionArgs);
 
         // Don't force an UI refresh if nothing has changed
@@ -92,7 +94,7 @@ public class TrayProvider extends ContentProvider {
     }
 
     public SQLiteDatabase getReadableDatabase() {
-        return mDbHelper.getReadableDatabase();
+        return mUserDbHelper.getReadableDatabase();
     }
 
     /**
@@ -123,8 +125,12 @@ public class TrayProvider extends ContentProvider {
         return null;
     }
 
-    public SQLiteDatabase getWritableDatabase() {
-        return mDbHelper.getWritableDatabase();
+    public SQLiteDatabase getWritableDatabase(final Uri uri) {
+        if (shouldBackup(uri)) {
+            return mUserDbHelper.getWritableDatabase();
+        } else {
+            return mDeviceDbHelper.getWritableDatabase();
+        }
     }
 
     @Override
@@ -155,7 +161,7 @@ public class TrayProvider extends ContentProvider {
 
         final String[] excludeForUpdate = {TrayContract.Preferences.Columns.CREATED};
 
-        final int status = insertOrUpdate(getWritableDatabase(), getTable(uri),
+        final int status = insertOrUpdate(getWritableDatabase(uri), getTable(uri),
                 prefSelection, prefSelectionArgs, values, excludeForUpdate);
 
         if (status >= 0) {
@@ -185,7 +191,8 @@ public class TrayProvider extends ContentProvider {
     public boolean onCreate() {
         setAuthority(getContext().getString(R.string.tray__authority));
 
-        mDbHelper = new TrayDBHelper(getContext());
+        mUserDbHelper = new TrayDBHelper(getContext(), true);
+        mDeviceDbHelper = new TrayDBHelper(getContext(), false);
         return true;
     }
 
@@ -232,7 +239,7 @@ public class TrayProvider extends ContentProvider {
 
     @Override
     public void shutdown() {
-        mDbHelper.close();
+        mUserDbHelper.close();
     }
 
     @Override
@@ -256,7 +263,7 @@ public class TrayProvider extends ContentProvider {
                 throw new IllegalArgumentException("Update is not supported for Uri: " + uri);
         }
 
-        final int rows = mDbHelper.getWritableDatabase()
+        final int rows = mUserDbHelper.getWritableDatabase()
                 .update(getTable(uri), values, selection, selectionArgs);
 
         // Don't force an UI refresh if nothing has changed
@@ -265,6 +272,17 @@ public class TrayProvider extends ContentProvider {
         }
 
         return rows;*/
+    }
+
+    /**
+     * checks the uri for the backup param. default is that
+     *
+     * @param uri contentUri
+     * @return default true or false for {@code /the/uri&backup=false}
+     */
+    private boolean shouldBackup(final Uri uri) {
+        final String backup = uri.getQueryParameter("backup");
+        return !"false".equals(backup);
     }
 
     /**

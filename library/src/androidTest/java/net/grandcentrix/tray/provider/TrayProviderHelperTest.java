@@ -17,11 +17,9 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.AppPreferences;
-import net.grandcentrix.tray.TrayAppPreferences;
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.accessor.ModularizedTrayPreferences;
-import net.grandcentrix.tray.accessor.Preferences;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
+import net.grandcentrix.tray.storage.TrayStorage;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -53,6 +51,8 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     final String STRING_B = "fooBar2";
 
     private TrayProviderHelper mProviderHelper;
+
+    private TrayUri mTrayUri;
 
     public void testClear() throws Exception {
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
@@ -113,7 +113,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         final long start = System.currentTimeMillis();
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         final List<TrayItem> list = mProviderHelper
-                .queryProvider(mProviderHelper.getUri(MODULE_A, KEY_A));
+                .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
         assertEquals(1, list.size());
         TrayItem itemA = list.get(0);
@@ -152,16 +152,6 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertEquals(4, all.size());
     }
 
-    public void testGetUriWithoutModule() throws Exception {
-
-        try {
-            mProviderHelper.getUri(null, "key");
-            fail();
-        } catch (Exception e) {
-            assertTrue(e.getMessage().contains("module"));
-        }
-    }
-
     public void testPersist() throws Exception {
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         assertDatabaseSize(1);
@@ -194,7 +184,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     public void testQueryAll() throws Exception {
         buildQueryDatabase();
         final List<TrayItem> list = mProviderHelper
-                .queryProvider(mProviderHelper.getUri());
+                .queryProvider(mTrayUri.get());
         assertNotNull(list);
         assertEquals(4, list.size());
     }
@@ -207,10 +197,14 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     public void testQueryModule() throws Exception {
         buildQueryDatabase();
         final List<TrayItem> list = mProviderHelper
-                .queryProvider(mProviderHelper.getUri(MODULE_A));
+                .queryProvider(getUri(MODULE_A));
         assertNotNull(list);
         assertEquals(2, list.size());
         assertNotSame(list.get(0).value(), list.get(1).value());
+    }
+
+    private Uri getUri(final String module) {
+        return mTrayUri.builder().setType(TrayStorage.Type.USER).setModule(module).build();
     }
 
     public void testQueryProviderWithUnregisteredProvider() throws Exception {
@@ -218,7 +212,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         final ContentResolver contentResolver = mock(ContentResolver.class);
         when(context.getContentResolver()).thenReturn(contentResolver);
         final TrayProviderHelper trayProviderHelper = new TrayProviderHelper(context);
-        final Uri uri = trayProviderHelper.getUri();
+        final Uri uri = mTrayUri.get();
         try {
             trayProviderHelper.queryProvider(uri);
             fail();
@@ -230,7 +224,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     public void testQuerySingle() throws Exception {
         buildQueryDatabase();
         final List<TrayItem> list = mProviderHelper
-                .queryProvider(mProviderHelper.getUri(MODULE_A, KEY_A));
+                .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
         assertEquals(1, list.size());
         assertEquals(STRING_A, list.get(0).value());
@@ -239,7 +233,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     public void testReadParsedProperties() throws Exception {
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         final List<TrayItem> list = mProviderHelper
-                .queryProvider(mProviderHelper.getUri(MODULE_A, KEY_A));
+                .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
         assertEquals(1, list.size());
         TrayItem itemA = list.get(0);
@@ -271,7 +265,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     public void testUpdateChanges() throws Exception {
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         final List<TrayItem> list = mProviderHelper
-                .queryProvider(mProviderHelper.getUri(MODULE_A, KEY_A));
+                .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
         assertEquals(1, list.size());
         TrayItem itemA = list.get(0);
@@ -281,7 +275,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         Thread.sleep(10);
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_B);
         final List<TrayItem> list2 = mProviderHelper
-                .queryProvider(mProviderHelper.getUri(MODULE_A, KEY_A));
+                .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list2);
         assertEquals(1, list2.size());
         TrayItem itemB = list2.get(0);
@@ -292,7 +286,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     public void testUpdateEqualsCreatedAtFirst() throws Exception {
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
         final List<TrayItem> list = mProviderHelper
-                .queryProvider(mProviderHelper.getUri(MODULE_A, KEY_A));
+                .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
         assertEquals(1, list.size());
         TrayItem itemA = list.get(0);
@@ -305,12 +299,21 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         mProviderHelper = new TrayProviderHelper(getProviderMockContext());
+        mTrayUri = new TrayUri(getProviderMockContext());
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         mProviderHelper = null;
+    }
+
+    private Uri getUri(final String module, final String key) {
+        return mTrayUri.builder()
+                .setModule(module)
+                .setKey(key)
+                .setType(TrayStorage.Type.USER)
+                .build();
     }
 
     private void assertEqualsWithin(long expected, long value, long fudgeFactor) {
@@ -333,7 +336,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertDatabaseSize(1);
 
         final List<TrayItem> list = mProviderHelper
-                .queryProvider(mProviderHelper.getUri(module));
+                .queryProvider(getUri(module));
         assertEquals(1, list.size());
         assertEquals(module, list.get(0).module());
         assertEquals(key, list.get(0).key());

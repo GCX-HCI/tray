@@ -28,7 +28,7 @@ import android.support.annotation.NonNull;
  * <p>
  * A {@link Preferences} where the module name depends on the
  * developer. Extending this class should be preferred compared to the usage of the {@link
- * net.grandcentrix.tray.TrayAppPreferences}.
+ * AppPreferences}.
  * <p>
  * This class gives the developer the opportunity to remove whole modules without knowing each
  * single preference key.
@@ -39,12 +39,21 @@ import android.support.annotation.NonNull;
 public abstract class TrayPreferences extends ModularizedTrayPreferences<TrayStorage> {
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
+            final int version, final TrayStorage.Type type) {
+        super(new TrayStorage(context, module, type), version);
+    }
+
+    public TrayPreferences(@NonNull final Context context, @NonNull final String module,
             final int version) {
-        super(new TrayStorage(context, module), version);
+        this(context, module, version, TrayStorage.Type.USER);
+    }
+
+    public void annexModule(final String oldStorageName, final TrayStorage.Type type) {
+        super.annex(new TrayStorage(getContext(), oldStorageName, type));
     }
 
     public void annexModule(final String oldStorageName) {
-        super.annex(new TrayStorage(getContext(), oldStorageName));
+        annexModule(oldStorageName, TrayStorage.Type.UNDEFINED);
     }
 
     protected Context getContext() {

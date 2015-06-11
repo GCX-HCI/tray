@@ -34,6 +34,8 @@ public class TrayDBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "tray.db";
 
+    public static final String DATABASE_NAME_NO_BACKUP = "tray_backup_excluded.db";
+
     public static final String KEY = "KEY";
 
     public static final String VALUE = "VALUE";
@@ -93,7 +95,11 @@ public class TrayDBHelper extends SQLiteOpenHelper {
     }
 
     public TrayDBHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this(context, true);
+    }
+
+    public TrayDBHelper(Context context, final boolean backup) {
+        super(context, backup ? DATABASE_NAME : DATABASE_NAME_NO_BACKUP, null, DATABASE_VERSION);
         mCreateVersion = DATABASE_VERSION;
     }
 

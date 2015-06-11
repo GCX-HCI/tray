@@ -17,7 +17,9 @@
 package net.grandcentrix.tray.sample;
 
 import net.grandcentrix.tray.AppPreferences;
+import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.migration.SharedPreferencesImport;
+import net.grandcentrix.tray.storage.TrayStorage;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -90,6 +92,12 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                     .putString("userToken", UUID.randomUUID().toString())
                     .putString("gcmToken", UUID.randomUUID().toString())
                     .commit();
+
+            final TrayPreferences nobackup = new TrayPreferences(this, "nobackup", 1,
+                    TrayStorage.Type.DEVICE){
+
+            };
+            nobackup.put("deviceId", UUID.randomUUID().toString());
         }
 
         if (savedInstanceState == null) {

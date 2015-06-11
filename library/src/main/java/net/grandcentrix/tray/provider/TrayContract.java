@@ -31,6 +31,9 @@ import android.util.Log;
 @SuppressWarnings("unused")
 public class TrayContract {
 
+    /**
+     * default preferences
+     */
     public interface Preferences {
 
         interface Columns extends BaseColumns {
@@ -53,6 +56,9 @@ public class TrayContract {
         String BASE_PATH = "preferences";
     }
 
+    /**
+     * trays internal preferences to hold things like the version number
+     */
     public interface InternalPreferences extends Preferences {
 
         String BASE_PATH = "internal_preferences";
