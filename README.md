@@ -174,6 +174,15 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 - no support to save `Set<String>`. Is someone using this?
 - more metadata fields: (i.e. app version code/name)
 
+## Roadmap
+
+- Last changes in naming before 1.0
+- rename modules and migrate modules into other modules (and the migration documentation is missing)
+- save additional data types (`Set<String>`, `byte[]`)
+- Observe changes with a `ContentObserver`
+- rx wrapper for changes
+- performance tests
+
 ## Versions
 
 ##### Version 0.9.2 `02.06.15`
