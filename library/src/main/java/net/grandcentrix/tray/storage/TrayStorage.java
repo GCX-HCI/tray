@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
- * Implements the functionality between the {@link net.grandcentrix.tray.accessor.TrayPreference}
+ * Implements the functionality between the {@link net.grandcentrix.tray.TrayPreferences}
  * and the {@link net.grandcentrix.tray.provider.TrayProvider}. Uses functions of the {@link
  * net.grandcentrix.tray.provider.TrayProviderHelper} for simple and unified access to the
  * provider.
@@ -59,7 +59,23 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void clear() {
-        final Uri uri = mProviderHelper.getUri().buildUpon().appendPath(getModuleName())
+        final Uri uri = mProviderHelper.getUri().buildUpon()
+                .appendPath(getModuleName())
+                .build();
+        mContext.getContentResolver().delete(uri, null, null);
+    }
+
+    /**
+     * clear the data inside the preference and all evidence this preference has ever existed
+     * <p>
+     * also cleans internal information like the version for this preference
+     *
+     * @see #clear()
+     */
+    public void wipe() {
+        clear();
+        final Uri uri = mProviderHelper.getInternalUri().buildUpon()
+                .appendPath(getModuleName())
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
     }
@@ -88,6 +104,11 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
             return 0;
         }
         return Integer.valueOf(trayItems.get(0).value());
+    }
+
+    @Override
+    public void put(final TrayItem item) {
+        mProviderHelper.persist(getModuleName(), item.key(), item.migratedKey(), item.value());
     }
 
     @Override
@@ -126,5 +147,13 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void setVersion(final int version) {
         mProviderHelper.persistInternal(getModuleName(), VERSION, String.valueOf(version));
+    }
+
+    @Override
+    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
+        for (final TrayItem trayItem : oldStorage.getAll()) {
+            put(trayItem);
+        }
+        oldStorage.wipe();
     }
 }

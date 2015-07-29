@@ -25,11 +25,11 @@ import android.support.annotation.Nullable;
 /**
  * Created by pascalwelsch on 11/20/14.
  */
-public abstract class TrayPreference extends Preference<TrayItem> {
+public abstract class ModularizedTrayPreferences<T extends ModularizedStorage<TrayItem>> extends
+        Preferences<TrayItem, T> {
 
-    private static final String TAG = TrayPreference.class.getSimpleName();
-
-    public TrayPreference(final ModularizedStorage<TrayItem> storage, final int version) {
+    protected ModularizedTrayPreferences(@NonNull final T storage,
+            final int version) {
         super(storage, version);
     }
 
@@ -108,10 +108,6 @@ public abstract class TrayPreference extends Preference<TrayItem> {
         }
     }
 
-    public ModularizedStorage<TrayItem> getModularizedStorage() {
-        return (ModularizedStorage<TrayItem>) super.getStorage();
-    }
-
     @Override
     public String getString(@NonNull final String key) throws ItemNotFoundException {
         final TrayItem pref = getPref(key);
@@ -129,6 +125,25 @@ public abstract class TrayPreference extends Preference<TrayItem> {
         } catch (ItemNotFoundException e) {
             return defaultValue;
         }
+    }
+
+    /**
+     * @return the module name of this preference
+     */
+    public String getName() {
+        return getStorage().getModuleName();
+    }
+
+    /**
+     * imports all data from an old storage. Use this if you have changed the module name
+     * <p>
+     * Call this in {@link #onCreate(int)}. The created and updated fields of the old {@link
+     * TrayItem}s will be lost. The old data gets deleted completely.
+     *
+     * @param oldStorage the old storage
+     */
+    protected void annex(final T oldStorage) {
+        getStorage().annex(oldStorage);
     }
 
     /**

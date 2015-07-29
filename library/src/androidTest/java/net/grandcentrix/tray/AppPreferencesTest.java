@@ -18,24 +18,14 @@ package net.grandcentrix.tray;
 
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
-public class TrayModulePreferencesTest extends TrayProviderTestCase {
+public class AppPreferencesTest extends TrayProviderTestCase {
 
-    public void testGetContext() throws Exception {
-        final TrayModulePreferences modulePreferences = new TrayModulePreferences(
-                getProviderMockContext(), "test", 1) {
-
-            @Override
-            protected void onCreate(final int newVersion) {
-
-            }
-
-            @Override
-            protected void onUpgrade(final int oldVersion, final int newVersion) {
-
-            }
-        };
-
-        assertEquals(getProviderMockContext().getApplicationContext(),
-                modulePreferences.getContext());
+    public void testInstantiation() throws Exception {
+        new AppPreferences(getProviderMockContext());
     }
+
+    public void testLegacyInstantiation() throws Exception {
+        new TrayAppPreferences(getProviderMockContext());
+    }
+
 }

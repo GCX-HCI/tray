@@ -29,9 +29,21 @@ import java.util.Collection;
 public interface PreferenceStorage<T> {
 
     /**
-     * clears the storage and wipes all of its content
+     * clears the storage by deleting all of its content. But doesn't clear metadata like the
+     * version. to do so, use {@link #wipe()}
+     *
+     * @see #wipe()
+     * @see #getVersion()
      */
     void clear();
+
+    /**
+     * deleted this storage like it has never existed. removed saved data and all possible meta
+     * data
+     *
+     * @see #clear()
+     */
+    void wipe();
 
     /**
      * @param key mapping key for the stored object
@@ -51,6 +63,12 @@ public interface PreferenceStorage<T> {
      * @see #setVersion(int)
      */
     int getVersion();
+
+    /**
+     * stores a data item.
+     * @param item data object
+     */
+    void put(T item);
 
     /**
      * same as {@link #put(String, Object)} but with an additional migration key to save where the

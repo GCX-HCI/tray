@@ -74,10 +74,11 @@ public class SharedPreferencesImport implements TrayMigration {
     @Override
     public boolean shouldMigrate() {
         if (mPreferences.contains(mSharedPrefsKey)) {
-            Log.v(TAG, "SharedPreference with key '" + mSharedPrefsKey
-                    + "' not found. skipped import");
             return true;
         }
+
+        Log.v(TAG, "SharedPreference with key '" + mSharedPrefsKey
+                + "' not found. skipped import");
         return false;
     }
 

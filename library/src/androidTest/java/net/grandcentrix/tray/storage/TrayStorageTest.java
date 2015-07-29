@@ -49,6 +49,18 @@ public class TrayStorageTest extends TrayProviderTestCase {
         assertDatabaseSize(trayProviderHelper.getUri(MODULE2), 1, true);
     }
 
+    public void testClear2() throws Exception {
+        mStorage.put("key", "value");
+        assertEquals("value", mStorage.get("key").value());
+        mStorage.setVersion(1);
+        assertEquals(1, mStorage.getVersion());
+
+        mStorage.clear();
+        assertNull(mStorage.get("key"));
+        assertEquals(0, mStorage.getAll().size());
+        assertEquals(1, mStorage.getVersion());
+    }
+
     public void testGet() throws Exception {
         assertNull(mStorage.get("something"));
 
@@ -118,6 +130,18 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
         mStorage.setVersion(25);
         assertEquals(25, mStorage.getVersion());
+    }
+
+    public void testWipe() throws Exception {
+        mStorage.put("key", "value");
+        assertEquals("value", mStorage.get("key").value());
+        mStorage.setVersion(1);
+        assertEquals(1, mStorage.getVersion());
+
+        mStorage.wipe();
+        assertNull(mStorage.get("key"));
+        assertEquals(0, mStorage.getAll().size());
+        assertEquals(0, mStorage.getVersion());
     }
 
     @Override

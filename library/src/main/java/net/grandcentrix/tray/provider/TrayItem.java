@@ -87,6 +87,7 @@ public class TrayItem {
 
         //noinspection StringBufferReplaceableByString
         return new StringBuilder()
+                .append("{")
                 .append("key: ")
                 .append(mKey)
                 .append(", value: ")
@@ -99,6 +100,7 @@ public class TrayItem {
                 .append(sf.format(mUpdated))
                 .append(", migratedKey: ")
                 .append(mMigratedKey)
+                .append("}")
                 .toString();
     }
 

@@ -35,6 +35,15 @@ public interface PreferenceAccessor<T> {
     void clear();
 
     /**
+     * clear the data inside the preference and all evidence this preference has ever existed
+     * <p>
+     * also cleans internal information like the version for this preference
+     *
+     * @see #clear()
+     */
+    void wipe();
+
+    /**
      * @return all data stored in the preference
      */
     Collection<T> getAll();

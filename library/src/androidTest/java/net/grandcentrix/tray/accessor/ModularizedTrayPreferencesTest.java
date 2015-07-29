@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 
 import net.grandcentrix.tray.mock.MockModularizedStorage;
 
-public class TrayPreferenceTest extends TestCase {
+public class ModularizedTrayPreferencesTest extends TestCase {
 
     private static final String KEY = "key";
 
@@ -36,7 +36,22 @@ public class TrayPreferenceTest extends TestCase {
 
     final String TEST_STRING = "fooBar";
 
-    private TrayPreference mTrayAccessor;
+    private ModularizedTrayPreferences mTrayAccessor;
+
+    public void testAnnexModule() throws Exception {
+        final MockSimplePreferences modulePreferences = new MockSimplePreferences(
+                new MockModularizedStorage("test"), 1);
+        assertEquals(0, modulePreferences.getAll().size());
+        modulePreferences.annex(new MockModularizedStorage("other"));
+        assertEquals(0, modulePreferences.getAll().size());
+        final MockModularizedStorage oldStorage = new MockModularizedStorage("old");
+        final MockSimplePreferences oldPrefs = new MockSimplePreferences(oldStorage, 1);
+        oldPrefs.put("key", "value");
+        assertEquals(1, oldPrefs.getAll().size());
+        modulePreferences.annex(oldStorage);
+        assertEquals(1, modulePreferences.getAll().size());
+        assertEquals(0, oldPrefs.getAll().size());
+    }
 
     public void testBoolean() throws Exception {
         mTrayAccessor.put(KEY, TEST_BOOL);
@@ -71,17 +86,8 @@ public class TrayPreferenceTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mTrayAccessor = new TrayPreference(new MockModularizedStorage("test"), 1) {
-
-            @Override
-            protected void onCreate(final int newVersion) {
-
-            }
-
-            @Override
-            protected void onUpgrade(final int oldVersion, final int newVersion) {
-
-            }
+        mTrayAccessor = new ModularizedTrayPreferences<MockModularizedStorage>(
+                new MockModularizedStorage("test"), 1) {
         };
 
     }
