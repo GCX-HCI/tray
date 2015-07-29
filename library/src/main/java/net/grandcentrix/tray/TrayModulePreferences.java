@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 
 /**
  * Created by pascalwelsch on 6/5/15.
+ *
+ * use {@link @TrayPreferences} instead. Only the name was changed
  */
 @Deprecated
 public class TrayModulePreferences extends TrayPreferences {

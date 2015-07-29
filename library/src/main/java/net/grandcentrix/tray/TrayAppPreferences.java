@@ -19,7 +19,7 @@ package net.grandcentrix.tray;
 import android.content.Context;
 
 /**
- * Use {@link TrayPreferences} instead. This was only a naming thing.
+ * Use {@link AppPreferences} instead. This was only a naming thing.
  */
 @Deprecated
 public class TrayAppPreferences extends TrayPreferences {

@@ -26,12 +26,15 @@ import android.util.Log;
 import java.util.Collection;
 
 /**
- * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}.
- * The access to this storage defines the {@link PreferenceAccessor} interface.
- * <p>
+ * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}. The
+ * access to this storage defines the {@link PreferenceAccessor} interface.
+ * <p/>
+ * Saves type T in a Storage of type T
+ * <p/>
  * Created by pascalwelsch on 11/20/14.
  */
-public abstract class Preferences<T, S extends PreferenceStorage<T>> implements PreferenceAccessor<T> {
+public abstract class Preferences<T, S extends PreferenceStorage<T>>
+        implements PreferenceAccessor<T> {
 
     private static final String TAG = Preferences.class.getSimpleName();
 
@@ -46,6 +49,13 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>> implements 
                 || data == null;
     }
 
+    /**
+     * {@link Preferences} allows access to a storage with unfriendly util functions like versioning
+     * and migrations of data
+     *
+     * @param storage the underlying data store for the saved data
+     * @param version user defined version. based on this {@link #onUpgrade(int, int)} gets called.
+     */
     public Preferences(final S storage, final int version) {
         mStorage = storage;
 
@@ -154,7 +164,6 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>> implements 
      * </pre>
      * compareable to the mechanism in  {@link android.database.sqlite.SQLiteOpenHelper#getWritableDatabase()}
      */
-    // TODO PW is public useful?
     /*package*/
     synchronized void changeVersion(final int newVersion) {
         if (newVersion < 1) {
@@ -187,6 +196,8 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>> implements 
      * migration from other data source should happen.
      *
      * @param initialVersion the version set in the constructor, always &gt; 0
+     * @see #onUpgrade(int, int)
+     * @see #onDowngrade(int, int)
      */
     protected void onCreate(final int initialVersion) {
 
@@ -197,6 +208,8 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>> implements 
      *
      * @param oldVersion version before downgrade
      * @param newVersion version to downgrade to, always &gt; 0
+     * @see #onCreate(int)
+     * @see #onUpgrade(int, int)
      */
     protected void onDowngrade(final int oldVersion, final int newVersion) {
         throw new IllegalStateException("Can't downgrade from version " +
@@ -206,13 +219,14 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>> implements 
     /**
      * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
      * over time.
-     * <p>
-     * Once the version in the constructor is increased the next constructor call to this
-     * Preference
+     * <p/>
+     * Once the version in the constructor is increased the next constructor call to this Preference
      * will trigger an upgrade.
      *
      * @param oldVersion version before upgrade, always &gt; 0
      * @param newVersion version after upgrade
+     * @see #onCreate(int)
+     * @see #onDowngrade(int, int)
      */
     protected void onUpgrade(final int oldVersion, final int newVersion) {
         throw new IllegalStateException("Can't upgrade database from version " +

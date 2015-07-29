@@ -127,6 +127,9 @@ public abstract class ModularizedTrayPreferences<T extends ModularizedStorage<Tr
         }
     }
 
+    /**
+     * @return the module name of this preference
+     */
     public String getName() {
         return getStorage().getModuleName();
     }
