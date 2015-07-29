@@ -28,9 +28,9 @@ import java.util.Collection;
 /**
  * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}. The
  * access to this storage defines the {@link PreferenceAccessor} interface.
- * <p/>
+ * <p>
  * Saves type T in a Storage of type T
- * <p/>
+ * <p>
  * Created by pascalwelsch on 11/20/14.
  */
 public abstract class Preferences<T, S extends PreferenceStorage<T>>
@@ -219,7 +219,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     /**
      * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
      * over time.
-     * <p/>
+     * <p>
      * Once the version in the constructor is increased the next constructor call to this Preference
      * will trigger an upgrade.
      *

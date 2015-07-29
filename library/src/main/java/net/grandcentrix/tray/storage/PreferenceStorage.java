@@ -66,7 +66,7 @@ public interface PreferenceStorage<T> {
 
     /**
      * stores a data item.
-     * @param item
+     * @param item data object
      */
     void put(T item);
 
