@@ -26,8 +26,8 @@ import android.util.Log;
 import java.util.Collection;
 
 /**
- * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}. The
- * access to this storage defines the {@link PreferenceAccessor} interface.
+ * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}.
+ * The access to this storage defines the {@link PreferenceAccessor} interface.
  * <p>
  * Saves type T in a Storage of type T
  * <p>
@@ -50,7 +50,8 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     }
 
     /**
-     * {@link Preferences} allows access to a storage with unfriendly util functions like versioning
+     * {@link Preferences} allows access to a storage with unfriendly util functions like
+     * versioning
      * and migrations of data
      *
      * @param storage the underlying data store for the saved data
@@ -68,13 +69,14 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     }
 
     @Override
-    public void wipe() {
-        mStorage.wipe();
-    }
-
-    @Override
     public Collection<T> getAll() {
         return mStorage.getAll();
+    }
+
+    @Nullable
+    @Override
+    public T getPref(@NonNull final String key) {
+        return mStorage.get(key);
     }
 
     /**
@@ -82,12 +84,6 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
      */
     public int getVersion() {
         return mStorage.getVersion();
-    }
-
-    @Nullable
-    @Override
-    public T getPref(@NonNull final String key) {
-        return mStorage.get(key);
     }
 
     /**
@@ -152,39 +148,9 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
         mStorage.remove(key);
     }
 
-    /**
-     * Changes the version of this preferences. checks for version changes and calls the correct
-     * handling methods.
-     * <pre>
-     * <ul>
-     * <li>{@link #onCreate(int)} when there is no previous version</li>
-     * <li>{@link #onUpgrade(int, int)} for an increasing version</li>
-     * <li>{@link #onDowngrade(int, int)} for a decreasing version</li>
-     * </ul>
-     * </pre>
-     * compareable to the mechanism in  {@link android.database.sqlite.SQLiteOpenHelper#getWritableDatabase()}
-     */
-    /*package*/
-    synchronized void changeVersion(final int newVersion) {
-        if (newVersion < 1) {
-            // negative versions are illegal.
-            // 0 is reserved to detect the initial state
-            throw new IllegalArgumentException("Version must be >= 1, was " + newVersion);
-        }
-
-        final int version = getStorage().getVersion();
-        if (version != newVersion) {
-            if (version == 0) {
-                onCreate(newVersion);
-            } else {
-                if (version > newVersion) {
-                    onDowngrade(version, newVersion);
-                } else {
-                    onUpgrade(version, newVersion);
-                }
-            }
-        }
-        getStorage().setVersion(newVersion);
+    @Override
+    public void wipe() {
+        mStorage.wipe();
     }
 
     protected S getStorage() {
@@ -220,7 +186,8 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
      * Called when the Preference needs to be upgraded. Use this to migrate data in this Preference
      * over time.
      * <p>
-     * Once the version in the constructor is increased the next constructor call to this Preference
+     * Once the version in the constructor is increased the next constructor call to this
+     * Preference
      * will trigger an upgrade.
      *
      * @param oldVersion version before upgrade, always &gt; 0
@@ -231,5 +198,40 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     protected void onUpgrade(final int oldVersion, final int newVersion) {
         throw new IllegalStateException("Can't upgrade database from version " +
                 oldVersion + " to " + newVersion + ", not implemented.");
+    }
+
+    /**
+     * Changes the version of this preferences. checks for version changes and calls the correct
+     * handling methods.
+     * <pre>
+     * <ul>
+     * <li>{@link #onCreate(int)} when there is no previous version</li>
+     * <li>{@link #onUpgrade(int, int)} for an increasing version</li>
+     * <li>{@link #onDowngrade(int, int)} for a decreasing version</li>
+     * </ul>
+     * </pre>
+     * compareable to the mechanism in  {@link android.database.sqlite.SQLiteOpenHelper#getWritableDatabase()}
+     */
+    /*package*/
+    synchronized void changeVersion(final int newVersion) {
+        if (newVersion < 1) {
+            // negative versions are illegal.
+            // 0 is reserved to detect the initial state
+            throw new IllegalArgumentException("Version must be >= 1, was " + newVersion);
+        }
+
+        final int version = getStorage().getVersion();
+        if (version != newVersion) {
+            if (version == 0) {
+                onCreate(newVersion);
+            } else {
+                if (version > newVersion) {
+                    onDowngrade(version, newVersion);
+                } else {
+                    onUpgrade(version, newVersion);
+                }
+            }
+        }
+        getStorage().setVersion(newVersion);
     }
 }
