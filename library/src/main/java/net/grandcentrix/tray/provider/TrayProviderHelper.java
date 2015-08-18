@@ -109,6 +109,18 @@ public class TrayProviderHelper {
         persist(module, key, previousKey, value, false, false);
     }
 
+    public void persist(@NonNull final Uri uri, @Nullable String value) {
+        persist(uri, value, null);
+    }
+
+    public void persist(@NonNull final Uri uri, @Nullable String value,
+            @Nullable final String previousKey) {
+        ContentValues values = new ContentValues();
+        values.put(TrayContract.Preferences.Columns.VALUE, value);
+        values.put(TrayContract.Preferences.Columns.MIGRATED_KEY, previousKey);
+        mContext.getContentResolver().insert(uri, values);
+    }
+
     /**
      * saves data internally, not accessible with public api
      *
@@ -154,18 +166,6 @@ public class TrayProviderHelper {
     public void wipe() {
         clear();
         mContext.getContentResolver().delete(mTrayUri.getInternal(), null, null);
-    }
-
-    public void persist(@NonNull final Uri uri, @Nullable String value) {
-        persist(uri, value, null);
-    }
-
-    public void persist(@NonNull final Uri uri, @Nullable String value,
-            @Nullable final String previousKey) {
-        ContentValues values = new ContentValues();
-        values.put(TrayContract.Preferences.Columns.VALUE, value);
-        values.put(TrayContract.Preferences.Columns.MIGRATED_KEY, previousKey);
-        mContext.getContentResolver().insert(uri, values);
     }
 
     /**

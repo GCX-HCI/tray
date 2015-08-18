@@ -54,9 +54,9 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     private final TrayProviderHelper mProviderHelper;
 
-    private final Type mType;
-
     private final TrayUri mTrayUri;
+
+    private final Type mType;
 
     public TrayStorage(@NonNull final Context context, @NonNull final String module,
             final Type type) {

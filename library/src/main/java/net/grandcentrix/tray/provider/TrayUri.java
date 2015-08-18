@@ -13,46 +13,16 @@ public class TrayUri {
 
     public final class Builder {
 
-        private String mModule;
+        private boolean mInternal;
 
         private String mKey;
 
-        private Type mStorage = Type.UNDEFINED;
+        private String mModule;
 
-        private boolean mInternal;
+        private Type mStorage = Type.UNDEFINED;
 
         public Builder(final Context context) {
             mContext = context.getApplicationContext();
-        }
-
-        public Builder setType(Type storage) {
-            mStorage = storage;
-            return this;
-        }
-
-        /**
-         * same as {@link #setType(Type)} but sets either {@link Type#USER} or {@link Type#DEVICE}.
-         * Not calling this results in {@link Type#UNDEFINED}.
-         */
-        @Deprecated
-        public Builder isDeviceSpecific(final boolean deviceSpecific) {
-            mStorage = deviceSpecific ? Type.DEVICE : Type.USER;
-            return this;
-        }
-
-        public Builder setModule(final String module) {
-            mModule = module;
-            return this;
-        }
-
-        public Builder setKey(final String key) {
-            mKey = key;
-            return this;
-        }
-
-        public Builder setInternal(final boolean internal) {
-            mInternal = internal;
-            return this;
         }
 
         public Uri build() {
@@ -69,6 +39,36 @@ public class TrayUri {
                         Type.USER.equals(mStorage) ? "true" : "false");
             }
             return builder.build();
+        }
+
+        /**
+         * same as {@link #setType(Type)} but sets either {@link Type#USER} or {@link Type#DEVICE}.
+         * Not calling this results in {@link Type#UNDEFINED}.
+         */
+        @Deprecated
+        public Builder isDeviceSpecific(final boolean deviceSpecific) {
+            mStorage = deviceSpecific ? Type.DEVICE : Type.USER;
+            return this;
+        }
+
+        public Builder setInternal(final boolean internal) {
+            mInternal = internal;
+            return this;
+        }
+
+        public Builder setKey(final String key) {
+            mKey = key;
+            return this;
+        }
+
+        public Builder setModule(final String module) {
+            mModule = module;
+            return this;
+        }
+
+        public Builder setType(Type storage) {
+            mStorage = storage;
+            return this;
         }
     }
 
@@ -88,11 +88,11 @@ public class TrayUri {
         return new Builder(mContext);
     }
 
-    public Uri getInternal() {
-        return mContentUriInternal;
-    }
-
     public Uri get() {
         return mContentUri;
+    }
+
+    public Uri getInternal() {
+        return mContentUriInternal;
     }
 }

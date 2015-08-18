@@ -19,7 +19,6 @@ package net.grandcentrix.tray.storage;
 import junit.framework.Assert;
 
 import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.provider.TrayProviderHelper;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 import net.grandcentrix.tray.provider.TrayUri;
 
@@ -74,7 +73,8 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testGetAll() throws Exception {
-        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2",TrayStorage.Type.USER);
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2",
+                TrayStorage.Type.USER);
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
         assertDatabaseSize(2);
@@ -87,7 +87,8 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testPutMultipleModules() throws Exception {
-        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2",TrayStorage.Type.USER);
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2",
+                TrayStorage.Type.USER);
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
         assertDatabaseSize(2);

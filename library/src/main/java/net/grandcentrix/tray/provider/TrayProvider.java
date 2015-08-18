@@ -52,9 +52,9 @@ public class TrayProvider extends ContentProvider {
 
     private static UriMatcher sURIMatcher;
 
-    TrayDBHelper mUserDbHelper;
-
     TrayDBHelper mDeviceDbHelper;
+
+    TrayDBHelper mUserDbHelper;
 
     @Override
     public int delete(final Uri uri, String selection, String[] selectionArgs) {

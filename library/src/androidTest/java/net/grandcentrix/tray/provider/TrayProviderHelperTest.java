@@ -203,10 +203,6 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertNotSame(list.get(0).value(), list.get(1).value());
     }
 
-    private Uri getUri(final String module) {
-        return mTrayUri.builder().setType(TrayStorage.Type.USER).setModule(module).build();
-    }
-
     public void testQueryProviderWithUnregisteredProvider() throws Exception {
         final Context context = mock(Context.class);
         final ContentResolver contentResolver = mock(ContentResolver.class);
@@ -308,14 +304,6 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper = null;
     }
 
-    private Uri getUri(final String module, final String key) {
-        return mTrayUri.builder()
-                .setModule(module)
-                .setKey(key)
-                .setType(TrayStorage.Type.USER)
-                .build();
-    }
-
     private void assertEqualsWithin(long expected, long value, long fudgeFactor) {
         long diff = Math.abs(expected - value);
         final String message = "expected: " + expected + " value: " + value
@@ -329,6 +317,18 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
         mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
         assertDatabaseSize(4);
+    }
+
+    private Uri getUri(final String module) {
+        return mTrayUri.builder().setType(TrayStorage.Type.USER).setModule(module).build();
+    }
+
+    private Uri getUri(final String module, final String key) {
+        return mTrayUri.builder()
+                .setModule(module)
+                .setKey(key)
+                .setType(TrayStorage.Type.USER)
+                .build();
     }
 
     private void specialCharTest(final String module, final String key) {
