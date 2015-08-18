@@ -16,7 +16,6 @@
 
 package net.grandcentrix.tray.mock;
 
-import net.grandcentrix.tray.TrayModulePreferences;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.storage.PreferenceStorage;
@@ -32,6 +31,10 @@ public class TestTrayModulePreferences extends TrayPreferences {
         super(context, module, 1);
     }
 
+    public PreferenceStorage<TrayItem> getInternalStorage() {
+        return getStorage();
+    }
+
     @Override
     protected void onCreate(final int newVersion) {
 
@@ -40,9 +43,5 @@ public class TestTrayModulePreferences extends TrayPreferences {
     @Override
     protected void onUpgrade(final int oldVersion, final int newVersion) {
 
-    }
-
-    public PreferenceStorage<TrayItem> getInternalStorage() {
-        return getStorage();
     }
 }

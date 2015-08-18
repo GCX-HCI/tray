@@ -7,15 +7,6 @@ import net.grandcentrix.tray.provider.TrayProviderTestCase;
  */
 public class TrayPreferencesTest extends TrayProviderTestCase {
 
-    public void testGetContext() throws Exception {
-        final TrayPreferences prefs = new TrayPreferences(
-                getProviderMockContext(), "test", 1) {
-        };
-
-        assertEquals(getProviderMockContext().getApplicationContext(),
-                prefs.getContext());
-    }
-
     public void testAnnexModule() throws Exception {
         final TrayPreferences prefs = new TrayPreferences(
                 getProviderMockContext(), "test", 1) {
@@ -32,6 +23,14 @@ public class TrayPreferencesTest extends TrayProviderTestCase {
         assertEquals(0, others.getAll().size());
     }
 
+    public void testGetContext() throws Exception {
+        final TrayPreferences prefs = new TrayPreferences(
+                getProviderMockContext(), "test", 1) {
+        };
+
+        assertEquals(getProviderMockContext().getApplicationContext(),
+                prefs.getContext());
+    }
 
     public void testInstantiation() throws Exception {
         new TrayPreferences(getProviderMockContext(), "test", 1) {

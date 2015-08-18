@@ -30,10 +30,6 @@ public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
         mModuleName = moduleName;
     }
 
-    public String getModuleName() {
-        return mModuleName;
-    }
-
     /**
      * imports all data from an old storage. The old storage gets wiped afterwards.
      * <p>
@@ -42,5 +38,9 @@ public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
      * @param oldStorage the old preference
      */
     public abstract void annex(final ModularizedStorage<T> oldStorage);
+
+    public String getModuleName() {
+        return mModuleName;
+    }
 
 }

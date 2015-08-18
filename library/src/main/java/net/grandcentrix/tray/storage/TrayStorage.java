@@ -67,30 +67,17 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         mType = type;
     }
 
-    public Context getContext() {
-        return mContext;
+    @Override
+    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
+        for (final TrayItem trayItem : oldStorage.getAll()) {
+            put(trayItem);
+        }
+        oldStorage.wipe();
     }
 
     @Override
     public void clear() {
         final Uri uri = mTrayUri.builder()
-                .setModule(getModuleName())
-                .setType(mType)
-                .build();
-        mContext.getContentResolver().delete(uri, null, null);
-    }
-
-    /**
-     * clear the data inside the preference and all evidence this preference has ever existed
-     * <p>
-     * also cleans internal information like the version for this preference
-     *
-     * @see #clear()
-     */
-    public void wipe() {
-        clear();
-        final Uri uri = mTrayUri.builder()
-                .setInternal(true)
                 .setModule(getModuleName())
                 .setType(mType)
                 .build();
@@ -117,6 +104,10 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
                 .setType(mType)
                 .build();
         return mProviderHelper.queryProvider(uri);
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 
     @Override
@@ -200,11 +191,20 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         mProviderHelper.persist(uri, String.valueOf(version));
     }
 
-    @Override
-    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
-        for (final TrayItem trayItem : oldStorage.getAll()) {
-            put(trayItem);
-        }
-        oldStorage.wipe();
+    /**
+     * clear the data inside the preference and all evidence this preference has ever existed
+     * <p>
+     * also cleans internal information like the version for this preference
+     *
+     * @see #clear()
+     */
+    public void wipe() {
+        clear();
+        final Uri uri = mTrayUri.builder()
+                .setModule(getModuleName())
+                .setType(mType)
+                .setInternal(true)
+                .build();
+        mContext.getContentResolver().delete(uri, null, null);
     }
 }

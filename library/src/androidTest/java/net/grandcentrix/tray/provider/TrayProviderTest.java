@@ -75,14 +75,18 @@ public class TrayProviderTest extends TrayProviderTestCase {
         assertEquals(TrayDBHelper.TABLE_NAME,
                 trayProvider.getTable(mTrayUri.builder().setModule("module").build()));
         assertEquals(TrayDBHelper.TABLE_NAME,
-                trayProvider.getTable(mTrayUri.builder().setModule("module").setKey("key").build()));
+                trayProvider
+                        .getTable(mTrayUri.builder().setModule("module").setKey("key").build()));
 
         assertEquals(TrayDBHelper.INTERNAL_TABLE_NAME,
                 trayProvider.getTable(mTrayUri.getInternal()));
         assertEquals(TrayDBHelper.INTERNAL_TABLE_NAME,
-                trayProvider.getTable(mTrayUri.builder().setInternal(true).setModule("module").build()));
+                trayProvider.getTable(
+                        mTrayUri.builder().setInternal(true).setModule("module").build()));
         assertEquals(TrayDBHelper.INTERNAL_TABLE_NAME,
-                trayProvider.getTable(mTrayUri.builder().setInternal(true).setModule("module").setKey("key").build()));
+                trayProvider.getTable(
+                        mTrayUri.builder().setInternal(true).setModule("module").setKey("key")
+                                .build()));
 
         assertEquals(TrayDBHelper.TABLE_NAME,
                 trayProvider.getTable(Uri.parse("http://www.google.com")));
@@ -100,7 +104,8 @@ public class TrayProviderTest extends TrayProviderTestCase {
         assertNull(getProviderMockContext().getContentResolver()
                 .getType(mTrayUri.getInternal()));
         assertNull(getProviderMockContext().getContentResolver()
-                .getType(mTrayUri.builder().setInternal(true).setModule("module").setKey("key").build()));
+                .getType(mTrayUri.builder().setInternal(true).setModule("module").setKey("key")
+                        .build()));
     }
 
     public void testInsert() throws Exception {
@@ -202,6 +207,14 @@ public class TrayProviderTest extends TrayProviderTestCase {
         }
     }
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        System.setProperty("dexmaker.dexcache", getContext().getCacheDir().getPath());
+        mProviderHelper = new TrayProviderHelper(getProviderMockContext());
+        mTrayUri = new TrayUri(getProviderMockContext());
+    }
+
     void assertInsertUriEqualsNullForUpdateOrInsertError(final int errorCode) {
         final TrayProvider trayProvider = new TrayProvider();
         final TrayProvider spy = spy(trayProvider);
@@ -209,19 +222,10 @@ public class TrayProviderTest extends TrayProviderTestCase {
         final Uri mockInsertUri = mTrayUri.builder().setModule("module").setKey("key").build();
         doReturn(null).when(spy).getWritableDatabase(mockInsertUri);
 
-
         doReturn(errorCode).when(spy)
                 .insertOrUpdate(any(SQLiteDatabase.class), anyString(), anyString(),
                         any(String[].class), any(ContentValues.class), any(String[].class));
         final Uri insert = spy.insert(mockInsertUri, new ContentValues());
         assertNull(insert);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        System.setProperty("dexmaker.dexcache", getContext().getCacheDir().getPath());
-        mProviderHelper = new TrayProviderHelper(getProviderMockContext());
-        mTrayUri = new TrayUri(getProviderMockContext());
     }
 }

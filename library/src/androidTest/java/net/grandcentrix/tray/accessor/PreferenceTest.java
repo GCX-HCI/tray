@@ -56,16 +56,6 @@ public class PreferenceTest extends TestCase {
         assertFalse(Preferences.isDataTypeSupported(new Double(1d)));
     }
 
-    public void testOnUpgrade() throws Exception {
-        final MockSimplePreferences appPreferences = new MockSimplePreferences(1);
-        try {
-            appPreferences.onUpgrade(0, 1);
-            fail();
-        } catch (IllegalStateException e) {
-            // not implemented yet
-        }
-    }
-
     public void testClear() throws Exception {
         final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
         mockPreference.put("a", "a");
@@ -113,13 +103,6 @@ public class PreferenceTest extends TestCase {
         assertTrue(map.containsKey("create"));
     }
 
-    public void testWipe() throws Exception {
-        final MockSimplePreferences preferences = new MockSimplePreferences(1);
-        assertEquals(1, preferences.getVersion());
-        preferences.wipe();
-        assertEquals(0, preferences.getVersion());
-    }
-
     public void testLowVersion() throws Exception {
         int version = 0;
         try {
@@ -146,6 +129,16 @@ public class PreferenceTest extends TestCase {
             fail();
         } catch (IllegalStateException e) {
             assertTrue(e.getMessage().contains("downgrade"));
+        }
+    }
+
+    public void testOnUpgrade() throws Exception {
+        final MockSimplePreferences appPreferences = new MockSimplePreferences(1);
+        try {
+            appPreferences.onUpgrade(0, 1);
+            fail();
+        } catch (IllegalStateException e) {
+            // not implemented yet
         }
     }
 
@@ -221,5 +214,12 @@ public class PreferenceTest extends TestCase {
         mockPreference.changeVersion(1);
         assertTrue(map.containsKey("down"));
         assertFalse(map.containsKey("up"));
+    }
+
+    public void testWipe() throws Exception {
+        final MockSimplePreferences preferences = new MockSimplePreferences(1);
+        assertEquals(1, preferences.getVersion());
+        preferences.wipe();
+        assertEquals(0, preferences.getVersion());
     }
 }

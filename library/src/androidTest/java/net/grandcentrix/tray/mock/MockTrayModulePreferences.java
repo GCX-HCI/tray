@@ -16,7 +16,6 @@
 
 package net.grandcentrix.tray.mock;
 
-import net.grandcentrix.tray.TrayModulePreferences;
 import net.grandcentrix.tray.TrayPreferences;
 
 import android.content.Context;

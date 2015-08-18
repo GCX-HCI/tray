@@ -33,6 +33,10 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    adbOptions {
+        timeOutInMs 30000
+    }
 }
 
 dependencies {
