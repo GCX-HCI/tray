@@ -38,14 +38,6 @@ public interface PreferenceStorage<T> {
     void clear();
 
     /**
-     * deleted this storage like it has never existed. removed saved data and all possible meta
-     * data
-     *
-     * @see #clear()
-     */
-    void wipe();
-
-    /**
      * @param key mapping key for the stored object
      * @return the corresponding Item object {@link T} for the given key
      */
@@ -66,6 +58,7 @@ public interface PreferenceStorage<T> {
 
     /**
      * stores a data item.
+     *
      * @param item data object
      */
     void put(T item);
@@ -102,5 +95,13 @@ public interface PreferenceStorage<T> {
      * @param version should be &gt; 0
      */
     void setVersion(final int version);
+
+    /**
+     * deleted this storage like it has never existed. removed saved data and all possible meta
+     * data
+     *
+     * @see #clear()
+     */
+    void wipe();
 
 }

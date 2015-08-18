@@ -53,12 +53,6 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
-    public void wipe() {
-        mData.clear();
-        mVersion = 0;
-    }
-
-    @Override
     public TrayItem get(@NonNull final String key) {
         return mData.get(key);
     }
@@ -101,5 +95,11 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void setVersion(final int version) {
         this.mVersion = version;
+    }
+
+    @Override
+    public void wipe() {
+        mData.clear();
+        mVersion = 0;
     }
 }

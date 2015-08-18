@@ -35,27 +35,9 @@ public interface PreferenceAccessor<T> {
     void clear();
 
     /**
-     * clear the data inside the preference and all evidence this preference has ever existed
-     * <p>
-     * also cleans internal information like the version for this preference
-     *
-     * @see #clear()
-     */
-    void wipe();
-
-    /**
      * @return all data stored in the preference
      */
     Collection<T> getAll();
-
-    // TODO for version 1.1
-    // boolean contains(String key);
-
-    // TODO for version 1.1
-    // List<String> keys();
-
-    // TODO for version 1.1
-    // int getSize();
 
     /**
      * returns true if <code>true</code> or String "true" is saved. All other values will be parsed
@@ -69,6 +51,15 @@ public interface PreferenceAccessor<T> {
      * @see #getBoolean(String, boolean)
      */
     boolean getBoolean(@NonNull final String key) throws ItemNotFoundException;
+
+    // TODO for version 1.1
+    // boolean contains(String key);
+
+    // TODO for version 1.1
+    // List<String> keys();
+
+    // TODO for version 1.1
+    // int getSize();
 
     /**
      * returns true if <code>true</code> or String "true" is saved. All other values will be parsed
@@ -107,7 +98,6 @@ public interface PreferenceAccessor<T> {
      *                               to {@link Integer}
      */
     int getInt(@NonNull final String key) throws ItemNotFoundException, WrongTypeException;
-
 
     /**
      * @param key          the key to map the value
@@ -212,4 +202,13 @@ public interface PreferenceAccessor<T> {
      * @param key the key to map the value
      */
     void remove(@NonNull final String key);
+
+    /**
+     * clear the data inside the preference and all evidence this preference has ever existed
+     * <p>
+     * also cleans internal information like the version for this preference
+     *
+     * @see #clear()
+     */
+    void wipe();
 }

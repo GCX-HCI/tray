@@ -108,6 +108,13 @@ public abstract class ModularizedTrayPreferences<T extends ModularizedStorage<Tr
         }
     }
 
+    /**
+     * @return the module name of this preference
+     */
+    public String getName() {
+        return getStorage().getModuleName();
+    }
+
     @Override
     public String getString(@NonNull final String key) throws ItemNotFoundException {
         final TrayItem pref = getPref(key);
@@ -125,13 +132,6 @@ public abstract class ModularizedTrayPreferences<T extends ModularizedStorage<Tr
         } catch (ItemNotFoundException e) {
             return defaultValue;
         }
-    }
-
-    /**
-     * @return the module name of this preference
-     */
-    public String getName() {
-        return getStorage().getModuleName();
     }
 
     /**

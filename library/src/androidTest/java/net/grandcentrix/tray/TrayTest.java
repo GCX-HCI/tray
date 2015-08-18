@@ -104,18 +104,6 @@ public class TrayTest extends TrayProviderTestCase {
         assertDatabaseSize(2);
     }
 
-    public void testWipe() throws Exception {
-        assertEquals(1, mTrayModulePref.getVersion());
-        final TestTrayModulePreferences module2 =
-                new TestTrayModulePreferences(getProviderMockContext(), "module2");
-        assertEquals(1, module2.getVersion());
-
-        mTray.wipe();
-
-        assertEquals(0, mTrayModulePref.getVersion());
-        assertEquals(0, module2.getVersion());
-    }
-
     public void testGetAll() throws Exception {
         final TestTrayModulePreferences module2 =
                 new TestTrayModulePreferences(getProviderMockContext(), "module2");
@@ -128,6 +116,18 @@ public class TrayTest extends TrayProviderTestCase {
 
         final Collection<TrayItem> all = mTray.getAll();
         assertEquals(4, all.size());
+    }
+
+    public void testWipe() throws Exception {
+        assertEquals(1, mTrayModulePref.getVersion());
+        final TestTrayModulePreferences module2 =
+                new TestTrayModulePreferences(getProviderMockContext(), "module2");
+        assertEquals(1, module2.getVersion());
+
+        mTray.wipe();
+
+        assertEquals(0, mTrayModulePref.getVersion());
+        assertEquals(0, module2.getVersion());
     }
 
     @Override

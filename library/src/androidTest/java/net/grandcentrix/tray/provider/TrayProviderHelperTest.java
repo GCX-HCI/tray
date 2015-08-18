@@ -17,10 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.AppPreferences;
-import net.grandcentrix.tray.TrayAppPreferences;
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.accessor.ModularizedTrayPreferences;
-import net.grandcentrix.tray.accessor.Preferences;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
 import android.content.ContentResolver;

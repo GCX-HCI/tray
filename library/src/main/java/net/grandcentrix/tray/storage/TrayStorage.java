@@ -53,28 +53,17 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         mProviderHelper = new TrayProviderHelper(mContext);
     }
 
-    public Context getContext() {
-        return mContext;
+    @Override
+    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
+        for (final TrayItem trayItem : oldStorage.getAll()) {
+            put(trayItem);
+        }
+        oldStorage.wipe();
     }
 
     @Override
     public void clear() {
         final Uri uri = mProviderHelper.getUri().buildUpon()
-                .appendPath(getModuleName())
-                .build();
-        mContext.getContentResolver().delete(uri, null, null);
-    }
-
-    /**
-     * clear the data inside the preference and all evidence this preference has ever existed
-     * <p>
-     * also cleans internal information like the version for this preference
-     *
-     * @see #clear()
-     */
-    public void wipe() {
-        clear();
-        final Uri uri = mProviderHelper.getInternalUri().buildUpon()
                 .appendPath(getModuleName())
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
@@ -93,6 +82,10 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     public Collection<TrayItem> getAll() {
         final Uri uri = mProviderHelper.getUri(getModuleName());
         return mProviderHelper.queryProvider(uri);
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 
     @Override
@@ -149,11 +142,18 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         mProviderHelper.persistInternal(getModuleName(), VERSION, String.valueOf(version));
     }
 
-    @Override
-    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
-        for (final TrayItem trayItem : oldStorage.getAll()) {
-            put(trayItem);
-        }
-        oldStorage.wipe();
+    /**
+     * clear the data inside the preference and all evidence this preference has ever existed
+     * <p>
+     * also cleans internal information like the version for this preference
+     *
+     * @see #clear()
+     */
+    public void wipe() {
+        clear();
+        final Uri uri = mProviderHelper.getInternalUri().buildUpon()
+                .appendPath(getModuleName())
+                .build();
+        mContext.getContentResolver().delete(uri, null, null);
     }
 }

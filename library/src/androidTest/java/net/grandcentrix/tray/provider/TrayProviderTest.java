@@ -200,6 +200,13 @@ public class TrayProviderTest extends TrayProviderTestCase {
         }
     }
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        System.setProperty("dexmaker.dexcache", getContext().getCacheDir().getPath());
+        mProviderHelper = new TrayProviderHelper(getProviderMockContext());
+    }
+
     void assertInsertUriEqualsNullForUpdateOrInsertError(final int errorCode) {
         final TrayProvider trayProvider = new TrayProvider();
         final TrayProvider spy = spy(trayProvider);
@@ -213,12 +220,5 @@ public class TrayProviderTest extends TrayProviderTestCase {
                         any(String[].class), any(ContentValues.class), any(String[].class));
         final Uri insert = spy.insert(mockInsertUri, new ContentValues());
         assertNull(insert);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        System.setProperty("dexmaker.dexcache", getContext().getCacheDir().getPath());
-        mProviderHelper = new TrayProviderHelper(getProviderMockContext());
     }
 }

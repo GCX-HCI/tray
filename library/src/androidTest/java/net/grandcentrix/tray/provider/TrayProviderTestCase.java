@@ -44,11 +44,11 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
 
         boolean mHasMockResolver = false;
 
-        IsolatedContext innerContext = new IsolatedContext(getContentResolver(), this);
+        private HashMap<String, ContentProvider> mProviders = new HashMap<>();
 
         private final Context mTargetContext;
 
-        private HashMap<String, ContentProvider> mProviders = new HashMap<>();
+        IsolatedContext innerContext = new IsolatedContext(getContentResolver(), this);
 
         public TrayIsolatedContext(final ContentResolver resolver, final Context targetContext) {
             super(resolver, targetContext);

@@ -72,13 +72,6 @@ public class Tray {
     }
 
     /**
-     * clears <b>all</b> saved preferences. Module independent. <b>Erases everything</b>.
-     */
-    public void wipe() {
-        mProviderHelper.wipe();
-    }
-
-    /**
      * clears <b>all</b> saved preferences, but the stated modules.
      *
      * @param modules modules excluded when deleting preferences
@@ -94,5 +87,12 @@ public class Tray {
      */
     public List<TrayItem> getAll() {
         return mProviderHelper.getAll();
+    }
+
+    /**
+     * clears <b>all</b> saved preferences. Module independent. <b>Erases everything</b>.
+     */
+    public void wipe() {
+        mProviderHelper.wipe();
     }
 }

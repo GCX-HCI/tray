@@ -52,6 +52,20 @@ public class ImportTrayPreferences extends TrayPreferences {
     }
 
     /**
+     * example how to import shared preferences
+     */
+    private void importSharedPreferences() {
+        // migrate sharedPreferences in here.
+        final SharedPreferencesImport userTokenMigration = new SharedPreferencesImport(getContext(),
+                SampleActivity.SHARED_PREF_NAME, "userToken", KEY_USER_TOKEN);
+        migrate(userTokenMigration);
+
+        final SharedPreferencesImport gcmTokenMigration = new SharedPreferencesImport(getContext(),
+                SampleActivity.SHARED_PREF_NAME, "gcmToken", KEY_GCM_TOKEN);
+        migrate(gcmTokenMigration);
+    }
+
+    /**
      * logging wrapper for:
      * example how to import shared preferences
      */
@@ -76,19 +90,5 @@ public class ImportTrayPreferences extends TrayPreferences {
         final HashMap<String, ?> allAfter = new HashMap<>(sharedPreferences.getAll());
         Log.v(TAG, allAfter.size() + " items in sharedPreferences: " + allAfter.toString());
         // 0 items in sharedPreferences: {}
-    }
-
-    /**
-     * example how to import shared preferences
-     */
-    private void importSharedPreferences() {
-        // migrate sharedPreferences in here.
-        final SharedPreferencesImport userTokenMigration = new SharedPreferencesImport(getContext(),
-                SampleActivity.SHARED_PREF_NAME, "userToken", KEY_USER_TOKEN);
-        migrate(userTokenMigration);
-
-        final SharedPreferencesImport gcmTokenMigration = new SharedPreferencesImport(getContext(),
-                SampleActivity.SHARED_PREF_NAME, "gcmToken", KEY_GCM_TOKEN);
-        migrate(gcmTokenMigration);
     }
 }
