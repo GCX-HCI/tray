@@ -122,18 +122,6 @@ public class TrayProviderHelper {
     }
 
     /**
-     * saves data internally, not accessible with public api
-     *
-     * @param module module name
-     * @param key    key for mapping
-     * @param value  data to save
-     */
-    public void persistInternal(@NonNull final String module, @NonNull final String key,
-            @Nullable final String value, final boolean deviceSpecific) {
-        persist(module, key, null, value, true, deviceSpecific);
-    }
-
-    /**
      * sends a query for TrayItems to the provider
      *
      * @param uri path to data
