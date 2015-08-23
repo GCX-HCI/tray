@@ -243,34 +243,93 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testRemove() throws Exception {
-        mStorage.put(TEST_KEY, TEST_STRING);
-        mStorage.put(TEST_KEY2, TEST_STRING2);
-        assertUserDatabaseSize(2);
-        mStorage.remove(TEST_KEY);
-        assertUserDatabaseSize(1);
-        final TrayItem item = mStorage.get(TEST_KEY2);
-        assertNotNull(item);
-        assertEquals(TEST_STRING2, item.value());
+        final TrayStorage storage1 = new TrayStorage(getProviderMockContext(), "testRemove1",
+                TrayStorage.Type.USER);
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "testRemove2",
+                TrayStorage.Type.USER);
+        final TrayStorage storage3 = new TrayStorage(getProviderMockContext(), "testRemove3",
+                TrayStorage.Type.DEVICE);
+        final TrayStorage storage4 = new TrayStorage(getProviderMockContext(), "testRemove4",
+                TrayStorage.Type.DEVICE);
+        storage1.put(TEST_KEY, TEST_STRING);
+        storage1.put(TEST_KEY2, TEST_STRING2);
+        storage2.put(TEST_KEY, TEST_STRING);
+        storage2.put(TEST_KEY2, TEST_STRING2);
+        storage3.put(TEST_KEY, TEST_STRING);
+        storage3.put(TEST_KEY2, TEST_STRING2);
+        storage4.put(TEST_KEY, TEST_STRING);
+        storage4.put(TEST_KEY2, TEST_STRING2);
+        assertUserDatabaseSize(4);
+        assertDeviceDatabaseSize(4);
+
+        // remove from user storage
+        storage1.remove(TEST_KEY);
+        assertEquals(1, storage1.getAll().size());
+        assertEquals(2, storage2.getAll().size());
+        assertEquals(2, storage3.getAll().size());
+        assertEquals(2, storage4.getAll().size());
+        assertNotNull(storage1.get(TEST_KEY2));
+
+        // remove from device storage
+        storage3.remove(TEST_KEY);
+        assertEquals(1, storage1.getAll().size());
+        assertEquals(2, storage2.getAll().size());
+        assertEquals(1, storage3.getAll().size());
+        assertEquals(2, storage4.getAll().size());
+        assertNotNull(storage3.get(TEST_KEY2));
+
+        final TrayStorage undefinedDevice = new TrayStorage(getProviderMockContext(), "testRemove4",
+                TrayStorage.Type.DEVICE);
+        final TrayStorage undefinedUser = new TrayStorage(getProviderMockContext(), "testRemove2",
+                TrayStorage.Type.UNDEFINED);
+
+        undefinedDevice.remove(TEST_KEY);
+        assertEquals(1, storage1.getAll().size());
+        assertEquals(2, storage2.getAll().size());
+        assertEquals(1, storage3.getAll().size());
+        assertEquals(1, storage4.getAll().size());
+        assertNotNull(undefinedDevice.get(TEST_KEY2));
+
+        undefinedUser.remove(TEST_KEY);
+        assertEquals(1, storage1.getAll().size());
+        assertEquals(1, storage2.getAll().size());
+        assertEquals(1, storage3.getAll().size());
+        assertEquals(1, storage4.getAll().size());
+        assertNotNull(undefinedUser.get(TEST_KEY2));
     }
 
     public void testRemoveIfItemIsNotThere() {
-        mStorage.put(TEST_KEY2, TEST_STRING2);
-        mStorage.remove(TEST_KEY);
+        final TrayStorage storageUser = new TrayStorage(getProviderMockContext(),
+                "testRemoveIfItemIsNotThereUser", TrayStorage.Type.USER);
+        storageUser.put(TEST_KEY2, TEST_STRING);
+        storageUser.remove(TEST_KEY);
+        assertUserDatabaseSize(1);
+
+        final TrayStorage storageDevice = new TrayStorage(getProviderMockContext(),
+                "testRemoveIfItemIsNotThereDevice", TrayStorage.Type.DEVICE);
+        storageDevice.put(TEST_KEY2, TEST_STRING2);
+        storageDevice.remove(TEST_KEY);
         assertUserDatabaseSize(1);
     }
 
+    // not important if Type.USER or Type.DEVICE
     public void testRemoveWithoutKey() throws Exception {
+        final TrayStorage storage = new TrayStorage(getProviderMockContext(),
+                "testRemoveWithoutKey", TrayStorage.Type.USER);
         try {
             //noinspection ConstantConditions
-            mStorage.remove(null);
+            storage.remove(null);
             Assert.fail();
         } catch (IllegalArgumentException e) {
-            // success
+            final String msg = e.getMessage();
+            assertTrue(msg.contains("null"));
+            assertTrue(msg.contains("clear"));
+            assertTrue(msg.contains("wipe"));
         }
     }
 
     /**
-     * writing data and version should fail
+     * writing data and version should fail for an undefined storage type
      */
     public void testUndefinedTypeAccessErrors() throws Exception {
         final TrayStorage storage = new TrayStorage(getProviderMockContext(), "undefined",
