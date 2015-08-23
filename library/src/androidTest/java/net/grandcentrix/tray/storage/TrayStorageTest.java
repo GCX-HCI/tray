@@ -22,6 +22,8 @@ import net.grandcentrix.tray.TrayRuntimeException;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
+import java.util.Collection;
+
 /**
  * Created by pascalwelsch on 11/21/14.
  */
@@ -109,12 +111,36 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testGetAll() throws Exception {
-        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2",
+        final TrayStorage storage1 = new TrayStorage(getProviderMockContext(), "testGetAll1",
                 TrayStorage.Type.USER);
-        storage2.put(TEST_KEY, TEST_STRING);
-        mStorage.put(TEST_KEY, TEST_STRING);
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "testGetAll2",
+                TrayStorage.Type.USER);
+        final TrayStorage storage3 = new TrayStorage(getProviderMockContext(), "testGetAll3",
+                TrayStorage.Type.DEVICE);
+        final TrayStorage storage4 = new TrayStorage(getProviderMockContext(), "testGetAll4",
+                TrayStorage.Type.DEVICE);
+        storage1.put(TEST_KEY, "1");
+        storage2.put(TEST_KEY, "2");
+        storage3.put(TEST_KEY, "3");
+        storage4.put(TEST_KEY, "4");
         assertUserDatabaseSize(2);
-        assertEquals(1, mStorage.getAll().size());
+        assertDeviceDatabaseSize(2);
+
+        final Collection<TrayItem> all1 = storage1.getAll();
+        assertEquals(1, all1.size());
+        assertEquals("1", all1.iterator().next().value());
+
+        final Collection<TrayItem> all2 = storage2.getAll();
+        assertEquals(1, all2.size());
+        assertEquals("2", all2.iterator().next().value());
+
+        final Collection<TrayItem> all3 = storage3.getAll();
+        assertEquals(1, all3.size());
+        assertEquals("3", all3.iterator().next().value());
+
+        final Collection<TrayItem> all4 = storage4.getAll();
+        assertEquals(1, all4.size());
+        assertEquals("4", all4.iterator().next().value());
     }
 
     public void testGetDevice() throws Exception {
