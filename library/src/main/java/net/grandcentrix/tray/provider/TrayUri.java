@@ -41,16 +41,6 @@ public class TrayUri {
             return builder.build();
         }
 
-        /**
-         * same as {@link #setType(Type)} but sets either {@link Type#USER} or {@link Type#DEVICE}.
-         * Not calling this results in {@link Type#UNDEFINED}.
-         */
-        @Deprecated
-        public Builder isDeviceSpecific(final boolean deviceSpecific) {
-            mStorage = deviceSpecific ? Type.DEVICE : Type.USER;
-            return this;
-        }
-
         public Builder setInternal(final boolean internal) {
             mInternal = internal;
             return this;

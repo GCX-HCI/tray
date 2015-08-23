@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.storage.TrayStorage;
 import net.grandcentrix.tray.util.SqliteHelper;
 
 import android.content.ContentValues;
@@ -168,7 +169,7 @@ public class TrayProviderHelper {
             final boolean internal, final boolean deviceSpecific) {
 
         final Uri uri = mTrayUri.builder()
-                .isDeviceSpecific(deviceSpecific)
+                .setType(deviceSpecific ? TrayStorage.Type.DEVICE : TrayStorage.Type.USER)
                 .setInternal(internal)
                 .setModule(module)
                 .setKey(key)
