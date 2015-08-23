@@ -37,8 +37,6 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
     final String TEST_STRING2 = "fooBar2";
 
-    private TrayStorage mStorage;
-
     public void testClear() throws Exception {
         final TrayStorage storage1 = new TrayStorage(getProviderMockContext(), "testClear1",
                 TrayStorage.Type.USER);
@@ -155,7 +153,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testGetDevice() throws Exception {
-        final TrayStorage storage = new TrayStorage(getProviderMockContext(), "testGetDevice",
+        final TrayStorage storage = new TrayStorage(getProviderMockContext(), "testGet_Device",
                 TrayStorage.Type.DEVICE);
         assertNull(storage.get("test"));
 
@@ -167,7 +165,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testGetUser() throws Exception {
-        final TrayStorage storage = new TrayStorage(getProviderMockContext(), "testGetUser",
+        final TrayStorage storage = new TrayStorage(getProviderMockContext(), "testGet_User",
                 TrayStorage.Type.USER);
         assertNull(storage.get("test"));
 
@@ -180,7 +178,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
     public void testPutDevice() throws Exception {
         final TrayStorage storage =
-                new TrayStorage(getProviderMockContext(), "testPutDevice", TrayStorage.Type.DEVICE);
+                new TrayStorage(getProviderMockContext(), "testPut_Device", TrayStorage.Type.DEVICE);
         storage.put(TEST_KEY, TEST_STRING);
         assertDeviceDatabaseSize(1);
         assertUserDatabaseSize(0);
@@ -205,19 +203,19 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
     public void testPutNullValue() throws Exception {
         final TrayStorage user = new TrayStorage(getProviderMockContext(),
-                "testPutNullValueUser", TrayStorage.Type.USER);
+                "testPutNullValue_User", TrayStorage.Type.USER);
         user.put(TEST_KEY, null);
         assertUserDatabaseSize(1);
 
         final TrayStorage device = new TrayStorage(getProviderMockContext(),
-                "testPutNullValueDevice", TrayStorage.Type.DEVICE);
+                "testPutNullValue_Device", TrayStorage.Type.DEVICE);
         device.put(TEST_KEY, null);
         assertDeviceDatabaseSize(1);
     }
 
     public void testPutUser() throws Exception {
         final TrayStorage storage =
-                new TrayStorage(getProviderMockContext(), "testPutUser", TrayStorage.Type.USER);
+                new TrayStorage(getProviderMockContext(), "testPut_User", TrayStorage.Type.USER);
         storage.put(TEST_KEY, TEST_STRING);
         assertUserDatabaseSize(1);
         assertDeviceDatabaseSize(0);
@@ -300,13 +298,13 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
     public void testRemoveIfItemIsNotThere() {
         final TrayStorage storageUser = new TrayStorage(getProviderMockContext(),
-                "testRemoveIfItemIsNotThereUser", TrayStorage.Type.USER);
+                "testRemoveIfItemIsNotThere_User", TrayStorage.Type.USER);
         storageUser.put(TEST_KEY2, TEST_STRING);
         storageUser.remove(TEST_KEY);
         assertUserDatabaseSize(1);
 
         final TrayStorage storageDevice = new TrayStorage(getProviderMockContext(),
-                "testRemoveIfItemIsNotThereDevice", TrayStorage.Type.DEVICE);
+                "testRemoveIfItemIsNotThere_Device", TrayStorage.Type.DEVICE);
         storageDevice.put(TEST_KEY2, TEST_STRING2);
         storageDevice.remove(TEST_KEY);
         assertUserDatabaseSize(1);
@@ -376,49 +374,120 @@ public class TrayStorageTest extends TrayProviderTestCase {
     }
 
     public void testVersion() throws Exception {
+        final TrayStorage storageUser = new TrayStorage(getProviderMockContext(),
+                "testVersion_User", TrayStorage.Type.USER);
         // default version, not set yet
-        assertEquals(0, mStorage.getVersion());
+        assertEquals(0, storageUser.getVersion());
 
-        mStorage.setVersion(25);
-        assertEquals(25, mStorage.getVersion());
+        storageUser.setVersion(25);
+        assertEquals(25, storageUser.getVersion());
+
+
+        final TrayStorage storageDevice = new TrayStorage(getProviderMockContext(),
+                "testVersion_Device", TrayStorage.Type.DEVICE);
+        // default version, not set yet
+        assertEquals(0, storageDevice.getVersion());
+
+        storageDevice.setVersion(25);
+        assertEquals(25, storageDevice.getVersion());
     }
-
+    
     public void testVersionAfterClearDevice() throws Exception {
         final TrayStorage storage = new TrayStorage(getProviderMockContext(),
-                "testVersionAfterClearDevice",
-                TrayStorage.Type.DEVICE);
+                "testVersionAfterClear_Device", TrayStorage.Type.DEVICE);
         checkVersionAfterClear(storage);
     }
 
     public void testVersionAfterClearUser() throws Exception {
         final TrayStorage storage = new TrayStorage(getProviderMockContext(),
-                "testVersionAfterClearUser",
-                TrayStorage.Type.USER);
+                "testVersionAfterClear_User", TrayStorage.Type.USER);
         checkVersionAfterClear(storage);
     }
 
     public void testWipe() throws Exception {
-        mStorage.put("key", "value");
-        assertEquals("value", mStorage.get("key").value());
-        mStorage.setVersion(1);
-        assertEquals(1, mStorage.getVersion());
+        final TrayStorage storage1 = new TrayStorage(getProviderMockContext(), "testWipe1",
+                TrayStorage.Type.USER);
+        storage1.setVersion(1);
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "testWipe2",
+                TrayStorage.Type.USER);
+        storage2.setVersion(1);
+        final TrayStorage storage3 = new TrayStorage(getProviderMockContext(), "testWipe3",
+                TrayStorage.Type.DEVICE);
+        storage3.setVersion(1);
+        final TrayStorage storage4 = new TrayStorage(getProviderMockContext(), "testWipe4",
+                TrayStorage.Type.DEVICE);
+        storage4.setVersion(1);
 
-        mStorage.wipe();
-        assertNull(mStorage.get("key"));
-        assertEquals(0, mStorage.getAll().size());
-        assertEquals(0, mStorage.getVersion());
-    }
+        storage1.put(TEST_KEY, TEST_STRING);
+        storage2.put(TEST_KEY, TEST_STRING);
+        storage3.put(TEST_KEY, TEST_STRING);
+        storage4.put(TEST_KEY, TEST_STRING);
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mStorage = new TrayStorage(getProviderMockContext(), "test", TrayStorage.Type.USER);
-    }
+        assertEquals(1, storage1.getVersion());
+        assertEquals(1, storage2.getVersion());
+        assertEquals(1, storage3.getVersion());
+        assertEquals(1, storage4.getVersion());
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        mStorage = null;
+        storage1.wipe();
+
+        assertEquals(0, storage1.getAll().size());
+        assertEquals(1, storage2.getAll().size());
+        assertEquals(1, storage3.getAll().size());
+        assertEquals(1, storage4.getAll().size());
+
+        assertEquals(0, storage1.getVersion());
+        assertEquals(1, storage2.getVersion());
+        assertEquals(1, storage3.getVersion());
+        assertEquals(1, storage4.getVersion());
+
+        storage3.wipe();
+
+        assertEquals(0, storage1.getAll().size());
+        assertEquals(1, storage2.getAll().size());
+        assertEquals(0, storage3.getAll().size());
+        assertEquals(1, storage4.getAll().size());
+
+        assertEquals(0, storage1.getVersion());
+        assertEquals(1, storage2.getVersion());
+        assertEquals(0, storage3.getVersion());
+        assertEquals(1, storage4.getVersion());
+
+        // fill up again
+        storage1.put(TEST_KEY, TEST_STRING);
+        storage1.setVersion(1);
+        storage3.put(TEST_KEY, TEST_STRING);
+        storage3.setVersion(1);
+
+        // test clear for undefined.
+        // tricky because it's not clear which database has to be updated
+        final TrayStorage undefinedDevice = new TrayStorage(getProviderMockContext(), "testWipe4",
+                TrayStorage.Type.DEVICE);
+        final TrayStorage undefinedUser = new TrayStorage(getProviderMockContext(), "testWipe2",
+                TrayStorage.Type.UNDEFINED);
+
+        undefinedDevice.wipe();
+
+        assertEquals(1, storage1.getAll().size());
+        assertEquals(1, storage2.getAll().size());
+        assertEquals(1, storage3.getAll().size());
+        assertEquals(0, storage4.getAll().size());
+
+        assertEquals(1, storage1.getVersion());
+        assertEquals(1, storage2.getVersion());
+        assertEquals(1, storage3.getVersion());
+        assertEquals(0, storage4.getVersion());
+
+        undefinedUser.wipe();
+
+        assertEquals(1, storage1.getAll().size());
+        assertEquals(0, storage2.getAll().size());
+        assertEquals(1, storage3.getAll().size());
+        assertEquals(0, storage4.getAll().size());
+
+        assertEquals(1, storage1.getVersion());
+        assertEquals(0, storage2.getVersion());
+        assertEquals(1, storage3.getVersion());
+        assertEquals(0, storage4.getVersion());
     }
 
     private void checkReadDataWithUndefined(final TrayStorage original) {
