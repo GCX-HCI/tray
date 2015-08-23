@@ -72,6 +72,40 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
         assertUserDatabaseSize(1);
         assertDeviceDatabaseSize(1);
+
+
+        // fill up again
+        storage1.put(TEST_KEY, TEST_STRING);
+        storage3.put(TEST_KEY, TEST_STRING);
+
+
+        // test clear for undefined.
+        // tricky because it's not clear which database has to be updated
+        final TrayStorage undefinedDevice = new TrayStorage(getProviderMockContext(), "testClear4",
+                TrayStorage.Type.DEVICE);
+        final TrayStorage undefinedUser = new TrayStorage(getProviderMockContext(), "testClear2",
+                TrayStorage.Type.UNDEFINED);
+
+        undefinedDevice.clear();
+
+        assertEquals(1, storage1.getAll().size());
+        assertEquals(1, storage2.getAll().size());
+        assertEquals(1, storage3.getAll().size());
+        assertEquals(0, storage4.getAll().size());
+
+        assertUserDatabaseSize(2);
+        assertDeviceDatabaseSize(1);
+
+        undefinedUser.clear();
+
+        assertEquals(1, storage1.getAll().size());
+        assertEquals(0, storage2.getAll().size());
+        assertEquals(1, storage3.getAll().size());
+        assertEquals(0, storage4.getAll().size());
+
+        assertUserDatabaseSize(1);
+        assertDeviceDatabaseSize(1);
+
     }
 
     public void testGetAll() throws Exception {
