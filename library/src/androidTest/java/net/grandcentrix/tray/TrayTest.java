@@ -36,12 +36,12 @@ public class TrayTest extends TrayProviderTestCase {
                 new TestTrayModulePreferences(getProviderMockContext(), "module2");
         module2.put("blubb", "hello");
         mTrayModulePref.put("test", "test");
-        assertDatabaseSize(2);
+        assertUserDatabaseSize(2);
         mTray.clear(mTrayModulePref);
-        assertDatabaseSize(1);
+        assertUserDatabaseSize(1);
 
         mTray.clear(module2);
-        assertDatabaseSize(0);
+        assertUserDatabaseSize(0);
     }
 
     public void testClearAll() throws Exception {
@@ -49,9 +49,9 @@ public class TrayTest extends TrayProviderTestCase {
                 new TestTrayModulePreferences(getProviderMockContext(), "module2");
         module2.put("blubb", "hello");
         mTrayModulePref.put("test", "test");
-        assertDatabaseSize(2);
+        assertUserDatabaseSize(2);
         mTray.clear();
-        assertDatabaseSize(0);
+        assertUserDatabaseSize(0);
     }
 
     public void testClearBut() throws Exception {
@@ -62,21 +62,21 @@ public class TrayTest extends TrayProviderTestCase {
         module2.put("test", "test");
         mTrayModulePref.put("test2", "test");
         module2.put("test2", "test");
-        assertDatabaseSize(4);
+        assertUserDatabaseSize(4);
 
         mTray.clearBut(module2);
-        assertDatabaseSize(2);
+        assertUserDatabaseSize(2);
 
         final AppPreferences appPrefs = new AppPreferences(getProviderMockContext());
         appPrefs.put("test", "value");
 
-        assertDatabaseSize(3);
+        assertUserDatabaseSize(3);
 
         mTray.clearBut(appPrefs);
-        assertDatabaseSize(1);
+        assertUserDatabaseSize(1);
 
         mTray.clear();
-        assertDatabaseSize(0);
+        assertUserDatabaseSize(0);
     }
 
     public void testClearModules() throws Exception {
@@ -89,19 +89,19 @@ public class TrayTest extends TrayProviderTestCase {
         module2.put("test", "test");
         module1.put("test2", "test");
         module2.put("test2", "test");
-        assertDatabaseSize(4);
+        assertUserDatabaseSize(4);
 
         Tray.clear(new TestTrayModulePreferences(getProviderMockContext(), "module1"));
-        assertDatabaseSize(2);
+        assertUserDatabaseSize(2);
 
         Tray.clear(new TestTrayModulePreferences(getProviderMockContext(), "module2"));
-        assertDatabaseSize(0);
+        assertUserDatabaseSize(0);
 
         module1.put("test", "test");
         module2.put("test", "test");
 
         Tray.clear((TrayPreferences) null);
-        assertDatabaseSize(2);
+        assertUserDatabaseSize(2);
     }
 
     public void testGetAll() throws Exception {
@@ -112,7 +112,7 @@ public class TrayTest extends TrayProviderTestCase {
         module2.put("test", "test");
         mTrayModulePref.put("test2", "test");
         module2.put("test2", "test");
-        assertDatabaseSize(4);
+        assertUserDatabaseSize(4);
 
         final Collection<TrayItem> all = mTray.getAll();
         assertEquals(4, all.size());

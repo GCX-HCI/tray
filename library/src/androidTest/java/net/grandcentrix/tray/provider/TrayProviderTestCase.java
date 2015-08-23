@@ -18,6 +18,7 @@ package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.BuildConfig;
 import net.grandcentrix.tray.mock.MockProvider;
+import net.grandcentrix.tray.storage.TrayStorage;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
@@ -111,14 +112,17 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
         return mIsolatedContext;
     }
 
-    /**
-     * checks the database size by querying the given {@param contentUri}
-     *
-     * @param expectedSize the number of items you expect
-     */
-    protected void
-    assertDatabaseSize(final long expectedSize) {
-        assertDatabaseSize(MockProvider.getContentUri(), expectedSize, true);
+    protected void assertDatabaseSize(final TrayStorage.Type type, final long expectedSize) {
+        switch (type) {
+            default:
+            case UNDEFINED:
+            case USER:
+                assertUserDatabaseSize(expectedSize);
+                break;
+            case DEVICE:
+                assertDeviceDatabaseSize(expectedSize);
+                break;
+        }
     }
 
     /**
@@ -140,6 +144,24 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
         }
 
         return cursor;
+    }
+
+    /**
+     * checks the database size by querying the given {@param contentUri}
+     *
+     * @param expectedSize the number of items you expect
+     */
+    protected void assertDeviceDatabaseSize(final long expectedSize) {
+        assertDatabaseSize(MockProvider.getDeviceContentUri(), expectedSize, true);
+    }
+
+    /**
+     * checks the database size by querying the given {@param contentUri}
+     *
+     * @param expectedSize the number of items you expect
+     */
+    protected void assertUserDatabaseSize(final long expectedSize) {
+        assertDatabaseSize(MockProvider.getUserContentUri(), expectedSize, true);
     }
 
     @Override
@@ -164,11 +186,15 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
         TrayContract.setAuthority(MockProvider.AUTHORITY);
         TrayProvider.setAuthority(MockProvider.AUTHORITY);
         try {
-            getMockContentResolver().delete(MockProvider.getContentUri(), null, null);
-            getMockContentResolver().delete(MockProvider.getInternalContentUri(), null, null);
+            getMockContentResolver().delete(MockProvider.getUserContentUri(), null, null);
+            getMockContentResolver().delete(MockProvider.getDeviceContentUri(), null, null);
+            getMockContentResolver().delete(MockProvider.getInternalUserContentUri(), null, null);
+            getMockContentResolver().delete(MockProvider.getInternalDeviceContentUri(), null, null);
 
-            assertDatabaseSize(0);
-            assertDatabaseSize(MockProvider.getInternalContentUri(), 0, true);
+            assertUserDatabaseSize(0);
+            assertDeviceDatabaseSize(0);
+            assertDatabaseSize(MockProvider.getInternalUserContentUri(), 0, true);
+            assertDatabaseSize(MockProvider.getInternalDeviceContentUri(), 0, true);
         } catch (SQLiteException e) {
             // the table is unknown. no problem
         }

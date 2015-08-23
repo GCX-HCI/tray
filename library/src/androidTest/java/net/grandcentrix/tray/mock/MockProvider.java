@@ -27,12 +27,29 @@ public class MockProvider {
 
     public static final String AUTHORITY = "net.grandcentrix.tray.test";
 
-    public static Uri getContentUri() {
-        return getContentUri(TrayContract.Preferences.BASE_PATH);
+    public static Uri getDeviceContentUri() {
+        return getContentUri(TrayContract.Preferences.BASE_PATH).buildUpon()
+                .appendQueryParameter("backup", "false")
+                .build();
     }
 
-    public static Uri getInternalContentUri() {
-        return getContentUri(TrayContract.InternalPreferences.BASE_PATH);
+    public static Uri getInternalUserContentUri() {
+        return getContentUri(TrayContract.InternalPreferences.BASE_PATH).buildUpon()
+                .appendQueryParameter("backup", "true")
+                .build();
+    }
+
+
+    public static Uri getInternalDeviceContentUri() {
+        return getContentUri(TrayContract.InternalPreferences.BASE_PATH).buildUpon()
+                .appendQueryParameter("backup", "false")
+                .build();
+    }
+
+    public static Uri getUserContentUri() {
+        return getContentUri(TrayContract.Preferences.BASE_PATH).buildUpon()
+                .appendQueryParameter("backup", "true")
+                .build();
     }
 
     private static Uri getContentUri(final String basepath) {

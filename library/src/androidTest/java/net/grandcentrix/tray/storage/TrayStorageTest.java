@@ -18,6 +18,7 @@ package net.grandcentrix.tray.storage;
 
 import junit.framework.Assert;
 
+import net.grandcentrix.tray.TrayRuntimeException;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 import net.grandcentrix.tray.provider.TrayUri;
@@ -43,7 +44,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
                 TrayStorage.Type.USER);
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
-        assertDatabaseSize(2);
+        assertUserDatabaseSize(2);
 
         mStorage.clear();
         final TrayUri trayUri = new TrayUri(getMockContext());
@@ -62,11 +63,25 @@ public class TrayStorageTest extends TrayProviderTestCase {
         assertEquals(1, mStorage.getVersion());
     }
 
-    public void testGet() throws Exception {
-        assertNull(mStorage.get("something"));
+    public void testGetUser() throws Exception {
+        final TrayStorage storage = new TrayStorage(getProviderMockContext(), "testGetUser",
+                TrayStorage.Type.USER);
+        assertNull(storage.get("test"));
 
-        mStorage.put("test", "foo");
-        final TrayItem item = mStorage.get("test");
+        storage.put("test", "foo");
+        final TrayItem item = storage.get("test");
+        assertNotNull(item);
+        assertEquals("test", item.key());
+        assertEquals("foo", item.value());
+    }
+
+    public void testGetDevice() throws Exception {
+        final TrayStorage storage = new TrayStorage(getProviderMockContext(), "testGetDevice",
+                TrayStorage.Type.DEVICE);
+        assertNull(storage.get("test"));
+
+        storage.put("test", "foo");
+        final TrayItem item = storage.get("test");
         assertNotNull(item);
         assertEquals("test", item.key());
         assertEquals("foo", item.value());
@@ -77,13 +92,24 @@ public class TrayStorageTest extends TrayProviderTestCase {
                 TrayStorage.Type.USER);
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
-        assertDatabaseSize(2);
+        assertUserDatabaseSize(2);
         assertEquals(1, mStorage.getAll().size());
     }
 
-    public void testPut() throws Exception {
-        mStorage.put(TEST_KEY, TEST_STRING);
-        assertDatabaseSize(1);
+    public void testPutUser() throws Exception {
+        final TrayStorage storage =
+                new TrayStorage(getProviderMockContext(), "device", TrayStorage.Type.USER);
+        storage.put(TEST_KEY, TEST_STRING);
+        assertUserDatabaseSize(1);
+        assertDeviceDatabaseSize(0);
+    }
+
+    public void testPutDevice() throws Exception {
+        final TrayStorage storage =
+                new TrayStorage(getProviderMockContext(), "device", TrayStorage.Type.DEVICE);
+        storage.put(TEST_KEY, TEST_STRING);
+        assertDeviceDatabaseSize(1);
+        assertUserDatabaseSize(0);
     }
 
     public void testPutMultipleModules() throws Exception {
@@ -91,21 +117,52 @@ public class TrayStorageTest extends TrayProviderTestCase {
                 TrayStorage.Type.USER);
         storage2.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY, TEST_STRING);
-        assertDatabaseSize(2);
+        assertUserDatabaseSize(2);
     }
 
     public void testPutNullValue() throws Exception {
         //noinspection ConstantConditions
         mStorage.put(TEST_KEY, null);
-        assertDatabaseSize(1);
+        assertUserDatabaseSize(1);
+    }
+
+    public void testReadDataWithUndefinedStorageFromUserStore() throws Exception {
+        final TrayStorage original = new TrayStorage(getProviderMockContext(), "storageName",
+                TrayStorage.Type.USER);
+        original.setVersion(25);
+        original.put(TEST_KEY, TEST_STRING);
+
+        checkReadDataWithUndefined(original);
+    }
+    public void testReadDataWithUndefinedStorageFromDeviceStore() throws Exception {
+        final TrayStorage original = new TrayStorage(getProviderMockContext(), "storageName",
+                TrayStorage.Type.DEVICE);
+        original.setVersion(26);
+        original.put(TEST_KEY, "someValue");
+        assertNotNull(original.get(TEST_KEY));
+
+        checkReadDataWithUndefined(original);
+    }
+
+    private void checkReadDataWithUndefined(final TrayStorage original) {
+        final TrayStorage undefined = new TrayStorage(getProviderMockContext(), original.getModuleName(),
+                TrayStorage.Type.UNDEFINED);
+
+        assertEquals(TrayStorage.Type.UNDEFINED, undefined.getType());
+        assertEquals(original.getAll().size(), undefined.getAll().size());
+        final TrayItem item = undefined.get(TEST_KEY);
+        assertNotNull(item);
+        assertEquals(original.get(TEST_KEY).value(), item.value());
+        assertEquals(original.getVersion(), undefined.getVersion());
+        assertEquals(original.getModuleName(), undefined.getModuleName());
     }
 
     public void testRemove() throws Exception {
         mStorage.put(TEST_KEY, TEST_STRING);
         mStorage.put(TEST_KEY2, TEST_STRING2);
-        assertDatabaseSize(2);
+        assertUserDatabaseSize(2);
         mStorage.remove(TEST_KEY);
-        assertDatabaseSize(1);
+        assertUserDatabaseSize(1);
         final TrayItem item = mStorage.get(TEST_KEY2);
         assertNotNull(item);
         assertEquals(TEST_STRING2, item.value());
@@ -114,7 +171,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
     public void testRemoveIfItemIsNotThere() {
         mStorage.put(TEST_KEY2, TEST_STRING2);
         mStorage.remove(TEST_KEY);
-        assertDatabaseSize(1);
+        assertUserDatabaseSize(1);
     }
 
     public void testRemoveWithoutKey() throws Exception {
@@ -125,6 +182,53 @@ public class TrayStorageTest extends TrayProviderTestCase {
         } catch (IllegalArgumentException e) {
             // success
         }
+    }
+
+    /**
+     * writing data and version should fail
+     */
+    public void testUndefinedTypeAccessErrors() throws Exception {
+        final TrayStorage storage = new TrayStorage(getProviderMockContext(), "undefined",
+                TrayStorage.Type.UNDEFINED);
+
+        // put
+        try {
+            storage.put(TEST_KEY2, TEST_STRING);
+            fail();
+        } catch (TrayRuntimeException e) {
+            assertTrue(e.getMessage().contains("UNDEFINED"));
+        }
+        try {
+            storage.put(new TrayItem("undefined", TEST_KEY2, null, TEST_STRING, null, null));
+            fail();
+        } catch (TrayRuntimeException e) {
+            assertTrue(e.getMessage().contains("UNDEFINED"));
+        }
+        try {
+            final TrayStorage someModule = new TrayStorage(
+                    getProviderMockContext(), "someModule", TrayStorage.Type.USER);
+            // without value -> no data reading -> no exception
+            someModule.put(TEST_KEY, TEST_STRING);
+            storage.annex(someModule);
+            fail();
+        } catch (TrayRuntimeException e) {
+            assertTrue(e.getMessage().contains("UNDEFINED"));
+        }
+
+        // setVersion
+        try {
+            storage.setVersion(10);
+            fail();
+        } catch (TrayRuntimeException e) {
+            assertTrue(e.getMessage().contains("UNDEFINED"));
+        }
+
+        assertEquals(TrayStorage.Type.UNDEFINED, storage.getType());
+        storage.get(TEST_KEY);
+        storage.getAll();
+        storage.getVersion();
+        storage.getModuleName();
+
     }
 
     public void testVersion() throws Exception {

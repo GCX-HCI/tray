@@ -16,6 +16,7 @@
 
 package net.grandcentrix.tray.storage;
 
+import net.grandcentrix.tray.TrayRuntimeException;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
 import net.grandcentrix.tray.provider.TrayUri;
@@ -59,7 +60,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     private final Type mType;
 
     public TrayStorage(@NonNull final Context context, @NonNull final String module,
-            final Type type) {
+            @NonNull final Type type) {
         super(module);
         mContext = context.getApplicationContext();
         mTrayUri = new TrayUri(mContext);
@@ -110,6 +111,15 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         return mContext;
     }
 
+    /**
+     * Indicates where the data internally gets stored and how the backup is handled for the data
+     *
+     * @return the type of storage
+     */
+    public Type getType() {
+        return mType;
+    }
+
     @Override
     public int getVersion() {
         final Uri internalUri = mTrayUri.builder()
@@ -128,13 +138,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void put(final TrayItem item) {
-        final Uri uri = mTrayUri.builder()
-                .setType(mType)
-                .setModule(getModuleName())
-                .setKey(item.key())
-                .build();
-
-        mProviderHelper.persist(uri, item.value(), item.migratedKey());
+        put(item.key(), item.migratedKey(), item.value());
     }
 
     @Override
@@ -155,6 +159,11 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
             @Nullable final Object data) {
+        if (getType() == Type.UNDEFINED) {
+            throw new TrayRuntimeException(
+                    "writing data into a storage with type UNDEFINED is forbidden. Only Read and delete is allowed.");
+        }
+
         final String value = data == null ? null : String.valueOf(data);
 
         final Uri uri = mTrayUri.builder()
@@ -182,6 +191,10 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void setVersion(final int version) {
+        if (getType() == Type.UNDEFINED) {
+            throw new TrayRuntimeException(
+                    "writing data into a storage with type UNDEFINED is forbidden. Only Read and delete is allowed.");
+        }
         final Uri uri = mTrayUri.builder()
                 .setInternal(true)
                 .setType(mType)

@@ -24,6 +24,7 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -91,10 +92,6 @@ public class TrayProvider extends ContentProvider {
         }
 
         return rows;
-    }
-
-    public SQLiteDatabase getReadableDatabase() {
-        return mUserDbHelper.getReadableDatabase();
     }
 
     /**
@@ -227,9 +224,22 @@ public class TrayProvider extends ContentProvider {
                 throw new IllegalArgumentException("Query is not supported for Uri: " + uri);
         }
 
-        // Query
-        Cursor cursor = builder.query(getReadableDatabase(), projection, selection,
-                selectionArgs, null, null, sortOrder);
+        final Cursor cursor;
+        final String backup = uri.getQueryParameter("backup");
+        if (backup == null) {
+            // backup not set, query both dbs
+            Cursor cursor1 = builder
+                    .query(mUserDbHelper.getReadableDatabase(), projection, selection,
+                            selectionArgs, null, null, sortOrder);
+            Cursor cursor2 = builder
+                    .query(mDeviceDbHelper.getReadableDatabase(), projection, selection,
+                            selectionArgs, null, null, sortOrder);
+            cursor = new MergeCursor(new Cursor[]{cursor1, cursor2});
+        } else {
+            // Query
+            cursor = builder.query(getWritableDatabase(uri), projection, selection,
+                    selectionArgs, null, null, sortOrder);
+        }
 
         if (cursor != null) {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
