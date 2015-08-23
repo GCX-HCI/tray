@@ -83,8 +83,18 @@ public class TrayProvider extends ContentProvider {
                 throw new IllegalArgumentException("Delete is not supported for Uri: " + uri);
         }
 
-        final int rows = getWritableDatabase(uri)
-                .delete(getTable(uri), selection, selectionArgs);
+        final int rows;
+        final String backup = uri.getQueryParameter("backup");
+        if (backup == null) {
+            int device = mDeviceDbHelper.getWritableDatabase()
+                    .delete(getTable(uri), selection, selectionArgs);
+            int user = mUserDbHelper.getWritableDatabase()
+                    .delete(getTable(uri), selection, selectionArgs);
+            rows = device + user;
+        } else {
+            rows = getWritableDatabase(uri)
+                    .delete(getTable(uri), selection, selectionArgs);
+        }
 
         // Don't force an UI refresh if nothing has changed
         if (rows > 0) {
