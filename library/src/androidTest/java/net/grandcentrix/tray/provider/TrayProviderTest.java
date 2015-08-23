@@ -188,6 +188,26 @@ public class TrayProviderTest extends TrayProviderTestCase {
         }
     }
 
+    public void testShouldBackup() throws Exception {
+        final TrayProvider provider = new TrayProvider();
+        final TrayUri trayUri = new TrayUri(getProviderMockContext());
+
+        // only &backup=false -> false
+        assertFalse(provider.shouldBackup(trayUri.builder()
+                .setType(TrayStorage.Type.DEVICE)
+                .build()));
+
+        assertTrue(provider.shouldBackup(trayUri.get()));
+
+        assertTrue(provider.shouldBackup(trayUri.builder()
+                .setType(TrayStorage.Type.USER)
+                .build()));
+
+        assertTrue(provider.shouldBackup(trayUri.builder()
+                .setType(TrayStorage.Type.UNDEFINED)
+                .build()));
+    }
+
     public void testShutdown() throws Exception {
         final TrayProvider provider = startupProvider();
         final SQLiteDatabase writableDatabase = provider.mUserDbHelper.getWritableDatabase();

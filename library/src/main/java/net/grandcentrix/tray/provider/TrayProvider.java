@@ -28,6 +28,7 @@ import android.database.MergeCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.Date;
@@ -302,7 +303,7 @@ public class TrayProvider extends ContentProvider {
      * @param uri contentUri
      * @return default true or false for {@code /the/uri&backup=false}
      */
-    private boolean shouldBackup(final Uri uri) {
+    boolean shouldBackup(@NonNull final Uri uri) {
         final String backup = uri.getQueryParameter("backup");
         return !"false".equals(backup);
     }
