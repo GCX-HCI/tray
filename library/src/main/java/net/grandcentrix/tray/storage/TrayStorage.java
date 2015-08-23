@@ -25,6 +25,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Collection;
 import java.util.List;
@@ -73,6 +74,8 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     public static final String VERSION = "version";
 
+    private static final String TAG = TrayStorage.class.getSimpleName();
+
     private final Context mContext;
 
     private final TrayProviderHelper mProviderHelper;
@@ -116,7 +119,17 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
                 .setKey(key)
                 .build();
         final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
-        return prefs.size() == 1 ? prefs.get(0) : null;
+        final int size = prefs.size();
+        if (size > 1) {
+            Log.w(TAG, "found more than one item for key '" + key
+                    + "' in module " + getModuleName() + ". "
+                    + "This can be caused by using the same name for a device and user specific preference.");
+            for (int i = 0; i < prefs.size(); i++) {
+                final TrayItem pref = prefs.get(i);
+                Log.d(TAG, "item #" + i + " " + pref);
+            }
+        }
+        return size > 0 ? prefs.get(0) : null;
     }
 
     @NonNull
