@@ -160,7 +160,9 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
         final TrayProvider provider = spy(new TrayProvider());
         provider.mUserDbHelper = spy(new TrayDBHelper(getProviderMockContext()));
+        provider.mDeviceDbHelper = spy(new TrayDBHelper(getProviderMockContext()));
         when(provider.mUserDbHelper.getReadableDatabase()).thenReturn(null);
+        when(provider.mDeviceDbHelper.getReadableDatabase()).thenReturn(null);
 
         // null as table forces the internal SQLiteQueryBuilder to return null on a query
         // in reality this may happen for many other hard sql or database errors

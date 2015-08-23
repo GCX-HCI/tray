@@ -234,7 +234,11 @@ public class TrayProvider extends ContentProvider {
             Cursor cursor2 = builder
                     .query(mDeviceDbHelper.getReadableDatabase(), projection, selection,
                             selectionArgs, null, null, sortOrder);
-            cursor = new MergeCursor(new Cursor[]{cursor1, cursor2});
+            if (cursor1 == null && cursor2 == null) {
+                cursor = null;
+            } else {
+                cursor = new MergeCursor(new Cursor[]{cursor1, cursor2});
+            }
         } else {
             // Query
             cursor = builder.query(getWritableDatabase(uri), projection, selection,
