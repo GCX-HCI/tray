@@ -75,11 +75,9 @@ public class TrayStorageTest extends TrayProviderTestCase {
         assertUserDatabaseSize(1);
         assertDeviceDatabaseSize(1);
 
-
         // fill up again
         storage1.put(TEST_KEY, TEST_STRING);
         storage3.put(TEST_KEY, TEST_STRING);
-
 
         // test clear for undefined.
         // tricky because it's not clear which database has to be updated
@@ -141,6 +139,19 @@ public class TrayStorageTest extends TrayProviderTestCase {
         final Collection<TrayItem> all4 = storage4.getAll();
         assertEquals(1, all4.size());
         assertEquals("4", all4.iterator().next().value());
+
+        final TrayStorage undefinedDevice = new TrayStorage(getProviderMockContext(), "testGetAll4",
+                TrayStorage.Type.DEVICE);
+        final TrayStorage undefinedUser = new TrayStorage(getProviderMockContext(), "testGetAll2",
+                TrayStorage.Type.UNDEFINED);
+
+        final Collection<TrayItem> allD = undefinedDevice.getAll();
+        assertEquals(1, allD.size());
+        assertEquals("4", allD.iterator().next().value());
+
+        final Collection<TrayItem> allU = undefinedUser.getAll();
+        assertEquals(1, allU.size());
+        assertEquals("2", allU.iterator().next().value());
     }
 
     public void testGetDevice() throws Exception {
@@ -169,29 +180,44 @@ public class TrayStorageTest extends TrayProviderTestCase {
 
     public void testPutDevice() throws Exception {
         final TrayStorage storage =
-                new TrayStorage(getProviderMockContext(), "device", TrayStorage.Type.DEVICE);
+                new TrayStorage(getProviderMockContext(), "testPutDevice", TrayStorage.Type.DEVICE);
         storage.put(TEST_KEY, TEST_STRING);
         assertDeviceDatabaseSize(1);
         assertUserDatabaseSize(0);
     }
 
     public void testPutMultipleModules() throws Exception {
-        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(), "test2",
-                TrayStorage.Type.USER);
+        final TrayStorage storage1 = new TrayStorage(getProviderMockContext(),
+                "testPutMultipleModules1", TrayStorage.Type.USER);
+        final TrayStorage storage2 = new TrayStorage(getProviderMockContext(),
+                "testPutMultipleModules2", TrayStorage.Type.USER);
+        final TrayStorage storage3 = new TrayStorage(getProviderMockContext(),
+                "testPutMultipleModules3", TrayStorage.Type.DEVICE);
+        final TrayStorage storage4 = new TrayStorage(getProviderMockContext(),
+                "testPutMultipleModules4", TrayStorage.Type.DEVICE);
+        storage1.put(TEST_KEY, TEST_STRING);
         storage2.put(TEST_KEY, TEST_STRING);
-        mStorage.put(TEST_KEY, TEST_STRING);
+        storage3.put(TEST_KEY, TEST_STRING);
+        storage4.put(TEST_KEY, TEST_STRING);
         assertUserDatabaseSize(2);
+        assertDeviceDatabaseSize(2);
     }
 
     public void testPutNullValue() throws Exception {
-        //noinspection ConstantConditions
-        mStorage.put(TEST_KEY, null);
+        final TrayStorage user = new TrayStorage(getProviderMockContext(),
+                "testPutNullValueUser", TrayStorage.Type.USER);
+        user.put(TEST_KEY, null);
         assertUserDatabaseSize(1);
+
+        final TrayStorage device = new TrayStorage(getProviderMockContext(),
+                "testPutNullValueDevice", TrayStorage.Type.DEVICE);
+        device.put(TEST_KEY, null);
+        assertDeviceDatabaseSize(1);
     }
 
     public void testPutUser() throws Exception {
         final TrayStorage storage =
-                new TrayStorage(getProviderMockContext(), "device", TrayStorage.Type.USER);
+                new TrayStorage(getProviderMockContext(), "testPutUser", TrayStorage.Type.USER);
         storage.put(TEST_KEY, TEST_STRING);
         assertUserDatabaseSize(1);
         assertDeviceDatabaseSize(0);
