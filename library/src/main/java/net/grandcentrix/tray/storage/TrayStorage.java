@@ -88,8 +88,8 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Nullable
     public TrayItem get(@NonNull final String key) {
         final Uri uri = mTrayUri.builder()
-                .setModule(getModuleName())
                 .setType(mType)
+                .setModule(getModuleName())
                 .setKey(key)
                 .build();
         final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
@@ -100,8 +100,8 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Override
     public Collection<TrayItem> getAll() {
         final Uri uri = mTrayUri.builder()
-                .setModule(getModuleName())
                 .setType(mType)
+                .setModule(getModuleName())
                 .build();
         return mProviderHelper.queryProvider(uri);
     }
@@ -173,8 +173,8 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
                     "null is not valid. use clear to delete all preferences");
         }
         final Uri uri = mTrayUri.builder()
-                .setModule(getModuleName())
                 .setType(mType)
+                .setModule(getModuleName())
                 .setKey(key)
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
@@ -184,8 +184,8 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     public void setVersion(final int version) {
         final Uri uri = mTrayUri.builder()
                 .setInternal(true)
-                .setModule(getModuleName())
                 .setType(mType)
+                .setModule(getModuleName())
                 .setKey(VERSION)
                 .build();
         mProviderHelper.persist(uri, String.valueOf(version));
@@ -201,9 +201,9 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     public void wipe() {
         clear();
         final Uri uri = mTrayUri.builder()
-                .setModule(getModuleName())
-                .setType(mType)
                 .setInternal(true)
+                .setType(mType)
+                .setModule(getModuleName())
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
     }
