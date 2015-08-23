@@ -240,6 +240,7 @@ public class TrayProvider extends ContentProvider {
     @Override
     public void shutdown() {
         mUserDbHelper.close();
+        mDeviceDbHelper.close();
     }
 
     @Override
