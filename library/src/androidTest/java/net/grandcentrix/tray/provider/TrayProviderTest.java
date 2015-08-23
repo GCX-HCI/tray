@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.mock.MockProvider;
+import net.grandcentrix.tray.storage.TrayStorage;
 
 import android.content.ContentValues;
 import android.content.pm.ProviderInfo;
@@ -166,7 +167,9 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
         // null as table forces the internal SQLiteQueryBuilder to return null on a query
         // in reality this may happen for many other hard sql or database errors
-        final Uri uri = mTrayUri.get();
+        final Uri uri = new TrayUri(getProviderMockContext()).builder()
+                .setType(TrayStorage.Type.DEVICE) // unknown will not work
+                .build();
         when(provider.getTable(uri)).thenReturn(null);
 
         final Cursor cursor = provider.query(uri, null, null, null, null);

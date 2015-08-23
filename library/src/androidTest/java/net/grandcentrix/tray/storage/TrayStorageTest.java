@@ -173,6 +173,8 @@ public class TrayStorageTest extends TrayProviderTestCase {
         assertUserDatabaseSize(0);
         assertDeviceDatabaseSize(0);
 
+        assertNull(undefinedStorage.get(TEST_KEY));
+
         assertEquals(100, userStorage.getVersion());
         assertEquals(200, deviceStorage.getVersion());
 
