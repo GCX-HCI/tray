@@ -80,7 +80,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
         // test clear for undefined.
         // tricky because it's not clear which database has to be updated
         final TrayStorage undefinedDevice = new TrayStorage(getProviderMockContext(), "testClear4",
-                TrayStorage.Type.DEVICE);
+                TrayStorage.Type.UNDEFINED);
         final TrayStorage undefinedUser = new TrayStorage(getProviderMockContext(), "testClear2",
                 TrayStorage.Type.UNDEFINED);
 
@@ -139,7 +139,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
         assertEquals("4", all4.iterator().next().value());
 
         final TrayStorage undefinedDevice = new TrayStorage(getProviderMockContext(), "testGetAll4",
-                TrayStorage.Type.DEVICE);
+                TrayStorage.Type.UNDEFINED);
         final TrayStorage undefinedUser = new TrayStorage(getProviderMockContext(), "testGetAll2",
                 TrayStorage.Type.UNDEFINED);
 
@@ -277,7 +277,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
         assertNotNull(storage3.get(TEST_KEY2));
 
         final TrayStorage undefinedDevice = new TrayStorage(getProviderMockContext(), "testRemove4",
-                TrayStorage.Type.DEVICE);
+                TrayStorage.Type.UNDEFINED);
         final TrayStorage undefinedUser = new TrayStorage(getProviderMockContext(), "testRemove2",
                 TrayStorage.Type.UNDEFINED);
 
@@ -461,7 +461,7 @@ public class TrayStorageTest extends TrayProviderTestCase {
         // test clear for undefined.
         // tricky because it's not clear which database has to be updated
         final TrayStorage undefinedDevice = new TrayStorage(getProviderMockContext(), "testWipe4",
-                TrayStorage.Type.DEVICE);
+                TrayStorage.Type.UNDEFINED);
         final TrayStorage undefinedUser = new TrayStorage(getProviderMockContext(), "testWipe2",
                 TrayStorage.Type.UNDEFINED);
 
