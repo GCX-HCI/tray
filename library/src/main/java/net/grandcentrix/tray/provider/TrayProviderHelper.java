@@ -107,7 +107,11 @@ public class TrayProviderHelper {
      */
     public void persist(@NonNull final String module, @NonNull final String key,
             @Nullable final String previousKey, @Nullable final String value) {
-        persist(module, key, previousKey, value, false, false);
+        final Uri uri = mTrayUri.builder()
+                .setModule(module)
+                .setKey(key)
+                .build();
+        persist(uri, value, previousKey);
     }
 
     public void persist(@NonNull final Uri uri, @Nullable String value) {
@@ -155,25 +159,5 @@ public class TrayProviderHelper {
     public void wipe() {
         clear();
         mContext.getContentResolver().delete(mTrayUri.getInternal(), null, null);
-    }
-
-    /**
-     * @param module      module name
-     * @param key         key for mapping
-     * @param value       data to save
-     * @param previousKey key before the migration
-     * @param internal    where to save
-     */
-    private void persist(@NonNull final String module, @NonNull final String key,
-            @Nullable final String previousKey, @Nullable final String value,
-            final boolean internal, final boolean deviceSpecific) {
-
-        final Uri uri = mTrayUri.builder()
-                .setType(deviceSpecific ? TrayStorage.Type.DEVICE : TrayStorage.Type.USER)
-                .setInternal(internal)
-                .setModule(module)
-                .setKey(key)
-                .build();
-        persist(uri, value, previousKey);
     }
 }

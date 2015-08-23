@@ -406,6 +406,19 @@ public class TrayStorageTest extends TrayProviderTestCase {
         }
     }
 
+    // not really necessary but required for 100% test coverage
+    public void testStorageType() throws Exception {
+        final TrayStorage.Type[] values = TrayStorage.Type.values();
+        assertEquals(3, values.length);
+
+        final TrayStorage.Type typeUser = TrayStorage.Type.valueOf("USER");
+        assertEquals(TrayStorage.Type.USER, typeUser);
+        final TrayStorage.Type typeDevice = TrayStorage.Type.valueOf("DEVICE");
+        assertEquals(TrayStorage.Type.DEVICE, typeDevice);
+        final TrayStorage.Type typeUndefined = TrayStorage.Type.valueOf("UNDEFINED");
+        assertEquals(TrayStorage.Type.UNDEFINED, typeUndefined);
+    }
+
     /**
      * writing data and version should fail for an undefined storage type
      */
