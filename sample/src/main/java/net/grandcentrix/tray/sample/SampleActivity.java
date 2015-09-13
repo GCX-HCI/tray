@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -46,6 +47,8 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
     private static final String SHARED_PREF_KEY = "shared_pref_key";
 
     private static final String TRAY_PREF_KEY = "importedData";
+
+    private static final String TAG = SampleActivity.class.getSimpleName();
 
     private AppPreferences mAppPrefs;
 
@@ -92,17 +95,13 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                     .putString("userToken", UUID.randomUUID().toString())
                     .putString("gcmToken", UUID.randomUUID().toString())
                     .commit();
-
-            final TrayPreferences nobackup = new TrayPreferences(this, "nobackup", 1,
-                    TrayStorage.Type.DEVICE){
-
-            };
-            nobackup.put("deviceId", UUID.randomUUID().toString());
         }
 
         if (savedInstanceState == null) {
             mAppPrefs.put(STARTUP_COUNT, ++startupCount);
         }
+
+        testAutoBackup();
 
         mImportPreference = new ImportTrayPreferences(this);
 
@@ -142,6 +141,35 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         final Intent intent = new Intent(this, SampleActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    private void testAutoBackup() {
+
+        {
+            // device specific data
+            final TrayPreferences deviceSpecificPref =
+                    new TrayPreferences(this, "nobackup", 1, TrayStorage.Type.DEVICE);
+            final String deviceId = deviceSpecificPref.getString("deviceId", null);
+            Log.v(TAG, "deviceId: " + deviceId);
+            if (deviceId == null) {
+                final String uuid = UUID.randomUUID().toString();
+                deviceSpecificPref.put("deviceId", uuid);
+                Log.v(TAG, "no deviceId, created: " + uuid);
+            }
+        }
+
+        {
+            // user specific data
+            final TrayPreferences userSpecificPref =
+                    new TrayPreferences(this, "autobackup", 1, TrayStorage.Type.USER);
+            final String userId = userSpecificPref.getString("userId", null);
+            Log.v(TAG, "userId: " + userId);
+            if (userId == null) {
+                final String uuid = UUID.randomUUID().toString();
+                userSpecificPref.put("userId", uuid);
+                Log.v(TAG, "no userId, created: " + uuid);
+            }
+        }
     }
 
     private void updateSharedPrefInfo() {
