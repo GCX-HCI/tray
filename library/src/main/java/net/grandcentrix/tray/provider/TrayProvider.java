@@ -34,6 +34,16 @@ import android.util.Log;
 import java.util.Date;
 
 /**
+ * The ContentProvider which stores all data for Tray. It accesses two databases {@link
+ * #mDeviceDbHelper} and {@link #mUserDbHelper} with two tables each; the data to store and an
+ * internal one.
+ * <p>
+ * {@link #update(Uri, ContentValues, String, String[])} is not supported. Use {@link #insert(Uri,
+ * ContentValues)} instead. Saving two items with the same column {@link
+ * net.grandcentrix.tray.provider.TrayContract.Preferences.Columns#KEY} and {@link
+ * net.grandcentrix.tray.provider.TrayContract.Preferences.Columns#MODULE} overrides the already
+ * existing data. So <code>insert</code> works as <code>insertOrUpdate</code>.
+ * <p>
  * Created by jannisveerkamp on 16.09.14.
  */
 public class TrayProvider extends ContentProvider {

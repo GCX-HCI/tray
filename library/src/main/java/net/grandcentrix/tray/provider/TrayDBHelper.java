@@ -24,6 +24,8 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 /**
+ * Helper to access the two internal databases where all tray data are saved
+ * <p>
  * Created by jannisveerkamp on 17.09.14.
  */
 public class TrayDBHelper extends SQLiteOpenHelper {

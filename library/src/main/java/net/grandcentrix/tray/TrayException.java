@@ -1,6 +1,8 @@
 package net.grandcentrix.tray;
 
 /**
+ * Generic Exception for the Tray library
+ * <p>
  * Created by pascalwelsch on 5/13/15.
  */
 public class TrayException extends Exception {

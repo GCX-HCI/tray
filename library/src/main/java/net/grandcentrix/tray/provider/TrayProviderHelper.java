@@ -17,7 +17,6 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.storage.TrayStorage;
 import net.grandcentrix.tray.util.SqliteHelper;
 
 import android.content.ContentValues;
@@ -31,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Helper for accessing the {@link TrayProvider}
+ * <p>
  * Created by pascalwelsch on 11/20/14.
  */
 public class TrayProviderHelper {

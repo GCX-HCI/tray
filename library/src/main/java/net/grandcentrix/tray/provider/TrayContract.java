@@ -26,6 +26,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 /**
+ * Contract defining the data in the {@link TrayProvider}. Use {@link TrayProviderHelper} to access
+ * them.
+ * <p>
  * Created by jannisveerkamp on 17.09.14.
  */
 @SuppressWarnings("unused")

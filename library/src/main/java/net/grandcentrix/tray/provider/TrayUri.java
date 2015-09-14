@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
+ * Internal helper class to build uris for the {@link TrayProvider}
+ * <p>
  * Created by pascalwelsch on 6/11/15.
  */
 public class TrayUri {
