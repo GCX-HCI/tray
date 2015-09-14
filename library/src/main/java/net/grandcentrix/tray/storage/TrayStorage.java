@@ -17,18 +17,24 @@
 package net.grandcentrix.tray.storage;
 
 import net.grandcentrix.tray.TrayRuntimeException;
+import net.grandcentrix.tray.accessor.OnTrayPreferenceChangeListener;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
 import net.grandcentrix.tray.provider.TrayUri;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Created by pascalwelsch on 11/20/14.
@@ -43,6 +49,48 @@ import java.util.List;
  * implementation for testing works seamless.
  */
 public class TrayStorage extends ModularizedStorage<TrayItem> {
+
+    private class TrayObserver extends ContentObserver {
+
+        /**
+         * Creates a content observer.
+         *
+         * @param handler The handler to run {@link #onChange} on, or null if none.
+         */
+        public TrayObserver(final Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public boolean deliverSelfNotifications() {
+            return super.deliverSelfNotifications();
+        }
+
+        @Override
+        public void onChange(final boolean selfChange) {
+            onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(final boolean selfChange, final Uri uri) {
+            final List<TrayItem> trayItems = mProviderHelper.queryProvider(uri);
+            for (final Map.Entry<OnTrayPreferenceChangeListener, Handler> entry
+                    : mListeners.entrySet()) {
+                final OnTrayPreferenceChangeListener listener = entry.getKey();
+                final Handler handler = entry.getValue();
+                if (handler != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onSharedPreferenceChanged(trayItems);
+                        }
+                    });
+                } else {
+                    listener.onSharedPreferenceChanged(trayItems);
+                }
+            }
+        }
+    }
 
     /**
      * The type of the data indicating their backup strategy to the cloud
@@ -77,6 +125,15 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     private static final String TAG = TrayStorage.class.getSimpleName();
 
     private final Context mContext;
+
+    /**
+     * weak references to the listeners. Only the keys are used.
+     */
+    private WeakHashMap<OnTrayPreferenceChangeListener, Handler> mListeners = new WeakHashMap<>();
+
+    private ContentObserver mObserver;
+
+    private Looper mObserverLooper;
 
     private final TrayProviderHelper mProviderHelper;
 
@@ -209,6 +266,51 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         mProviderHelper.persist(uri, value, migrationKey);
     }
 
+    public void registerOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        // noinspection ConstantConditions
+        if (listener == null) {
+            return;
+        }
+
+        // save a handler associated with the calling looper to call the callback on the same thread
+        // noinspection ConstantConditions
+        Handler handler = null;
+        final Looper looper = Looper.myLooper();
+        if (looper != null) {
+            handler = new Handler(looper);
+        }
+        //noinspection ConstantConditions
+        mListeners.put(listener, handler);
+
+        final Collection<OnTrayPreferenceChangeListener> listeners = mListeners.keySet();
+        if (listeners.size() == 1) {
+            // run the observer in it's own thread and start looping after setup and registering the observer
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    // init a looper for this tread
+                    Looper.prepare();
+                    // save looper. otherwise it could never be stopped
+                    mObserverLooper = Looper.myLooper();
+
+                    // noinspection ConstantConditions mObserverLooper is never null, prepare got called
+                    mObserver = new TrayObserver(new Handler(mObserverLooper));
+                    final Uri observingUri = mTrayUri.builder()
+                            .setType(mType)
+                            .setModule(getModuleName())
+                            .build();
+                    // register observer
+                    mContext.getContentResolver()
+                            .registerContentObserver(observingUri, true, mObserver);
+
+                    // no code will be executed after loop. It's an endless loop
+                    Looper.loop();
+                }
+            }).start();
+        }
+    }
+
     @Override
     public void remove(@NonNull final String key) {
         //noinspection ConstantConditions
@@ -239,6 +341,22 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         mProviderHelper.persist(uri, String.valueOf(version));
     }
 
+    public void unregisterOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        // noinspection ConstantConditions
+        if (listener == null) {
+            return;
+        }
+        mListeners.remove(listener);
+        if (mListeners.size() == 0) {
+            mContext.getContentResolver().unregisterContentObserver(mObserver);
+            if (mObserverLooper != null) {
+                mObserverLooper.quit();
+                mObserverLooper = null;
+            }
+        }
+    }
+
     /**
      * clear the data inside the preference and all evidence this preference has ever existed
      * <p>
@@ -255,4 +373,6 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
     }
+
+
 }

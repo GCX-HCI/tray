@@ -17,6 +17,7 @@
 package net.grandcentrix.tray;
 
 import net.grandcentrix.tray.accessor.ModularizedTrayPreferences;
+import net.grandcentrix.tray.accessor.OnTrayPreferenceChangeListener;
 import net.grandcentrix.tray.accessor.Preferences;
 import net.grandcentrix.tray.storage.TrayStorage;
 
@@ -54,6 +55,16 @@ public class TrayPreferences extends ModularizedTrayPreferences<TrayStorage> {
 
     public void annexModule(final String oldStorageName) {
         annexModule(oldStorageName, TrayStorage.Type.UNDEFINED);
+    }
+
+    public void registerOnTrayPreferenceChangeListener(
+            @NonNull OnTrayPreferenceChangeListener listener) {
+        getStorage().registerOnTrayPreferenceChangeListener(listener);
+    }
+
+    public void unregisterOnTrayPreferenceChangeListener(
+            @NonNull OnTrayPreferenceChangeListener listener) {
+        getStorage().unregisterOnTrayPreferenceChangeListener(listener);
     }
 
     protected Context getContext() {
