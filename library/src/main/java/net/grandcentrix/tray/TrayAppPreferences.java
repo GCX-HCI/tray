@@ -20,6 +20,8 @@ import android.content.Context;
 
 /**
  * Use {@link AppPreferences} instead. This was only a naming thing.
+ * <p>
+ * Will be removed with version 1.0
  */
 @Deprecated
 public class TrayAppPreferences extends TrayPreferences {

@@ -16,13 +16,16 @@
 
 package net.grandcentrix.tray.storage;
 
+import net.grandcentrix.tray.TrayRuntimeException;
 import net.grandcentrix.tray.provider.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
+import net.grandcentrix.tray.provider.TrayUri;
 
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Collection;
 import java.util.List;
@@ -41,16 +44,53 @@ import java.util.List;
  */
 public class TrayStorage extends ModularizedStorage<TrayItem> {
 
+    /**
+     * The type of the data indicating their backup strategy to the cloud
+     */
+    public enum Type {
+        /**
+         * don't use {@link #UNDEFINED} when creating a {@link net.grandcentrix.tray.TrayPreferences}.
+         * It's used internally to import a preference by moduleName without knowing the location
+         * of this preference (user or device). Because of that a undefined TrayStorage lookups the
+         * data in both data stores.
+         * <p>
+         * Because it's not clear where to save data a undefined TrayStorage is only able to read
+         * and delete items. Writing with <code>put()</code> is <b>not</b> allowed.
+         */
+        UNDEFINED,
+        /**
+         * the data relates to the user and can be saved in the cloud and restored on another
+         * device
+         */
+        USER,
+        /**
+         * the data is device specific like a GCM push token or settings that is important for this
+         * specific device.
+         * <p>
+         * Such data shouldn't saved to the cloud with auto backup since Android Marshmallow.
+         */
+        DEVICE
+    }
+
     public static final String VERSION = "version";
+
+    private static final String TAG = TrayStorage.class.getSimpleName();
 
     private final Context mContext;
 
     private final TrayProviderHelper mProviderHelper;
 
-    public TrayStorage(@NonNull final Context context, @NonNull final String module) {
+    private final TrayUri mTrayUri;
+
+    private final Type mType;
+
+    public TrayStorage(@NonNull final Context context, @NonNull final String module,
+            @NonNull final Type type) {
         super(module);
         mContext = context.getApplicationContext();
+        mTrayUri = new TrayUri(mContext);
         mProviderHelper = new TrayProviderHelper(mContext);
+        mType = type;
     }
 
     @Override
@@ -63,8 +103,9 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void clear() {
-        final Uri uri = mProviderHelper.getUri().buildUpon()
-                .appendPath(getModuleName())
+        final Uri uri = mTrayUri.builder()
+                .setModule(getModuleName())
+                .setType(mType)
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
     }
@@ -72,15 +113,32 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Override
     @Nullable
     public TrayItem get(@NonNull final String key) {
-        final Uri uri = mProviderHelper.getUri(getModuleName(), key);
+        final Uri uri = mTrayUri.builder()
+                .setType(mType)
+                .setModule(getModuleName())
+                .setKey(key)
+                .build();
         final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
-        return prefs.size() == 1 ? prefs.get(0) : null;
+        final int size = prefs.size();
+        if (size > 1) {
+            Log.w(TAG, "found more than one item for key '" + key
+                    + "' in module " + getModuleName() + ". "
+                    + "This can be caused by using the same name for a device and user specific preference.");
+            for (int i = 0; i < prefs.size(); i++) {
+                final TrayItem pref = prefs.get(i);
+                Log.d(TAG, "item #" + i + " " + pref);
+            }
+        }
+        return size > 0 ? prefs.get(0) : null;
     }
 
     @NonNull
     @Override
     public Collection<TrayItem> getAll() {
-        final Uri uri = mProviderHelper.getUri(getModuleName());
+        final Uri uri = mTrayUri.builder()
+                .setType(mType)
+                .setModule(getModuleName())
+                .build();
         return mProviderHelper.queryProvider(uri);
     }
 
@@ -88,9 +146,23 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         return mContext;
     }
 
+    /**
+     * Indicates where the data internally gets stored and how the backup is handled for the data
+     *
+     * @return the type of storage
+     */
+    public Type getType() {
+        return mType;
+    }
+
     @Override
     public int getVersion() {
-        final Uri internalUri = mProviderHelper.getInternalUri(getModuleName(), VERSION);
+        final Uri internalUri = mTrayUri.builder()
+                .setInternal(true)
+                .setType(mType)
+                .setModule(getModuleName())
+                .setKey(VERSION)
+                .build();
         final List<TrayItem> trayItems = mProviderHelper.queryProvider(internalUri);
         if (trayItems.size() == 0) {
             // fallback, not found
@@ -101,7 +173,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void put(final TrayItem item) {
-        mProviderHelper.persist(getModuleName(), item.key(), item.migratedKey(), item.value());
+        put(item.key(), item.migratedKey(), item.value());
     }
 
     @Override
@@ -122,8 +194,19 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
             @Nullable final Object data) {
-        String value = data == null ? null : String.valueOf(data);
-        mProviderHelper.persist(getModuleName(), key, migrationKey, value);
+        if (getType() == Type.UNDEFINED) {
+            throw new TrayRuntimeException(
+                    "writing data into a storage with type UNDEFINED is forbidden. Only Read and delete is allowed.");
+        }
+
+        final String value = data == null ? null : String.valueOf(data);
+
+        final Uri uri = mTrayUri.builder()
+                .setType(mType)
+                .setModule(getModuleName())
+                .setKey(key)
+                .build();
+        mProviderHelper.persist(uri, value, migrationKey);
     }
 
     @Override
@@ -131,15 +214,29 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         //noinspection ConstantConditions
         if (key == null) {
             throw new IllegalArgumentException(
-                    "null is not valid. use clear to delete all preferences");
+                    "null is not valid. use clear or wipe to delete all preferences");
         }
-        final Uri uri = mProviderHelper.getUri(getModuleName(), key);
+        final Uri uri = mTrayUri.builder()
+                .setType(mType)
+                .setModule(getModuleName())
+                .setKey(key)
+                .build();
         mContext.getContentResolver().delete(uri, null, null);
     }
 
     @Override
     public void setVersion(final int version) {
-        mProviderHelper.persistInternal(getModuleName(), VERSION, String.valueOf(version));
+        if (getType() == Type.UNDEFINED) {
+            throw new TrayRuntimeException(
+                    "writing data into a storage with type UNDEFINED is forbidden. Only Read and delete is allowed.");
+        }
+        final Uri uri = mTrayUri.builder()
+                .setInternal(true)
+                .setType(mType)
+                .setModule(getModuleName())
+                .setKey(VERSION)
+                .build();
+        mProviderHelper.persist(uri, String.valueOf(version));
     }
 
     /**
@@ -151,8 +248,10 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
      */
     public void wipe() {
         clear();
-        final Uri uri = mProviderHelper.getInternalUri().buildUpon()
-                .appendPath(getModuleName())
+        final Uri uri = mTrayUri.builder()
+                .setInternal(true)
+                .setType(mType)
+                .setModule(getModuleName())
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
     }

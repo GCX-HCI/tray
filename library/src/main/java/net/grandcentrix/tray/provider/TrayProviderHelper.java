@@ -30,27 +30,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Helper for accessing the {@link TrayProvider}
+ * <p>
  * Created by pascalwelsch on 11/20/14.
  */
 public class TrayProviderHelper {
 
-    private final Uri mContentUri;
-
-    private final Uri mContentUriInternal;
-
     private final Context mContext;
+
+    private final TrayUri mTrayUri;
 
     public TrayProviderHelper(@NonNull final Context context) {
         mContext = context;
-        mContentUri = TrayContract.generateContentUri(context);
-        mContentUriInternal = TrayContract.generateInternalContentUri(context);
+        mTrayUri = new TrayUri(context);
     }
 
     /**
      * clears <b>all</b> Preferences saved. Module independent. Erases all preference data
      */
     public void clear() {
-        mContext.getContentResolver().delete(mContentUri, null, null);
+        mContext.getContentResolver().delete(mTrayUri.get(), null, null);
     }
 
     /**
@@ -73,7 +72,7 @@ public class TrayProviderHelper {
                     .extendSelectionArgs(selectionArgs, new String[]{moduleName});
         }
 
-        mContext.getContentResolver().delete(mContentUri, selection, selectionArgs);
+        mContext.getContentResolver().delete(mTrayUri.get(), selection, selectionArgs);
     }
 
     /**
@@ -83,50 +82,9 @@ public class TrayProviderHelper {
      */
     @NonNull
     public List<TrayItem> getAll() {
-        return queryProvider(mContentUri);
+        return queryProvider(mTrayUri.get());
     }
 
-    public Uri getInternalUri() {
-        return getUri(null, null, true);
-    }
-
-    public Uri getInternalUri(final String module) {
-        return getUri(module, null, true);
-    }
-
-    public Uri getInternalUri(@Nullable final String module, @Nullable final String key) {
-        return getUri(module, key, true);
-    }
-
-    public Uri getUri() {
-        return getUri(null, null);
-    }
-
-    public Uri getUri(final String module) {
-        return getUri(module, null);
-    }
-
-    public Uri getUri(@Nullable final String module, @Nullable final String key) {
-        return getUri(module, key, false);
-    }
-
-    public Uri getUri(@Nullable final String module, @Nullable final String key,
-            final boolean internal) {
-        if (module == null && key != null) {
-            throw new IllegalArgumentException(
-                    "key without module is not valid. Look into the TryProvider for valid Uris");
-        }
-        final Uri uri = internal ? mContentUriInternal : mContentUri;
-        final Uri.Builder builder = uri
-                .buildUpon();
-        if (module != null) {
-            builder.appendPath(module);
-        }
-        if (key != null) {
-            builder.appendPath(key);
-        }
-        return builder.build();
-    }
 
     /**
      * saves the value into the database.
@@ -150,19 +108,23 @@ public class TrayProviderHelper {
      */
     public void persist(@NonNull final String module, @NonNull final String key,
             @Nullable final String previousKey, @Nullable final String value) {
-        persist(module, key, previousKey, value, false);
+        final Uri uri = mTrayUri.builder()
+                .setModule(module)
+                .setKey(key)
+                .build();
+        persist(uri, value, previousKey);
     }
 
-    /**
-     * saves data internally, not accessible with public api
-     *
-     * @param module module name
-     * @param key    key for mapping
-     * @param value  data to save
-     */
-    public void persistInternal(@NonNull final String module, @NonNull final String key,
-            @Nullable final String value) {
-        persist(module, key, null, value, true);
+    public void persist(@NonNull final Uri uri, @Nullable String value) {
+        persist(uri, value, null);
+    }
+
+    public void persist(@NonNull final Uri uri, @Nullable String value,
+            @Nullable final String previousKey) {
+        ContentValues values = new ContentValues();
+        values.put(TrayContract.Preferences.Columns.VALUE, value);
+        values.put(TrayContract.Preferences.Columns.MIGRATED_KEY, previousKey);
+        mContext.getContentResolver().insert(uri, values);
     }
 
     /**
@@ -197,29 +159,6 @@ public class TrayProviderHelper {
      */
     public void wipe() {
         clear();
-        mContext.getContentResolver().delete(mContentUriInternal, null, null);
-    }
-
-    /**
-     * @param module      module name
-     * @param key         key for mapping
-     * @param value       data to save
-     * @param previousKey key before the migration
-     * @param internal    where to save
-     */
-    private void persist(@NonNull final String module, @NonNull final String key,
-            @Nullable final String previousKey, @Nullable final String value,
-            final boolean internal) {
-
-        final Uri contentUri = internal ? mContentUriInternal : mContentUri;
-        final Uri uri = contentUri
-                .buildUpon()
-                .appendPath(module)
-                .appendPath(key)
-                .build();
-        ContentValues values = new ContentValues();
-        values.put(TrayContract.Preferences.Columns.VALUE, value);
-        values.put(TrayContract.Preferences.Columns.MIGRATED_KEY, previousKey);
-        mContext.getContentResolver().insert(uri, values);
+        mContext.getContentResolver().delete(mTrayUri.getInternal(), null, null);
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+
+    <!--exclude device specific tray data from backup-->
+    <exclude
+        domain="database"
+        path="tray_backup_excluded.db" />
+
+    <!--OR-->
+    <!--include user specific tray data into the backup-->
+    <!--<include
+        domain="database"
+        path="tray.db" />-->
+
+</full-backup-content>

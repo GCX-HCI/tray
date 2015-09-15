@@ -4,9 +4,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
+ * use {@link TrayPreferences} instead. Only the name was changed.
+ * <p>
+ * Will be removed with version 1.0
+ * <p>
  * Created by pascalwelsch on 6/5/15.
- *
- * use {@link TrayPreferences} instead. Only the name was changed
  */
 @Deprecated
 public class TrayModulePreferences extends TrayPreferences {

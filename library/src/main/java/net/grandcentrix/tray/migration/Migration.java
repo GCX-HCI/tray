@@ -22,6 +22,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
+ * Representing something which should be migrated with getters for the data and additional
+ * information
+ * <p>
  * Created by pascalwelsch on 2/25/15.
  */
 public interface Migration<T> {

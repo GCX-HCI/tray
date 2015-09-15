@@ -22,9 +22,9 @@ import android.support.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * Created by pascalwelsch on 11/20/14.
- * <p>
  * Access interface to interact with preferences.
+ * <p>
+ * Created by pascalwelsch on 11/20/14.
  */
 public interface PreferenceAccessor<T> {
 

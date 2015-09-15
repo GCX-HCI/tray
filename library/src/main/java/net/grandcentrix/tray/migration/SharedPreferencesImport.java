@@ -26,6 +26,9 @@ import android.util.Log;
 import java.util.Objects;
 
 /**
+ * Migrates a key value pair from the {@link SharedPreferences} into a {@link
+ * net.grandcentrix.tray.TrayPreferences}
+ * <p>
  * Created by pascalwelsch on 2/25/15.
  */
 public class SharedPreferencesImport implements TrayMigration {

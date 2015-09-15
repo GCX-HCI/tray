@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
+ * Immutable item from the Tray storage.
+ *
  * Created by jannisveerkamp on 17.09.14.
  */
 public class TrayItem {

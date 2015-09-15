@@ -22,9 +22,9 @@ import android.support.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * Created by pascalwelsch on 11/20/14.
- * <p>
  * basic functionality for every storage implementation
+ * <p>
+ * Created by pascalwelsch on 11/20/14.
  */
 public interface PreferenceStorage<T> {
 
