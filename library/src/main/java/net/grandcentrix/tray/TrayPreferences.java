@@ -18,6 +18,7 @@ package net.grandcentrix.tray;
 
 import net.grandcentrix.tray.core.ModularizedTrayPreferences;
 import net.grandcentrix.tray.core.Preferences;
+import net.grandcentrix.tray.core.TrayStorageType;
 import net.grandcentrix.tray.provider.TrayStorage;
 
 import android.content.Context;
@@ -26,34 +27,33 @@ import android.support.annotation.NonNull;
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
- * A {@link Preferences} where the module name depends on the
- * developer. Extending this class should be preferred compared to the usage of the {@link
- * AppPreferences}.
+ * A {@link Preferences} where the module name depends on the developer. Extending this class
+ * should be preferred compared to the usage of the {@link AppPreferences}.
  * <p>
  * This class gives the developer the opportunity to remove whole modules without knowing each
  * single preference key.
  * <p>
- * Communicates with the {@link TrayStorage} to store the preferences
- * into a {@link android.content.ContentProvider}
+ * Communicates with the {@link TrayStorage} to store the preferences into a {@link
+ * android.content.ContentProvider}
  */
 public class TrayPreferences extends ModularizedTrayPreferences<TrayStorage> {
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
-            final int version, final TrayStorage.Type type) {
+            final int version, final TrayStorageType type) {
         super(new TrayStorage(context, module, type), version);
     }
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
             final int version) {
-        this(context, module, version, TrayStorage.Type.USER);
+        this(context, module, version, TrayStorageType.USER);
     }
 
-    public void annexModule(final String oldStorageName, final TrayStorage.Type type) {
+    public void annexModule(final String oldStorageName, final TrayStorageType type) {
         super.annex(new TrayStorage(getContext(), oldStorageName, type));
     }
 
     public void annexModule(final String oldStorageName) {
-        annexModule(oldStorageName, TrayStorage.Type.UNDEFINED);
+        annexModule(oldStorageName, TrayStorageType.UNDEFINED);
     }
 
     protected Context getContext() {

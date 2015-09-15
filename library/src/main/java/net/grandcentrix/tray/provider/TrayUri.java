@@ -1,6 +1,6 @@
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.provider.TrayStorage.Type;
+import net.grandcentrix.tray.core.TrayStorageType;
 
 import android.content.Context;
 import android.net.Uri;
@@ -21,7 +21,7 @@ class TrayUri {
 
         private String mModule;
 
-        private Type mStorage = Type.UNDEFINED;
+        private TrayStorageType mType = TrayStorageType.UNDEFINED;
 
         public Builder(final Context context) {
             mContext = context.getApplicationContext();
@@ -36,9 +36,9 @@ class TrayUri {
             if (mKey != null) {
                 builder.appendPath(mKey);
             }
-            if (mStorage != Type.UNDEFINED) {
+            if (mType != TrayStorageType.UNDEFINED) {
                 builder.appendQueryParameter("backup",
-                        Type.USER.equals(mStorage) ? "true" : "false");
+                        TrayStorageType.USER.equals(mType) ? "true" : "false");
             }
             return builder.build();
         }
@@ -58,8 +58,8 @@ class TrayUri {
             return this;
         }
 
-        public Builder setType(Type storage) {
-            mStorage = storage;
+        public Builder setType(TrayStorageType type) {
+            mType = type;
             return this;
         }
     }

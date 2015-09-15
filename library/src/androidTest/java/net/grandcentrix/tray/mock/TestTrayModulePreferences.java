@@ -19,7 +19,7 @@ package net.grandcentrix.tray.mock;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.PreferenceStorage;
-import net.grandcentrix.tray.provider.TrayStorage;
+import net.grandcentrix.tray.core.TrayStorageType;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -34,7 +34,7 @@ public class TestTrayModulePreferences extends TrayPreferences {
     }
 
     public TestTrayModulePreferences(@NonNull final Context context,
-            @NonNull final String module, final TrayStorage.Type type) {
+            @NonNull final String module, final TrayStorageType type) {
         super(context, module, 1, type);
     }
 

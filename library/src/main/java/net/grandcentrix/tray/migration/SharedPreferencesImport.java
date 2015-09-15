@@ -28,7 +28,12 @@ import java.util.Objects;
 
 /**
  * Migrates a key value pair from the {@link SharedPreferences} into a {@link
- * TrayPreferences}
+ * TrayPreferences}. There is no Migration which imports all data from {@link SharedPreferences}
+ * into tray because devs using tray should be aware of what gets imported. It's your chance to get
+ * rid off all the long forgotten junk stored in your {@link SharedPreferences} ;)
+ * <p>
+ * <b>Caution!</b> the key value pair imported into tray will be deleted in the {@link
+ * SharedPreferences} after the import.
  * <p>
  * Created by pascalwelsch on 2/25/15.
  */

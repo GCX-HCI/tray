@@ -19,7 +19,7 @@ package net.grandcentrix.tray.sample;
 import net.grandcentrix.tray.AppPreferences;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.migration.SharedPreferencesImport;
-import net.grandcentrix.tray.provider.TrayStorage;
+import net.grandcentrix.tray.core.TrayStorageType;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -148,7 +148,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         {
             // device specific data
             final TrayPreferences deviceSpecificPref =
-                    new TrayPreferences(this, "nobackup", 1, TrayStorage.Type.DEVICE);
+                    new TrayPreferences(this, "nobackup", 1, TrayStorageType.DEVICE);
             final String deviceId = deviceSpecificPref.getString("deviceId", null);
             Log.v(TAG, "deviceId: " + deviceId);
             if (deviceId == null) {
@@ -161,7 +161,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         {
             // user specific data
             final TrayPreferences userSpecificPref =
-                    new TrayPreferences(this, "autobackup", 1, TrayStorage.Type.USER);
+                    new TrayPreferences(this, "autobackup", 1, TrayStorageType.USER);
             final String userId = userSpecificPref.getString("userId", null);
             Log.v(TAG, "userId: " + userId);
             if (userId == null) {

@@ -1,5 +1,7 @@
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.core.TrayStorageType;
+
 /**
  * Created by pascalwelsch on 8/23/15.
  */
@@ -59,7 +61,7 @@ public class TrayUriTest extends TrayProviderTestCase {
                 trayUri.builder()
                         .setModule("myModule")
                         .setKey("myKey")
-                        .setType(TrayStorage.Type.DEVICE)
+                        .setType(TrayStorageType.DEVICE)
                         .build().toString());
     }
 
@@ -69,7 +71,7 @@ public class TrayUriTest extends TrayProviderTestCase {
                 trayUri.builder()
                         .setModule("myModule")
                         .setKey("myKey")
-                        .setType(TrayStorage.Type.UNDEFINED)
+                        .setType(TrayStorageType.UNDEFINED)
                         .build().toString());
     }
 
@@ -79,7 +81,7 @@ public class TrayUriTest extends TrayProviderTestCase {
                 trayUri.builder()
                         .setModule("myModule")
                         .setKey("myKey")
-                        .setType(TrayStorage.Type.USER)
+                        .setType(TrayStorageType.USER)
                         .build().toString());
     }
 

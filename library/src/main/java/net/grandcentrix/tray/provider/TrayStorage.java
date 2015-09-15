@@ -20,6 +20,7 @@ import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.ModularizedStorage;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayRuntimeException;
+import net.grandcentrix.tray.core.TrayStorageType;
 
 import android.content.Context;
 import android.net.Uri;
@@ -44,34 +45,6 @@ import java.util.List;
  */
 public class TrayStorage extends ModularizedStorage<TrayItem> {
 
-    /**
-     * The type of the data indicating their backup strategy to the cloud
-     */
-    public enum Type {
-        /**
-         * don't use {@link #UNDEFINED} when creating a {@link TrayPreferences}.
-         * It's used internally to import a preference by moduleName without knowing the location
-         * of this preference (user or device). Because of that a undefined TrayStorage lookups the
-         * data in both data stores.
-         * <p>
-         * Because it's not clear where to save data a undefined TrayStorage is only able to read
-         * and delete items. Writing with <code>put()</code> is <b>not</b> allowed.
-         */
-        UNDEFINED,
-        /**
-         * the data relates to the user and can be saved in the cloud and restored on another
-         * device
-         */
-        USER,
-        /**
-         * the data is device specific like a GCM push token or settings that is important for this
-         * specific device.
-         * <p>
-         * Such data shouldn't saved to the cloud with auto backup since Android Marshmallow.
-         */
-        DEVICE
-    }
-
     public static final String VERSION = "version";
 
     private static final String TAG = TrayStorage.class.getSimpleName();
@@ -82,10 +55,10 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     private final TrayUri mTrayUri;
 
-    private final Type mType;
+    private final TrayStorageType mType;
 
     public TrayStorage(@NonNull final Context context, @NonNull final String module,
-            @NonNull final Type type) {
+            @NonNull final TrayStorageType type) {
         super(module);
         mContext = context.getApplicationContext();
         mTrayUri = new TrayUri(mContext);
@@ -151,7 +124,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
      *
      * @return the type of storage
      */
-    public Type getType() {
+    public TrayStorageType getType() {
         return mType;
     }
 
@@ -194,7 +167,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
             @Nullable final Object data) {
-        if (getType() == Type.UNDEFINED) {
+        if (getType() == TrayStorageType.UNDEFINED) {
             throw new TrayRuntimeException(
                     "writing data into a storage with type UNDEFINED is forbidden. Only Read and delete is allowed.");
         }
@@ -226,7 +199,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     @Override
     public void setVersion(final int version) {
-        if (getType() == Type.UNDEFINED) {
+        if (getType() == TrayStorageType.UNDEFINED) {
             throw new TrayRuntimeException(
                     "writing data into a storage with type UNDEFINED is forbidden. Only Read and delete is allowed.");
         }
