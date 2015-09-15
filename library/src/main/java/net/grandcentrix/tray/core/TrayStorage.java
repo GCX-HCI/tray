@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray.core;
 
+import net.grandcentrix.tray.TrayPreferences;
+
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
@@ -24,22 +26,41 @@ package net.grandcentrix.tray.core;
  */
 public abstract class TrayStorage implements PreferenceStorage<TrayItem> {
 
-    private String mModuleName;
-
-    private TrayStorageType mType;
-
-    public TrayStorage(final String moduleName, final TrayStorageType type) {
-        mModuleName = moduleName;
-        mType = type;
+    /**
+     * The type of the data indicating their backup strategy to the cloud
+     */
+    public enum Type {
+        /**
+         * don't use {@link #UNDEFINED} when creating a {@link TrayPreferences}.
+         * It's used internally to import a preference by moduleName without knowing the location
+         * of this preference (user or device). Because of that a undefined TrayStorage lookups the
+         * data in both data stores.
+         * <p>
+         * Because it's not clear where to save data a undefined TrayStorage is only able to read
+         * and delete items. Writing with <code>put()</code> is <b>not</b> allowed.
+         */
+        UNDEFINED,
+        /**
+         * the data relates to the user and can be saved in the cloud and restored on another
+         * device
+         */
+        USER,
+        /**
+         * the data is device specific like a GCM push token or settings that is important for this
+         * specific device.
+         * <p>
+         * Such data shouldn't saved to the cloud with auto backup since Android Marshmallow.
+         */
+        DEVICE
     }
 
-    /**
-     * Indicates where the data internally gets stored and how the backup is handled for the data
-     *
-     * @return the type of storage
-     */
-    public TrayStorageType getType() {
-        return mType;
+    private String mModuleName;
+
+    private Type mType;
+
+    public TrayStorage(final String moduleName, final Type type) {
+        mModuleName = moduleName;
+        mType = type;
     }
 
     /**
@@ -55,4 +76,12 @@ public abstract class TrayStorage implements PreferenceStorage<TrayItem> {
         return mModuleName;
     }
 
+    /**
+     * Indicates where the data internally gets stored and how the backup is handled for the data
+     *
+     * @return the type of storage
+     */
+    public Type getType() {
+        return mType;
+    }
 }

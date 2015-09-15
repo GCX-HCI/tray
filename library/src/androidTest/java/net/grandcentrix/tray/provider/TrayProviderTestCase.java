@@ -17,7 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.BuildConfig;
-import net.grandcentrix.tray.core.TrayStorageType;
+import net.grandcentrix.tray.core.TrayStorage;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
@@ -111,7 +111,7 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
         return mIsolatedContext;
     }
 
-    protected void assertDatabaseSize(final TrayStorageType type, final long expectedSize) {
+    protected void assertDatabaseSize(final TrayStorage.Type type, final long expectedSize) {
         switch (type) {
             default:
             case UNDEFINED:

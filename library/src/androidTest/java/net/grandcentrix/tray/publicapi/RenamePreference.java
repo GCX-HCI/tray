@@ -1,6 +1,6 @@
 package net.grandcentrix.tray.publicapi;
 
-import net.grandcentrix.tray.core.TrayStorageType;
+import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
@@ -10,14 +10,14 @@ import net.grandcentrix.tray.provider.TrayProviderTestCase;
 public class RenamePreference extends TrayProviderTestCase {
 
     public void testRename_User() throws Exception {
-        rename(TrayStorageType.USER);
+        rename(TrayStorage.Type.USER);
     }
 
     public void testRename_Device() throws Exception {
-        rename(TrayStorageType.DEVICE);
+        rename(TrayStorage.Type.DEVICE);
     }
 
-    private void rename(final TrayStorageType type) {
+    private void rename(final TrayStorage.Type type) {
         //create old Preference
         final TestTrayModulePreferences oldOne =
                 new TestTrayModulePreferences(getProviderMockContext(), "oldOne", type);

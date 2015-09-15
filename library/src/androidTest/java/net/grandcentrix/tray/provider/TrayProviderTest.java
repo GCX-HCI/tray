@@ -16,7 +16,7 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.core.TrayStorageType;
+import net.grandcentrix.tray.core.TrayStorage;
 
 import android.content.ContentValues;
 import android.content.pm.ProviderInfo;
@@ -167,7 +167,7 @@ public class TrayProviderTest extends TrayProviderTestCase {
         // null as table forces the internal SQLiteQueryBuilder to return null on a query
         // in reality this may happen for many other hard sql or database errors
         final Uri uri = new TrayUri(getProviderMockContext()).builder()
-                .setType(TrayStorageType.DEVICE) // unknown will not work
+                .setType(TrayStorage.Type.DEVICE) // unknown will not work
                 .build();
         when(provider.getTable(uri)).thenReturn(null);
 
@@ -193,17 +193,17 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
         // only &backup=false -> false
         assertFalse(provider.shouldBackup(trayUri.builder()
-                .setType(TrayStorageType.DEVICE)
+                .setType(TrayStorage.Type.DEVICE)
                 .build()));
 
         assertTrue(provider.shouldBackup(trayUri.get()));
 
         assertTrue(provider.shouldBackup(trayUri.builder()
-                .setType(TrayStorageType.USER)
+                .setType(TrayStorage.Type.USER)
                 .build()));
 
         assertTrue(provider.shouldBackup(trayUri.builder()
-                .setType(TrayStorageType.UNDEFINED)
+                .setType(TrayStorage.Type.UNDEFINED)
                 .build()));
     }
 

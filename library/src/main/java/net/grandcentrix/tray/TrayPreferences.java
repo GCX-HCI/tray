@@ -18,7 +18,7 @@ package net.grandcentrix.tray;
 
 import net.grandcentrix.tray.core.ModularizedTrayPreferences;
 import net.grandcentrix.tray.core.Preferences;
-import net.grandcentrix.tray.core.TrayStorageType;
+import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.provider.ContentProviderStorage;
 
 import android.content.Context;
@@ -39,21 +39,21 @@ import android.support.annotation.NonNull;
 public class TrayPreferences extends ModularizedTrayPreferences<ContentProviderStorage> {
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
-            final int version, final TrayStorageType type) {
+            final int version, final TrayStorage.Type type) {
         super(new ContentProviderStorage(context, module, type), version);
     }
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
             final int version) {
-        this(context, module, version, TrayStorageType.USER);
+        this(context, module, version, TrayStorage.Type.USER);
     }
 
-    public void annexModule(final String oldStorageName, final TrayStorageType type) {
+    public void annexModule(final String oldStorageName, final TrayStorage.Type type) {
         super.annex(new ContentProviderStorage(getContext(), oldStorageName, type));
     }
 
     public void annexModule(final String oldStorageName) {
-        annexModule(oldStorageName, TrayStorageType.UNDEFINED);
+        annexModule(oldStorageName, TrayStorage.Type.UNDEFINED);
     }
 
     protected Context getContext() {

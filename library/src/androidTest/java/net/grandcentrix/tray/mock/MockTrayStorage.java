@@ -18,7 +18,6 @@ package net.grandcentrix.tray.mock;
 
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayStorage;
-import net.grandcentrix.tray.core.TrayStorageType;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,7 +36,7 @@ public class MockTrayStorage extends TrayStorage {
     private int mVersion = 0;
 
     public MockTrayStorage(final String module) {
-        super(module, TrayStorageType.USER);
+        super(module, Type.USER);
     }
 
     @Override

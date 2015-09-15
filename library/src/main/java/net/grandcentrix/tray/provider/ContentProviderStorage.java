@@ -20,7 +20,6 @@ import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayRuntimeException;
 import net.grandcentrix.tray.core.TrayStorage;
-import net.grandcentrix.tray.core.TrayStorageType;
 
 import android.content.Context;
 import android.net.Uri;
@@ -56,7 +55,7 @@ public class ContentProviderStorage extends TrayStorage {
     private final TrayUri mTrayUri;
 
     public ContentProviderStorage(@NonNull final Context context, @NonNull final String module,
-            @NonNull final TrayStorageType type) {
+            @NonNull final Type type) {
         super(module, type);
         mContext = context.getApplicationContext();
         mTrayUri = new TrayUri(mContext);
@@ -155,7 +154,7 @@ public class ContentProviderStorage extends TrayStorage {
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
             @Nullable final Object data) {
-        if (getType() == TrayStorageType.UNDEFINED) {
+        if (getType() == Type.UNDEFINED) {
             throw new TrayRuntimeException(
                     "writing data into a storage with type UNDEFINED is forbidden. Only Read and delete is allowed.");
         }
@@ -187,7 +186,7 @@ public class ContentProviderStorage extends TrayStorage {
 
     @Override
     public void setVersion(final int version) {
-        if (getType() == TrayStorageType.UNDEFINED) {
+        if (getType() == Type.UNDEFINED) {
             throw new TrayRuntimeException(
                     "writing data into a storage with type UNDEFINED is forbidden. Only Read and delete is allowed.");
         }

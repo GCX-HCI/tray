@@ -19,7 +19,7 @@ package net.grandcentrix.tray.provider;
 import net.grandcentrix.tray.AppPreferences;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.TrayItem;
-import net.grandcentrix.tray.core.TrayStorageType;
+import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
 import android.content.ContentResolver;
@@ -358,14 +358,14 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     private Uri getUri(final String module) {
-        return mTrayUri.builder().setType(TrayStorageType.USER).setModule(module).build();
+        return mTrayUri.builder().setType(TrayStorage.Type.USER).setModule(module).build();
     }
 
     private Uri getUri(final String module, final String key) {
         return mTrayUri.builder()
                 .setModule(module)
                 .setKey(key)
-                .setType(TrayStorageType.USER)
+                .setType(TrayStorage.Type.USER)
                 .build();
     }
 
