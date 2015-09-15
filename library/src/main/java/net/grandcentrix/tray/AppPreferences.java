@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray;
 
+import net.grandcentrix.tray.core.PreferenceAccessor;
+
 import android.content.Context;
 
 /**

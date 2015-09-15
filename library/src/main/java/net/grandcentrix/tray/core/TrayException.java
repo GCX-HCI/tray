@@ -1,4 +1,4 @@
-package net.grandcentrix.tray;
+package net.grandcentrix.tray.core;
 
 /**
  * Generic Exception for the Tray library

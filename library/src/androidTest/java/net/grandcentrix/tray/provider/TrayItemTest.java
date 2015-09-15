@@ -18,10 +18,7 @@ package net.grandcentrix.tray.provider;
 
 import junit.framework.TestCase;
 
-import net.grandcentrix.tray.TrayItem;
-
-import android.database.MatrixCursor;
-import android.text.TextUtils;
+import net.grandcentrix.tray.core.TrayItem;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

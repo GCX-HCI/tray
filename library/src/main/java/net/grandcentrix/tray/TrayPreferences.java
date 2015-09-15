@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray;
 
+import net.grandcentrix.tray.core.ModularizedTrayPreferences;
+import net.grandcentrix.tray.core.Preferences;
 import net.grandcentrix.tray.provider.TrayStorage;
 
 import android.content.Context;

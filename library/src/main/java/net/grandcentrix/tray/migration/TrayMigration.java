@@ -16,12 +16,12 @@
 
 package net.grandcentrix.tray.migration;
 
-import net.grandcentrix.tray.TrayItem;
-import net.grandcentrix.tray.migration.Migration;
+import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.core.TrayItem;
 
 /**
  * A Migration for {@link TrayItem}s into a preference with {@link
- * net.grandcentrix.tray.TrayPreferences#migrate(Migration[])}
+ * TrayPreferences#migrate(Migration[])}
  * <p>
  * Created by pascalwelsch on 3/14/15.
  */

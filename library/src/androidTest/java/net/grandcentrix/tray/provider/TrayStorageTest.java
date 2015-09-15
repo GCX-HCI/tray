@@ -18,8 +18,8 @@ package net.grandcentrix.tray.provider;
 
 import junit.framework.Assert;
 
-import net.grandcentrix.tray.TrayRuntimeException;
-import net.grandcentrix.tray.TrayItem;
+import net.grandcentrix.tray.core.TrayRuntimeException;
+import net.grandcentrix.tray.core.TrayItem;
 
 import java.util.Collection;
 

@@ -1,4 +1,4 @@
-package net.grandcentrix.tray;
+package net.grandcentrix.tray.core;
 
 /**
  * Accessed values which where saved as a different type

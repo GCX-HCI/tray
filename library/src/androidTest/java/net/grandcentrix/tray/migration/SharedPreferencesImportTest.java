@@ -17,7 +17,7 @@
 package net.grandcentrix.tray.migration;
 
 import net.grandcentrix.tray.mock.MockTrayModulePreferences;
-import net.grandcentrix.tray.TrayItem;
+import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
 import android.annotation.SuppressLint;

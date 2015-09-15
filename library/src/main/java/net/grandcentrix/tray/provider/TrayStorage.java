@@ -16,9 +16,10 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.TrayItem;
-import net.grandcentrix.tray.TrayRuntimeException;
-import net.grandcentrix.tray.ModularizedStorage;
+import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.core.ModularizedStorage;
+import net.grandcentrix.tray.core.TrayItem;
+import net.grandcentrix.tray.core.TrayRuntimeException;
 
 import android.content.Context;
 import android.net.Uri;
@@ -32,7 +33,7 @@ import java.util.List;
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
- * Implements the functionality between the {@link net.grandcentrix.tray.TrayPreferences}
+ * Implements the functionality between the {@link TrayPreferences}
  * and the {@link TrayContentProvider}. Uses functions of the {@link
  * TrayProviderHelper} for simple and unified access to the
  * provider.
@@ -48,7 +49,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
      */
     public enum Type {
         /**
-         * don't use {@link #UNDEFINED} when creating a {@link net.grandcentrix.tray.TrayPreferences}.
+         * don't use {@link #UNDEFINED} when creating a {@link TrayPreferences}.
          * It's used internally to import a preference by moduleName without knowing the location
          * of this preference (user or device). Because of that a undefined TrayStorage lookups the
          * data in both data stores.

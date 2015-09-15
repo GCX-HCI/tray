@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray;
 
+import net.grandcentrix.tray.core.Preferences;
+import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
 
 import android.content.Context;

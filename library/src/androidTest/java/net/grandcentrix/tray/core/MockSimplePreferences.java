@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray;
+package net.grandcentrix.tray.core;
 
-import net.grandcentrix.tray.ModularizedTrayPreferences;
+import net.grandcentrix.tray.core.ModularizedTrayPreferences;
 import net.grandcentrix.tray.mock.MockModularizedStorage;
 
 import android.support.annotation.NonNull;

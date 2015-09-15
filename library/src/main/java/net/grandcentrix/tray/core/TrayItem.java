@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray;
+package net.grandcentrix.tray.core;
 
 import android.support.annotation.Nullable;
 

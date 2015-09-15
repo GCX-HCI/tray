@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray;
-
-import net.grandcentrix.tray.ItemNotFoundException;
-import net.grandcentrix.tray.WrongTypeException;
+package net.grandcentrix.tray.core;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

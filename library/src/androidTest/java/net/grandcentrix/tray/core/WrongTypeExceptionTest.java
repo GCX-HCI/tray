@@ -1,8 +1,8 @@
-package net.grandcentrix.tray;
+package net.grandcentrix.tray.core;
 
 import junit.framework.TestCase;
 
-import net.grandcentrix.tray.WrongTypeException;
+import net.grandcentrix.tray.core.WrongTypeException;
 
 /**
  * Created by pascalwelsch on 5/17/15.

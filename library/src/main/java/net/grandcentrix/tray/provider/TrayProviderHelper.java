@@ -16,8 +16,8 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.TrayItem;
 import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.util.SqliteHelper;
 
 import android.content.ContentValues;

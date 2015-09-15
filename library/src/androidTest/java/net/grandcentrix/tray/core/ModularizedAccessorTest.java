@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray;
+package net.grandcentrix.tray.core;
 
 import junit.framework.TestCase;
 
+import net.grandcentrix.tray.core.ModularizedStorage;
+import net.grandcentrix.tray.core.ModularizedTrayPreferences;
+import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.mock.MockModularizedStorage;
 
 /**

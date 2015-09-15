@@ -16,7 +16,8 @@
 
 package net.grandcentrix.tray.migration;
 
-import net.grandcentrix.tray.TrayItem;
+import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.core.TrayItem;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -27,7 +28,7 @@ import java.util.Objects;
 
 /**
  * Migrates a key value pair from the {@link SharedPreferences} into a {@link
- * net.grandcentrix.tray.TrayPreferences}
+ * TrayPreferences}
  * <p>
  * Created by pascalwelsch on 2/25/15.
  */

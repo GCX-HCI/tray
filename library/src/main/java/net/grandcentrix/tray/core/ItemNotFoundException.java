@@ -1,6 +1,4 @@
-package net.grandcentrix.tray;
-
-import net.grandcentrix.tray.TrayException;
+package net.grandcentrix.tray.core;
 
 /**
  * Thrown when accessing an item but there is no item for the given key

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray;
+package net.grandcentrix.tray.core;
 
 import junit.framework.TestCase;
 
+import net.grandcentrix.tray.BuildConfig;
 import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.migration.TrayMigration;
 import net.grandcentrix.tray.mock.MockModularizedStorage;

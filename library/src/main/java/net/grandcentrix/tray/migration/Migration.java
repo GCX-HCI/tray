@@ -16,7 +16,7 @@
 
 package net.grandcentrix.tray.migration;
 
-import net.grandcentrix.tray.Preferences;
+import net.grandcentrix.tray.core.Preferences;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
