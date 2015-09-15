@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.accessor;
+package net.grandcentrix.tray;
 
 import net.grandcentrix.tray.migration.Migration;
-import net.grandcentrix.tray.storage.PreferenceStorage;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

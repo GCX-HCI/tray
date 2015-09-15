@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storage;
+package net.grandcentrix.tray;
 
 /**
  * Created by pascalwelsch on 11/20/14.

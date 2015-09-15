@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.mock;
-
-import net.grandcentrix.tray.provider.TrayContract;
+package net.grandcentrix.tray.provider;
 
 import android.net.Uri;
 
@@ -33,16 +31,15 @@ public class MockProvider {
                 .build();
     }
 
-    public static Uri getInternalUserContentUri() {
-        return getContentUri(TrayContract.InternalPreferences.BASE_PATH).buildUpon()
-                .appendQueryParameter("backup", "true")
-                .build();
-    }
-
-
     public static Uri getInternalDeviceContentUri() {
         return getContentUri(TrayContract.InternalPreferences.BASE_PATH).buildUpon()
                 .appendQueryParameter("backup", "false")
+                .build();
+    }
+
+    public static Uri getInternalUserContentUri() {
+        return getContentUri(TrayContract.InternalPreferences.BASE_PATH).buildUpon()
+                .appendQueryParameter("backup", "true")
                 .build();
     }
 

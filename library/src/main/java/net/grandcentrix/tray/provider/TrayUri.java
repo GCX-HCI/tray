@@ -1,17 +1,17 @@
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.storage.TrayStorage.Type;
+import net.grandcentrix.tray.provider.TrayStorage.Type;
 
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
 /**
- * Internal helper class to build uris for the {@link TrayProvider}
+ * Internal helper class to build uris for the {@link TrayContentProvider}
  * <p>
  * Created by pascalwelsch on 6/11/15.
  */
-public class TrayUri {
+class TrayUri {
 
     public final class Builder {
 

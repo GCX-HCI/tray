@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.accessor;
+package net.grandcentrix.tray;
+
+import junit.framework.TestCase;
 
 import net.grandcentrix.tray.mock.MockModularizedStorage;
 
-import android.support.annotation.NonNull;
+public class ModularizedStorageTest extends TestCase {
 
-/**
- * Created by pascalwelsch on 3/9/15.
- */
-public class MockSimplePreferences extends ModularizedTrayPreferences<MockModularizedStorage> {
-
-    public MockSimplePreferences(final int version) {
-        super(new MockModularizedStorage("test"), version);
-    }
-
-    public MockSimplePreferences(
-            @NonNull final MockModularizedStorage storage,
-            final int version) {
-        super(storage, version);
+    public void testGetModule() throws Exception {
+        final MockModularizedStorage storage = new MockModularizedStorage("test");
+        assertEquals("test", storage.getModuleName());
     }
 }

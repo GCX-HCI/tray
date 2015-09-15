@@ -16,9 +16,7 @@
 
 package net.grandcentrix.tray;
 
-import net.grandcentrix.tray.accessor.ModularizedTrayPreferences;
-import net.grandcentrix.tray.accessor.Preferences;
-import net.grandcentrix.tray.storage.TrayStorage;
+import net.grandcentrix.tray.provider.TrayStorage;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -33,7 +31,7 @@ import android.support.annotation.NonNull;
  * This class gives the developer the opportunity to remove whole modules without knowing each
  * single preference key.
  * <p>
- * Communicates with the {@link net.grandcentrix.tray.storage.TrayStorage} to store the preferences
+ * Communicates with the {@link TrayStorage} to store the preferences
  * into a {@link android.content.ContentProvider}
  */
 public class TrayPreferences extends ModularizedTrayPreferences<TrayStorage> {

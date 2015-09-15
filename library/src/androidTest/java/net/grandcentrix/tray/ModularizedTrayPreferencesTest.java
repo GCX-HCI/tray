@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.accessor;
+package net.grandcentrix.tray;
 
 import junit.framework.TestCase;
 

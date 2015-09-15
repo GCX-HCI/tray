@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storage;
+package net.grandcentrix.tray.provider;
 
 import junit.framework.Assert;
 
 import net.grandcentrix.tray.TrayRuntimeException;
-import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.provider.TrayProviderTestCase;
+import net.grandcentrix.tray.TrayItem;
 
 import java.util.Collection;
 

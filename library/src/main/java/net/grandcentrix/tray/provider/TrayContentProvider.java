@@ -40,13 +40,13 @@ import java.util.Date;
  * <p>
  * {@link #update(Uri, ContentValues, String, String[])} is not supported. Use {@link #insert(Uri,
  * ContentValues)} instead. Saving two items with the same column {@link
- * net.grandcentrix.tray.provider.TrayContract.Preferences.Columns#KEY} and {@link
- * net.grandcentrix.tray.provider.TrayContract.Preferences.Columns#MODULE} overrides the already
+ * TrayContract.Preferences.Columns#KEY} and {@link
+ * TrayContract.Preferences.Columns#MODULE} overrides the already
  * existing data. So <code>insert</code> works as <code>insertOrUpdate</code>.
  * <p>
  * Created by jannisveerkamp on 16.09.14.
  */
-public class TrayProvider extends ContentProvider {
+public class TrayContentProvider extends ContentProvider {
 
     private static final int SINGLE_PREFERENCE = 10;
 
@@ -60,7 +60,7 @@ public class TrayProvider extends ContentProvider {
 
     private static final int INTERNAL_ALL_PREFERENCE = 130;
 
-    private static final String TAG = TrayProvider.class.getSimpleName();
+    private static final String TAG = TrayContentProvider.class.getSimpleName();
 
     private static UriMatcher sURIMatcher;
 

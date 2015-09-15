@@ -26,13 +26,12 @@ import android.text.TextUtils;
 import android.util.Log;
 
 /**
- * Contract defining the data in the {@link TrayProvider}. Use {@link TrayProviderHelper} to access
+ * Contract defining the data in the {@link TrayContentProvider}. Use {@link TrayProviderHelper} to access
  * them.
  * <p>
  * Created by jannisveerkamp on 17.09.14.
  */
-@SuppressWarnings("unused")
-public class TrayContract {
+class TrayContract {
 
     /**
      * default preferences
@@ -78,7 +77,7 @@ public class TrayContract {
      * use this only for tests and not in production
      *
      * @param authority the new authority for Tray
-     * @see TrayProvider#setAuthority(String)
+     * @see TrayContentProvider#setAuthority(String)
      */
     public static void setAuthority(final String authority) {
         sTestAuthority = authority;

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storage;
+package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.TrayItem;
 import net.grandcentrix.tray.TrayRuntimeException;
-import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.provider.TrayProviderHelper;
-import net.grandcentrix.tray.provider.TrayUri;
+import net.grandcentrix.tray.ModularizedStorage;
 
 import android.content.Context;
 import android.net.Uri;
@@ -34,8 +33,8 @@ import java.util.List;
  * Created by pascalwelsch on 11/20/14.
  * <p>
  * Implements the functionality between the {@link net.grandcentrix.tray.TrayPreferences}
- * and the {@link net.grandcentrix.tray.provider.TrayProvider}. Uses functions of the {@link
- * net.grandcentrix.tray.provider.TrayProviderHelper} for simple and unified access to the
+ * and the {@link TrayContentProvider}. Uses functions of the {@link
+ * TrayProviderHelper} for simple and unified access to the
  * provider.
  * <p>
  * This class represents a simple key value storage solution based on a {@link

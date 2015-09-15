@@ -1,8 +1,5 @@
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.mock.MockProvider;
-import net.grandcentrix.tray.storage.TrayStorage;
-
 /**
  * Created by pascalwelsch on 8/23/15.
  */

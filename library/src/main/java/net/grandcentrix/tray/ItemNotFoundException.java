@@ -1,4 +1,4 @@
-package net.grandcentrix.tray.accessor;
+package net.grandcentrix.tray;
 
 import net.grandcentrix.tray.TrayException;
 
