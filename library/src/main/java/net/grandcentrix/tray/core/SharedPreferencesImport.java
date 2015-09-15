@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.migration;
+package net.grandcentrix.tray.core;
 
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.core.TrayItem;
 
 import android.content.Context;
 import android.content.SharedPreferences;

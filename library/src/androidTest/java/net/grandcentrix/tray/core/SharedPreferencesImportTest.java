@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.migration;
+package net.grandcentrix.tray.core;
 
-import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.mock.MockTrayModulePreferences;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 

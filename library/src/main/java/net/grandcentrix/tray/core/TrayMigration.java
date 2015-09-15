@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.migration;
+package net.grandcentrix.tray.core;
 
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.core.TrayItem;
 
 /**
  * A Migration for {@link TrayItem}s into a preference with {@link
