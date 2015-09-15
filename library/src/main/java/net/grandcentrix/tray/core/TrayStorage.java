@@ -21,8 +21,9 @@ import net.grandcentrix.tray.TrayPreferences;
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
- * storage is now separated in modules and easier to maintain. Could be done with different files,
- * databases...
+ * A storage is now separated in modules (by name) and has a {@link Type} indicating how the data
+ * stored will be handled with the Android Auto Backup feature. {@see
+ * https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support}
  */
 public abstract class TrayStorage implements PreferenceStorage<TrayItem> {
 
