@@ -16,7 +16,7 @@
 
 package net.grandcentrix.tray;
 
-import net.grandcentrix.tray.core.ModularizedTrayPreferences;
+import net.grandcentrix.tray.core.AbstractTrayPreference;
 import net.grandcentrix.tray.core.Preferences;
 import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.provider.ContentProviderStorage;
@@ -36,7 +36,7 @@ import android.support.annotation.NonNull;
  * Communicates with the {@link ContentProviderStorage} to store the preferences into a {@link
  * android.content.ContentProvider}
  */
-public class TrayPreferences extends ModularizedTrayPreferences<ContentProviderStorage> {
+public class TrayPreferences extends AbstractTrayPreference<ContentProviderStorage> {
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
             final int version, final TrayStorage.Type type) {

@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 
 import net.grandcentrix.tray.mock.MockTrayStorage;
 
-public class ModularizedTrayPreferencesTest extends TestCase {
+public class AbstractTrayPreferenceTest extends TestCase {
 
     private static final String KEY = "key";
 
@@ -36,7 +36,7 @@ public class ModularizedTrayPreferencesTest extends TestCase {
 
     final String TEST_STRING = "fooBar";
 
-    private ModularizedTrayPreferences mTrayAccessor;
+    private AbstractTrayPreference mTrayAccessor;
 
     public void testAnnexModule() throws Exception {
         final MockSimplePreferences modulePreferences = new MockSimplePreferences(
@@ -86,7 +86,7 @@ public class ModularizedTrayPreferencesTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mTrayAccessor = new ModularizedTrayPreferences<MockTrayStorage>(
+        mTrayAccessor = new AbstractTrayPreference<MockTrayStorage>(
                 new MockTrayStorage("test"), 1) {
         };
 

@@ -23,7 +23,7 @@ import android.support.annotation.NonNull;
 /**
  * Created by pascalwelsch on 3/9/15.
  */
-public class MockSimplePreferences extends ModularizedTrayPreferences<MockTrayStorage> {
+public class MockSimplePreferences extends AbstractTrayPreference<MockTrayStorage> {
 
     public MockSimplePreferences(final int version) {
         super(new MockTrayStorage("test"), version);

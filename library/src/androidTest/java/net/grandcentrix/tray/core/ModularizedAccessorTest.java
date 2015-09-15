@@ -25,7 +25,7 @@ import net.grandcentrix.tray.mock.MockTrayStorage;
  */
 public class ModularizedAccessorTest extends TestCase {
 
-    private class MockTrayPreferences extends ModularizedTrayPreferences<MockTrayStorage> {
+    private class MockTrayPreferences extends AbstractTrayPreference<MockTrayStorage> {
 
         public MockTrayPreferences() {
             super(new MockTrayStorage("ModularizedAccessorTest"), 1);

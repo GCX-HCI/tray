@@ -24,10 +24,10 @@ import android.support.annotation.Nullable;
  *
  * Created by pascalwelsch on 11/20/14.
  */
-public abstract class ModularizedTrayPreferences<T extends TrayStorage> extends
+public abstract class AbstractTrayPreference<T extends TrayStorage> extends
         Preferences<TrayItem, T> {
 
-    protected ModularizedTrayPreferences(@NonNull final T storage, final int version) {
+    protected AbstractTrayPreference(@NonNull final T storage, final int version) {
         super(storage, version);
     }
 
