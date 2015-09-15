@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.accessor;
+package net.grandcentrix.tray;
 
 import junit.framework.TestCase;
 
-import net.grandcentrix.tray.BuildConfig;
 import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.migration.TrayMigration;
 import net.grandcentrix.tray.mock.MockModularizedStorage;
-import net.grandcentrix.tray.provider.TrayItem;
 
 import android.support.annotation.NonNull;
 
@@ -85,7 +83,7 @@ public class PreferenceMigrateTest extends TestCase {
 
     private HashMap<String, String> mDataStore;
 
-    private MockSimplePreference mTrayPreference;
+    private MockSimplePreferences mTrayPreference;
 
     public void testMigrateTwice() throws Exception {
         final Migration migration = new TestMigration(NEW_KEY, OLD_KEY);
@@ -100,12 +98,12 @@ public class PreferenceMigrateTest extends TestCase {
 
     public void testMigrationDidNotWorkNull() throws Exception {
         final MockModularizedStorage storage = spy(new MockModularizedStorage("test"));
-        mTrayPreference = new MockSimplePreference(storage, 1);
-        assertEquals(storage, mTrayPreference.getModularizedStorage());
+        mTrayPreference = new MockSimplePreferences(storage, 1);
+        assertEquals(storage, mTrayPreference.getStorage());
         when(storage.get(NEW_KEY)).thenReturn(null);
         assertNull(storage.get(NEW_KEY));
 
-        final Migration migration = spy(new TestMigration(NEW_KEY, OLD_KEY));
+        final TestMigration migration = spy(new TestMigration(NEW_KEY, OLD_KEY));
 
         mTrayPreference.migrate(migration);
         verify(migration, times(1)).onPostMigrate(null);
@@ -113,14 +111,14 @@ public class PreferenceMigrateTest extends TestCase {
 
     public void testMigrationDidNotWorkWrongData() throws Exception {
         final MockModularizedStorage storage = spy(new MockModularizedStorage("test"));
-        mTrayPreference = new MockSimplePreference(storage, 1);
-        assertEquals(storage, mTrayPreference.getModularizedStorage());
+        mTrayPreference = new MockSimplePreferences(storage, 1);
+        assertEquals(storage, mTrayPreference.getStorage());
         final TrayItem wrongItem = new TrayItem("test", NEW_KEY, OLD_KEY,
                 "thisIsNotTheMigratedData", new Date(), new Date());
         when(storage.get(NEW_KEY)).thenReturn(wrongItem);
         assertEquals(wrongItem, storage.get(NEW_KEY));
 
-        final Migration migration = spy(new TestMigration(NEW_KEY, OLD_KEY));
+        final TestMigration migration = spy(new TestMigration(NEW_KEY, OLD_KEY));
 
         mTrayPreference.migrate(migration);
         verify(migration, times(1)).onPostMigrate(wrongItem);
@@ -181,7 +179,7 @@ public class PreferenceMigrateTest extends TestCase {
         mDataStore.put(OLD_KEY, DATA);
         assertEquals(1, mDataStore.size());
 
-        mTrayPreference = new MockSimplePreference(1);
+        mTrayPreference = new MockSimplePreferences(1);
         assertEquals(0, mTrayPreference.getAll().size());
     }
 }

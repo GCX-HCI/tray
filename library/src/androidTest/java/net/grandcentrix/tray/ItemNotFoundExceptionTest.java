@@ -1,6 +1,8 @@
-package net.grandcentrix.tray.accessor;
+package net.grandcentrix.tray;
 
 import junit.framework.TestCase;
+
+import net.grandcentrix.tray.ItemNotFoundException;
 
 /**
  * Created by pascalwelsch on 5/17/15.

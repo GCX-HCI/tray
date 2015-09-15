@@ -16,10 +16,15 @@
 
 package net.grandcentrix.tray.migration;
 
+import net.grandcentrix.tray.Preferences;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
+ * Representing something which should be migrated with getters for the data and additional
+ * information
+ * <p>
  * Created by pascalwelsch on 2/25/15.
  */
 public interface Migration<T> {
@@ -27,7 +32,7 @@ public interface Migration<T> {
     /**
      * gets the data from the old data store.
      * <p>
-     * Only primitive types are supported. See {@link net.grandcentrix.tray.accessor.Preference#isDataTypeSupported(Object)}
+     * Only primitive types are supported. See {@link Preferences#isDataTypeSupported(Object)}
      * <p>
      * called after {@link #shouldMigrate()} and before {@link #onPostMigrate(Object)}
      *

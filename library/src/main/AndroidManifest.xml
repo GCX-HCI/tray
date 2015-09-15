@@ -1,10 +1,11 @@
-<manifest package="net.grandcentrix.tray"
+<manifest
+    package="net.grandcentrix.tray"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
 
         <provider
-            android:name="net.grandcentrix.tray.provider.TrayProvider"
+            android:name=".provider.TrayContentProvider"
             android:authorities="@string/tray__authority"
             android:exported="false"
             android:multiprocess="false" />

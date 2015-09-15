@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storage;
+package net.grandcentrix.tray;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,14 +22,18 @@ import android.support.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * Created by pascalwelsch on 11/20/14.
- * <p>
  * basic functionality for every storage implementation
+ * <p>
+ * Created by pascalwelsch on 11/20/14.
  */
 public interface PreferenceStorage<T> {
 
     /**
-     * clears the storage and wipes all of its content
+     * clears the storage by deleting all of its content. But doesn't clear metadata like the
+     * version. to do so, use {@link #wipe()}
+     *
+     * @see #wipe()
+     * @see #getVersion()
      */
     void clear();
 
@@ -51,6 +55,13 @@ public interface PreferenceStorage<T> {
      * @see #setVersion(int)
      */
     int getVersion();
+
+    /**
+     * stores a data item.
+     *
+     * @param item data object
+     */
+    void put(T item);
 
     /**
      * same as {@link #put(String, Object)} but with an additional migration key to save where the
@@ -84,5 +95,13 @@ public interface PreferenceStorage<T> {
      * @param version should be &gt; 0
      */
     void setVersion(final int version);
+
+    /**
+     * deleted this storage like it has never existed. removed saved data and all possible meta
+     * data
+     *
+     * @see #clear()
+     */
+    void wipe();
 
 }

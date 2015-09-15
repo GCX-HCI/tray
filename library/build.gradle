@@ -2,16 +2,16 @@ apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 apply plugin: 'bintray-release'
 
-def final String VERSION_NAME = "0.9.2"
-def final int VERSION_CODE = 5
+def final String VERSION_NAME = "0.10.0"
+def final int VERSION_CODE = 6
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
@@ -30,20 +30,21 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
-
     lintOptions {
         abortOnError false
+    }
+
+    adbOptions {
+        timeOutInMs 30000
     }
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:22.0.0'
+    compile 'com.android.support:support-annotations:22.2.0'
 
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
+    androidTestCompile 'com.android.support.test:runner:0.3'
     testCompile 'org.mockito:mockito-core:1.9.5'
     testCompile 'junit:junit:4.12'
 }

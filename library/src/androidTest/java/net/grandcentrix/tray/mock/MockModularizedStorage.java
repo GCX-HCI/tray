@@ -16,8 +16,8 @@
 
 package net.grandcentrix.tray.mock;
 
-import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.storage.ModularizedStorage;
+import net.grandcentrix.tray.TrayItem;
+import net.grandcentrix.tray.ModularizedStorage;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,6 +37,14 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
 
     public MockModularizedStorage(final String module) {
         super(module);
+    }
+
+    @Override
+    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
+        for (final TrayItem trayItem : oldStorage.getAll()) {
+            mData.put(trayItem.key(), trayItem);
+        }
+        oldStorage.wipe();
     }
 
     @Override
@@ -61,6 +69,11 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     }
 
     @Override
+    public void put(final TrayItem item) {
+        put(item.key(), item.value());
+    }
+
+    @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
             final Object data) {
         final String value = String.valueOf(data);
@@ -82,5 +95,11 @@ public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
     @Override
     public void setVersion(final int version) {
         this.mVersion = version;
+    }
+
+    @Override
+    public void wipe() {
+        mData.clear();
+        mVersion = 0;
     }
 }

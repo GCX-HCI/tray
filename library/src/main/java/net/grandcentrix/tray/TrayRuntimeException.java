@@ -1,6 +1,8 @@
 package net.grandcentrix.tray;
 
 /**
+ * Generic RuntimeException for the Tray library
+ * <p>
  * Created by pascalwelsch on 5/13/15.
  */
 public class TrayRuntimeException extends RuntimeException {

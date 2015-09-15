@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.accessor;
+package net.grandcentrix.tray;
+
+import net.grandcentrix.tray.ItemNotFoundException;
+import net.grandcentrix.tray.WrongTypeException;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,9 +25,9 @@ import android.support.annotation.Nullable;
 import java.util.Collection;
 
 /**
- * Created by pascalwelsch on 11/20/14.
- * <p>
  * Access interface to interact with preferences.
+ * <p>
+ * Created by pascalwelsch on 11/20/14.
  */
 public interface PreferenceAccessor<T> {
 
@@ -39,15 +42,6 @@ public interface PreferenceAccessor<T> {
      */
     Collection<T> getAll();
 
-    // TODO for version 1.1
-    // boolean contains(String key);
-
-    // TODO for version 1.1
-    // List<String> keys();
-
-    // TODO for version 1.1
-    // int getSize();
-
     /**
      * returns true if <code>true</code> or String "true" is saved. All other values will be parsed
      * as <code>false</code>
@@ -60,6 +54,15 @@ public interface PreferenceAccessor<T> {
      * @see #getBoolean(String, boolean)
      */
     boolean getBoolean(@NonNull final String key) throws ItemNotFoundException;
+
+    // TODO for version 1.1
+    // boolean contains(String key);
+
+    // TODO for version 1.1
+    // List<String> keys();
+
+    // TODO for version 1.1
+    // int getSize();
 
     /**
      * returns true if <code>true</code> or String "true" is saved. All other values will be parsed
@@ -98,7 +101,6 @@ public interface PreferenceAccessor<T> {
      *                               to {@link Integer}
      */
     int getInt(@NonNull final String key) throws ItemNotFoundException, WrongTypeException;
-
 
     /**
      * @param key          the key to map the value
@@ -203,4 +205,13 @@ public interface PreferenceAccessor<T> {
      * @param key the key to map the value
      */
     void remove(@NonNull final String key);
+
+    /**
+     * clear the data inside the preference and all evidence this preference has ever existed
+     * <p>
+     * also cleans internal information like the version for this preference
+     *
+     * @see #clear()
+     */
+    void wipe();
 }

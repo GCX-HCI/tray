@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.accessor;
-
-import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.storage.ModularizedStorage;
+package net.grandcentrix.tray;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
+ * Modular implementation of a {@link Preferences} which allows access to a {@link ModularizedStorage}.
+ *
  * Created by pascalwelsch on 11/20/14.
  */
-public abstract class TrayPreference extends Preference<TrayItem> {
+public abstract class ModularizedTrayPreferences<T extends ModularizedStorage<TrayItem>> extends
+        Preferences<TrayItem, T> {
 
-    private static final String TAG = TrayPreference.class.getSimpleName();
-
-    public TrayPreference(final ModularizedStorage<TrayItem> storage, final int version) {
+    protected ModularizedTrayPreferences(@NonNull final T storage,
+            final int version) {
         super(storage, version);
     }
 
@@ -108,8 +107,11 @@ public abstract class TrayPreference extends Preference<TrayItem> {
         }
     }
 
-    public ModularizedStorage<TrayItem> getModularizedStorage() {
-        return (ModularizedStorage<TrayItem>) super.getStorage();
+    /**
+     * @return the module name of this preference
+     */
+    public String getName() {
+        return getStorage().getModuleName();
     }
 
     @Override
@@ -129,6 +131,18 @@ public abstract class TrayPreference extends Preference<TrayItem> {
         } catch (ItemNotFoundException e) {
             return defaultValue;
         }
+    }
+
+    /**
+     * imports all data from an old storage. Use this if you have changed the module name
+     * <p>
+     * Call this in {@link #onCreate(int)}. The created and updated fields of the old {@link
+     * TrayItem}s will be lost. The old data gets deleted completely.
+     *
+     * @param oldStorage the old storage
+     */
+    protected void annex(final T oldStorage) {
+        getStorage().annex(oldStorage);
     }
 
     /**

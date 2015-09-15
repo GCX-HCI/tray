@@ -19,16 +19,23 @@ package net.grandcentrix.tray;
 import android.content.Context;
 
 /**
- * Use {@link AppPreferences} instead. This was only a naming thing.
+ * Created by pascalwelsch on 11/20/14.
  * <p>
- * Will be removed with version 1.0
+ * Default implementation of the {@link TrayPreferences} which uses
+ * the app package name as module name.
+ * <p>
+ * Use this {@link PreferenceAccessor} to save your preferences of
+ * your app independent of a single app module. It's not a good practice to put all preferences in
+ * a
+ * single module. Extend the {@link TrayPreferences} and gain the functionality to remove all
+ * data of a single module. This could help keeping the saved data as small as possible across app
+ * upgrades.
  */
-@Deprecated
-public class TrayAppPreferences extends TrayPreferences {
+public class AppPreferences extends TrayPreferences {
 
     private static final int VERSION = 1;
 
-    public TrayAppPreferences(final Context context) {
+    public AppPreferences(final Context context) {
         super(context, context.getPackageName(), VERSION);
     }
 }

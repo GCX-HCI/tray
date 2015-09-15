@@ -23,6 +23,7 @@ Tray is this mentioned _explicit cross-process data management approach_ powered
 - Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/migration/SharedPreferencesImport.java)
 - **tray is 100% unit tested!**
 - 0 lint warnings/errors
+- ![new_badge](https://cloud.githubusercontent.com/assets/1096485/9856970/37791f1c-5b18-11e5-97e4-53b8984c76e1.gif) Android 6.0 [Auto Backup for Apps](https://developer.android.com/preview/backup/index.html) support! [Read more in the wiki](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support)
 
 ## Usage
 
@@ -36,11 +37,11 @@ final TrayAppPreferences appPreferences = new TrayAppPreferences(getContext()); 
 // save a key value pair
 appPreferences.put("key", "lorem ipsum");
 
-// read the value for your key. the second parameter is a fallback
+// read the value for your key. the second parameter is a fallback (optional otherwise throws)
 final String value = appPreferences.getString("key", "default");
 Log.v(TAG, "value: " + value); // value: lorem ipsum
 
-// read a key that isn't saved. returns the default
+// read a key that isn't saved. returns the default (or throws without default)
 final String defaultValue = appPreferences.getString("key2", "default");
 Log.v(TAG, "value: " + defaultValue); // value: default
 ```
@@ -53,22 +54,12 @@ It's recommended to bundle preferences in groups, so called modules instead of p
 
 ```java
 // create a preference accessor for a module
-public class MyModulePreference extends TrayModulePreferences {
+public class MyModulePreference extends TrayPreferences {
 
     public static String KEY_IS_FIRST_LAUNCH = "first_launch";
 
     public MyModulePreference(final Context context) {
         super(context, "myModule", 1);
-    }
-
-    @Override
-    protected void onCreate(final int initialVersion) {
-
-    }
-
-    @Override
-    protected void onUpgrade(final int oldVersion, final int newVersion) {
-
     }
 }
 ```
@@ -79,7 +70,34 @@ final MyModulePreference myModulePreference = new MyModulePreference(getContext(
 myModulePreference.put(MyModulePreference.KEY_IS_FIRST_LAUNCH, false);
 ```
 
-See the [sample project](https://github.com/grandcentrix/tray/tree/master/sample) for more a demo
+See the [sample project](https://github.com/grandcentrix/tray/tree/master/sample) for more
+
+Like the Android [`SQLiteOpenHelper`](http://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper.html) a `TrayPreference` lets you implement methods to handle versioning.
+
+```java
+public class MyModulePreference extends TrayPreferences {
+
+    public MyModulePreference(final Context context) {
+        super(context, "myModule", 1);
+    }
+
+    @Override
+    protected void onCreate(final int initialVersion) {
+        super.onCreate(initialVersion);
+    }
+
+    @Override
+    protected void onUpgrade(final int oldVersion, final int newVersion) {
+        super.onUpgrade(oldVersion, newVersion);
+    }
+
+    @Override
+    protected void onDowngrade(final int oldVersion, final int newVersion) {
+        super.onDowngrade(oldVersion, newVersion);
+    }
+}
+
+```
 
 `// TOOD add clear sample`
 
@@ -186,6 +204,19 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 - performance tests
 
 ## Versions
+
+##### Version 0.10.0 `02.06.15`
+- `TrayAppPreferences` is now deprecated. Use `AppPreferences` instead (renaming)
+- `TrayModulePreferences` is now deprecated. Use `TrayPreferences` instead to extend from for your own Preferences
+- split up database for user and device specific data for Android M Auto Backup feature
+- `TrayPreferences` has now an optional 3. constructor parameter `TrayStorage.Type`, `USER` or `DEVICE` indicating the internal database (required for Android M Auto Backup). Default is `USER`
+- `Preference` `#onCreate(...)` and `#onUpgrade(...)` aren't abstract anymore
+- `PreferenceAccessor#wipe()` clears the preference data and it's internal data (version)
+- `ModularizedTrayPreferences#annex(ModularizedStorage<TrayItem>)` allows a storage to import another storage, wipes the imported afterwards
+- `TrayPreferences#annexModule(String name)` imports a module by name and wipes it afterwards. This allows renaming of preferences without losing data
+- added `Preferences#getStorage()`
+- added `Preference#getVersion()`
+- created `TrayUri` class + `Builder` because the uri creation for the internal ContentProvider got kind of complex
 
 ##### Version 0.9.2 `02.06.15`
 - `getContext()` is working in `TrayModulePreference#onCreate`

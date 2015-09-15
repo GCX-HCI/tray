@@ -14,34 +14,25 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.accessor;
+package net.grandcentrix.tray;
 
+import net.grandcentrix.tray.ModularizedTrayPreferences;
 import net.grandcentrix.tray.mock.MockModularizedStorage;
+
+import android.support.annotation.NonNull;
 
 /**
  * Created by pascalwelsch on 3/9/15.
  */
-public class MockSimplePreference extends TrayPreference {
+public class MockSimplePreferences extends ModularizedTrayPreferences<MockModularizedStorage> {
 
-    public MockSimplePreference(final int version) {
+    public MockSimplePreferences(final int version) {
         super(new MockModularizedStorage("test"), version);
     }
 
-    public MockSimplePreference(final MockModularizedStorage storage, final int version) {
+    public MockSimplePreferences(
+            @NonNull final MockModularizedStorage storage,
+            final int version) {
         super(storage, version);
-    }
-
-    public MockModularizedStorage getModularizedStorage() {
-        return (MockModularizedStorage) getStorage();
-    }
-
-    @Override
-    protected void onCreate(final int newVersion) {
-
-    }
-
-    @Override
-    protected void onUpgrade(final int oldVersion, final int newVersion) {
-
     }
 }

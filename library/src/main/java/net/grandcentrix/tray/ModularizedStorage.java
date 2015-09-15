@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storage;
+package net.grandcentrix.tray;
 
 /**
  * Created by pascalwelsch on 11/20/14.
@@ -30,7 +30,17 @@ public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
         mModuleName = moduleName;
     }
 
+    /**
+     * imports all data from an old storage. The old storage gets wiped afterwards.
+     * <p>
+     * Use this if you have changed the module name
+     *
+     * @param oldStorage the old preference
+     */
+    public abstract void annex(final ModularizedStorage<T> oldStorage);
+
     public String getModuleName() {
         return mModuleName;
     }
+
 }

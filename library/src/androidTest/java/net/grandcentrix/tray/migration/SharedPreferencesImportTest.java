@@ -17,7 +17,7 @@
 package net.grandcentrix.tray.migration;
 
 import net.grandcentrix.tray.mock.MockTrayModulePreferences;
-import net.grandcentrix.tray.provider.TrayItem;
+import net.grandcentrix.tray.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
 
 import android.annotation.SuppressLint;
@@ -77,6 +77,40 @@ public class SharedPreferencesImportTest extends TrayProviderTestCase {
         final TrayItem pref = trayPreference.getPref("trayKey");
         assertNotNull(pref);
         assertEquals("key", pref.migratedKey());
+    }
+
+    public void testMigrationInOnCreate() throws Exception {
+        mSharedPrefs.edit().putString("key", "value").commit();
+
+        final MockTrayModulePreferences trayPref = new MockTrayModulePreferences(
+                getProviderMockContext(), "importWithAccess") {
+            @Override
+            protected void onCreate(final int newVersion) {
+                super.onCreate(newVersion);
+                migrate(new SharedPreferencesImport(getContext(), SHARED_PREF_NAME, "key",
+                        "myKey"));
+            }
+        };
+
+        assertEquals("value", trayPref.getString("myKey"));
+        assertEquals("nothing", mSharedPrefs.getString("key", "nothing"));
+    }
+
+    public void testMigrationInOnCreateNoDataInSharedPreferences() throws Exception {
+        assertEquals("nothing", mSharedPrefs.getString("key", "nothing"));
+
+        final MockTrayModulePreferences trayPref = new MockTrayModulePreferences(
+                getProviderMockContext(), "importWithAccess") {
+            @Override
+            protected void onCreate(final int newVersion) {
+                super.onCreate(newVersion);
+                migrate(new SharedPreferencesImport(getContext(), SHARED_PREF_NAME, "key",
+                        "myKey"));
+            }
+        };
+
+        assertEquals("nothing", trayPref.getString("myKey", "nothing"));
+        assertEquals("nothing", mSharedPrefs.getString("key", "nothing"));
     }
 
     public void testPostMigrateCorrect() throws Exception {

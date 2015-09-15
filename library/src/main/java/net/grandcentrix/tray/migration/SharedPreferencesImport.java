@@ -16,7 +16,7 @@
 
 package net.grandcentrix.tray.migration;
 
-import net.grandcentrix.tray.provider.TrayItem;
+import net.grandcentrix.tray.TrayItem;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -26,6 +26,9 @@ import android.util.Log;
 import java.util.Objects;
 
 /**
+ * Migrates a key value pair from the {@link SharedPreferences} into a {@link
+ * net.grandcentrix.tray.TrayPreferences}
+ * <p>
  * Created by pascalwelsch on 2/25/15.
  */
 public class SharedPreferencesImport implements TrayMigration {
@@ -74,10 +77,11 @@ public class SharedPreferencesImport implements TrayMigration {
     @Override
     public boolean shouldMigrate() {
         if (mPreferences.contains(mSharedPrefsKey)) {
-            Log.v(TAG, "SharedPreference with key '" + mSharedPrefsKey
-                    + "' not found. skipped import");
             return true;
         }
+
+        Log.v(TAG, "SharedPreference with key '" + mSharedPrefsKey
+                + "' not found. skipped import");
         return false;
     }
 

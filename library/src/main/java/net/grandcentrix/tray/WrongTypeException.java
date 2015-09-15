@@ -1,6 +1,4 @@
-package net.grandcentrix.tray.accessor;
-
-import net.grandcentrix.tray.TrayRuntimeException;
+package net.grandcentrix.tray;
 
 /**
  * Accessed values which where saved as a different type

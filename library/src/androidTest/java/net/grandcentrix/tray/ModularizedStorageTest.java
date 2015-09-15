@@ -16,21 +16,14 @@
 
 package net.grandcentrix.tray;
 
-import net.grandcentrix.tray.provider.TrayProviderTestCase;
+import junit.framework.TestCase;
 
-public class TrayAppPreferencesTest extends TrayProviderTestCase {
+import net.grandcentrix.tray.mock.MockModularizedStorage;
 
-    public void testInstantiation() throws Exception {
-        new TrayAppPreferences(getProviderMockContext());
-    }
+public class ModularizedStorageTest extends TestCase {
 
-    public void testOnUpgrade() throws Exception {
-        final TrayAppPreferences appPreferences = new TrayAppPreferences(getProviderMockContext());
-        try {
-            appPreferences.onUpgrade(0, 1);
-            fail();
-        } catch (IllegalStateException e) {
-            // not implemented yet
-        }
+    public void testGetModule() throws Exception {
+        final MockModularizedStorage storage = new MockModularizedStorage("test");
+        assertEquals("test", storage.getModuleName());
     }
 }
