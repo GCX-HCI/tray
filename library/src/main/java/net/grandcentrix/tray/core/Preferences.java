@@ -39,7 +39,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     private S mStorage;
 
-    public static boolean isDataTypeSupported(final Object data) {
+    static boolean isDataTypeSupported(final Object data) {
         return data instanceof Integer
                 || data instanceof String
                 || data instanceof Long
@@ -100,7 +100,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
             final Object data = migration.getData();
 
-            final boolean supportedDataType = Preferences.isDataTypeSupported(data);
+            final boolean supportedDataType = isDataTypeSupported(data);
             if (!supportedDataType) {
                 Log.w(TAG, "could not migrate " + migration.getPreviousKey()
                         + " because the datatype" + data.getClass().getSimpleName() + "is invalid");
