@@ -22,12 +22,24 @@ package net.grandcentrix.tray.core;
  * storage is now separated in modules and easier to maintain. Could be done with different files,
  * databases...
  */
-public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
+public abstract class TrayStorage implements PreferenceStorage<TrayItem> {
 
     private String mModuleName;
 
-    public ModularizedStorage(final String moduleName) {
+    private TrayStorageType mType;
+
+    public TrayStorage(final String moduleName, final TrayStorageType type) {
         mModuleName = moduleName;
+        mType = type;
+    }
+
+    /**
+     * Indicates where the data internally gets stored and how the backup is handled for the data
+     *
+     * @return the type of storage
+     */
+    public TrayStorageType getType() {
+        return mType;
     }
 
     /**
@@ -37,7 +49,7 @@ public abstract class ModularizedStorage<T> implements PreferenceStorage<T> {
      *
      * @param oldStorage the old preference
      */
-    public abstract void annex(final ModularizedStorage<T> oldStorage);
+    public abstract void annex(final TrayStorage oldStorage);
 
     public String getModuleName() {
         return mModuleName;

@@ -18,12 +18,12 @@ package net.grandcentrix.tray.core;
 
 import junit.framework.TestCase;
 
-import net.grandcentrix.tray.mock.MockModularizedStorage;
+import net.grandcentrix.tray.mock.MockTrayStorage;
 
-public class ModularizedStorageTest extends TestCase {
+public class TrayStorageTest extends TestCase {
 
     public void testGetModule() throws Exception {
-        final MockModularizedStorage storage = new MockModularizedStorage("test");
+        final MockTrayStorage storage = new MockTrayStorage("test");
         assertEquals("test", storage.getModuleName());
     }
 }

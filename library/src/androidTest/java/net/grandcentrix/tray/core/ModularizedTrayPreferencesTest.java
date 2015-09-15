@@ -18,7 +18,7 @@ package net.grandcentrix.tray.core;
 
 import junit.framework.TestCase;
 
-import net.grandcentrix.tray.mock.MockModularizedStorage;
+import net.grandcentrix.tray.mock.MockTrayStorage;
 
 public class ModularizedTrayPreferencesTest extends TestCase {
 
@@ -40,11 +40,11 @@ public class ModularizedTrayPreferencesTest extends TestCase {
 
     public void testAnnexModule() throws Exception {
         final MockSimplePreferences modulePreferences = new MockSimplePreferences(
-                new MockModularizedStorage("test"), 1);
+                new MockTrayStorage("test"), 1);
         assertEquals(0, modulePreferences.getAll().size());
-        modulePreferences.annex(new MockModularizedStorage("other"));
+        modulePreferences.annex(new MockTrayStorage("other"));
         assertEquals(0, modulePreferences.getAll().size());
-        final MockModularizedStorage oldStorage = new MockModularizedStorage("old");
+        final MockTrayStorage oldStorage = new MockTrayStorage("old");
         final MockSimplePreferences oldPrefs = new MockSimplePreferences(oldStorage, 1);
         oldPrefs.put("key", "value");
         assertEquals(1, oldPrefs.getAll().size());
@@ -86,8 +86,8 @@ public class ModularizedTrayPreferencesTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mTrayAccessor = new ModularizedTrayPreferences<MockModularizedStorage>(
-                new MockModularizedStorage("test"), 1) {
+        mTrayAccessor = new ModularizedTrayPreferences<MockTrayStorage>(
+                new MockTrayStorage("test"), 1) {
         };
 
     }

@@ -17,8 +17,8 @@
 package net.grandcentrix.tray.mock;
 
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.PreferenceStorage;
+import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayStorageType;
 
 import android.content.Context;

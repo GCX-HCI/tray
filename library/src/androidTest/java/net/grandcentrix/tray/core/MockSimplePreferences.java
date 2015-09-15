@@ -16,22 +16,21 @@
 
 package net.grandcentrix.tray.core;
 
-import net.grandcentrix.tray.core.ModularizedTrayPreferences;
-import net.grandcentrix.tray.mock.MockModularizedStorage;
+import net.grandcentrix.tray.mock.MockTrayStorage;
 
 import android.support.annotation.NonNull;
 
 /**
  * Created by pascalwelsch on 3/9/15.
  */
-public class MockSimplePreferences extends ModularizedTrayPreferences<MockModularizedStorage> {
+public class MockSimplePreferences extends ModularizedTrayPreferences<MockTrayStorage> {
 
     public MockSimplePreferences(final int version) {
-        super(new MockModularizedStorage("test"), version);
+        super(new MockTrayStorage("test"), version);
     }
 
     public MockSimplePreferences(
-            @NonNull final MockModularizedStorage storage,
+            @NonNull final MockTrayStorage storage,
             final int version) {
         super(storage, version);
     }

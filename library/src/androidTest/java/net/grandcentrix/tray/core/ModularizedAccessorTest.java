@@ -18,20 +18,17 @@ package net.grandcentrix.tray.core;
 
 import junit.framework.TestCase;
 
-import net.grandcentrix.tray.core.ModularizedStorage;
-import net.grandcentrix.tray.core.ModularizedTrayPreferences;
-import net.grandcentrix.tray.core.TrayItem;
-import net.grandcentrix.tray.mock.MockModularizedStorage;
+import net.grandcentrix.tray.mock.MockTrayStorage;
 
 /**
  * Created by pascalwelsch on 11/20/14.
  */
 public class ModularizedAccessorTest extends TestCase {
 
-    private class MockTrayPreferences extends ModularizedTrayPreferences<MockModularizedStorage> {
+    private class MockTrayPreferences extends ModularizedTrayPreferences<MockTrayStorage> {
 
         public MockTrayPreferences() {
-            super(new MockModularizedStorage("ModularizedAccessorTest"), 1);
+            super(new MockTrayStorage("ModularizedAccessorTest"), 1);
         }
     }
 
@@ -61,8 +58,8 @@ public class ModularizedAccessorTest extends TestCase {
 
     public void testGetModularizedStorage() throws Exception {
         final MockTrayPreferences mockTrayPreference = new MockTrayPreferences();
-        final ModularizedStorage<TrayItem> modularizedStorage = mockTrayPreference.getStorage();
-        assertNotNull(modularizedStorage);
+        final TrayStorage trayStorage = mockTrayPreference.getStorage();
+        assertNotNull(trayStorage);
         assertEquals(mockTrayPreference.getStorage(), mockTrayPreference.getStorage());
     }
 

@@ -17,9 +17,9 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.core.ModularizedStorage;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayRuntimeException;
+import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.core.TrayStorageType;
 
 import android.content.Context;
@@ -43,11 +43,11 @@ import java.util.List;
  * android.content.ContentProvider}. Replacing this class with a {@link java.util.HashMap}
  * implementation for testing works seamless.
  */
-public class TrayStorage extends ModularizedStorage<TrayItem> {
+public class ContentProviderStorage extends TrayStorage {
 
     public static final String VERSION = "version";
 
-    private static final String TAG = TrayStorage.class.getSimpleName();
+    private static final String TAG = ContentProviderStorage.class.getSimpleName();
 
     private final Context mContext;
 
@@ -55,19 +55,16 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
 
     private final TrayUri mTrayUri;
 
-    private final TrayStorageType mType;
-
-    public TrayStorage(@NonNull final Context context, @NonNull final String module,
+    public ContentProviderStorage(@NonNull final Context context, @NonNull final String module,
             @NonNull final TrayStorageType type) {
-        super(module);
+        super(module, type);
         mContext = context.getApplicationContext();
         mTrayUri = new TrayUri(mContext);
         mProviderHelper = new TrayProviderHelper(mContext);
-        mType = type;
     }
 
     @Override
-    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
+    public void annex(final TrayStorage oldStorage) {
         for (final TrayItem trayItem : oldStorage.getAll()) {
             put(trayItem);
         }
@@ -78,7 +75,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     public void clear() {
         final Uri uri = mTrayUri.builder()
                 .setModule(getModuleName())
-                .setType(mType)
+                .setType(getType())
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
     }
@@ -87,7 +84,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Nullable
     public TrayItem get(@NonNull final String key) {
         final Uri uri = mTrayUri.builder()
-                .setType(mType)
+                .setType(getType())
                 .setModule(getModuleName())
                 .setKey(key)
                 .build();
@@ -109,7 +106,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
     @Override
     public Collection<TrayItem> getAll() {
         final Uri uri = mTrayUri.builder()
-                .setType(mType)
+                .setType(getType())
                 .setModule(getModuleName())
                 .build();
         return mProviderHelper.queryProvider(uri);
@@ -119,20 +116,11 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         return mContext;
     }
 
-    /**
-     * Indicates where the data internally gets stored and how the backup is handled for the data
-     *
-     * @return the type of storage
-     */
-    public TrayStorageType getType() {
-        return mType;
-    }
-
     @Override
     public int getVersion() {
         final Uri internalUri = mTrayUri.builder()
                 .setInternal(true)
-                .setType(mType)
+                .setType(getType())
                 .setModule(getModuleName())
                 .setKey(VERSION)
                 .build();
@@ -175,7 +163,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         final String value = data == null ? null : String.valueOf(data);
 
         final Uri uri = mTrayUri.builder()
-                .setType(mType)
+                .setType(getType())
                 .setModule(getModuleName())
                 .setKey(key)
                 .build();
@@ -190,7 +178,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
                     "null is not valid. use clear or wipe to delete all preferences");
         }
         final Uri uri = mTrayUri.builder()
-                .setType(mType)
+                .setType(getType())
                 .setModule(getModuleName())
                 .setKey(key)
                 .build();
@@ -205,7 +193,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         }
         final Uri uri = mTrayUri.builder()
                 .setInternal(true)
-                .setType(mType)
+                .setType(getType())
                 .setModule(getModuleName())
                 .setKey(VERSION)
                 .build();
@@ -223,7 +211,7 @@ public class TrayStorage extends ModularizedStorage<TrayItem> {
         clear();
         final Uri uri = mTrayUri.builder()
                 .setInternal(true)
-                .setType(mType)
+                .setType(getType())
                 .setModule(getModuleName())
                 .build();
         mContext.getContentResolver().delete(uri, null, null);

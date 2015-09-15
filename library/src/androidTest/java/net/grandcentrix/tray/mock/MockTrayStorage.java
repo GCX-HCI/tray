@@ -17,7 +17,8 @@
 package net.grandcentrix.tray.mock;
 
 import net.grandcentrix.tray.core.TrayItem;
-import net.grandcentrix.tray.core.ModularizedStorage;
+import net.grandcentrix.tray.core.TrayStorage;
+import net.grandcentrix.tray.core.TrayStorageType;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,18 +30,18 @@ import java.util.HashMap;
 /**
  * Created by pascalwelsch on 11/21/14.
  */
-public class MockModularizedStorage extends ModularizedStorage<TrayItem> {
+public class MockTrayStorage extends TrayStorage {
 
     private HashMap<String, TrayItem> mData = new HashMap<>();
 
     private int mVersion = 0;
 
-    public MockModularizedStorage(final String module) {
-        super(module);
+    public MockTrayStorage(final String module) {
+        super(module, TrayStorageType.USER);
     }
 
     @Override
-    public void annex(final ModularizedStorage<TrayItem> oldStorage) {
+    public void annex(final TrayStorage oldStorage) {
         for (final TrayItem trayItem : oldStorage.getAll()) {
             mData.put(trayItem.key(), trayItem);
         }

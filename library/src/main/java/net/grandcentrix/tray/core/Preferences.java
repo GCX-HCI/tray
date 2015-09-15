@@ -28,7 +28,7 @@ import java.util.Collection;
  * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}.
  * The access to this storage defines the {@link PreferenceAccessor} interface.
  * <p>
- * Saves type T in a Storage of type T
+ * Saves type T in a Storage S
  * <p>
  * Created by pascalwelsch on 11/20/14.
  */

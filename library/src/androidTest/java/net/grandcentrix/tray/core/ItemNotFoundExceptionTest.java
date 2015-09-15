@@ -2,8 +2,6 @@ package net.grandcentrix.tray.core;
 
 import junit.framework.TestCase;
 
-import net.grandcentrix.tray.core.ItemNotFoundException;
-
 /**
  * Created by pascalwelsch on 5/17/15.
  */

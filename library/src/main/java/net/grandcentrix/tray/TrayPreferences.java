@@ -19,7 +19,7 @@ package net.grandcentrix.tray;
 import net.grandcentrix.tray.core.ModularizedTrayPreferences;
 import net.grandcentrix.tray.core.Preferences;
 import net.grandcentrix.tray.core.TrayStorageType;
-import net.grandcentrix.tray.provider.TrayStorage;
+import net.grandcentrix.tray.provider.ContentProviderStorage;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -33,14 +33,14 @@ import android.support.annotation.NonNull;
  * This class gives the developer the opportunity to remove whole modules without knowing each
  * single preference key.
  * <p>
- * Communicates with the {@link TrayStorage} to store the preferences into a {@link
+ * Communicates with the {@link ContentProviderStorage} to store the preferences into a {@link
  * android.content.ContentProvider}
  */
-public class TrayPreferences extends ModularizedTrayPreferences<TrayStorage> {
+public class TrayPreferences extends ModularizedTrayPreferences<ContentProviderStorage> {
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
             final int version, final TrayStorageType type) {
-        super(new TrayStorage(context, module, type), version);
+        super(new ContentProviderStorage(context, module, type), version);
     }
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
@@ -49,7 +49,7 @@ public class TrayPreferences extends ModularizedTrayPreferences<TrayStorage> {
     }
 
     public void annexModule(final String oldStorageName, final TrayStorageType type) {
-        super.annex(new TrayStorage(getContext(), oldStorageName, type));
+        super.annex(new ContentProviderStorage(getContext(), oldStorageName, type));
     }
 
     public void annexModule(final String oldStorageName) {

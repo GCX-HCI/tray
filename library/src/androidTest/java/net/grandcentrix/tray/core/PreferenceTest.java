@@ -18,7 +18,7 @@ package net.grandcentrix.tray.core;
 
 import junit.framework.TestCase;
 
-import net.grandcentrix.tray.mock.MockModularizedStorage;
+import net.grandcentrix.tray.mock.MockTrayStorage;
 
 import android.annotation.SuppressLint;
 
@@ -121,7 +121,7 @@ public class PreferenceTest extends TestCase {
     }
 
     public void testOnDowngradeShouldFail() throws Exception {
-        final MockModularizedStorage storage = new MockModularizedStorage("blubb");
+        final MockTrayStorage storage = new MockTrayStorage("blubb");
         new MockSimplePreferences(storage, 2);
         try {
             new MockSimplePreferences(storage, 1);

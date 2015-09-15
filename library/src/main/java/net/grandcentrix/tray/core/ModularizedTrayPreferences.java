@@ -20,15 +20,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Modular implementation of a {@link Preferences} which allows access to a {@link ModularizedStorage}.
+ * Modular implementation of a {@link Preferences} which allows access to a {@link TrayStorage}.
  *
  * Created by pascalwelsch on 11/20/14.
  */
-public abstract class ModularizedTrayPreferences<T extends ModularizedStorage<TrayItem>> extends
+public abstract class ModularizedTrayPreferences<T extends TrayStorage> extends
         Preferences<TrayItem, T> {
 
-    protected ModularizedTrayPreferences(@NonNull final T storage,
-            final int version) {
+    protected ModularizedTrayPreferences(@NonNull final T storage, final int version) {
         super(storage, version);
     }
 
