@@ -16,6 +16,7 @@
 
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.TrayItem;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.util.SqliteHelper;
 
@@ -27,10 +28,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Helper for accessing the {@link TrayProvider}
+ * Helper for accessing the {@link TrayContentProvider}
  * <p>
  * Created by pascalwelsch on 11/20/14.
  */
@@ -148,7 +150,8 @@ public class TrayProviderHelper {
 
         final ArrayList<TrayItem> list = new ArrayList<>();
         for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
-            list.add(new TrayItem(cursor));
+            final TrayItem trayItem = cursorToTrayItem(cursor);
+            list.add(trayItem);
         }
         cursor.close();
         return list;
@@ -160,5 +163,31 @@ public class TrayProviderHelper {
     public void wipe() {
         clear();
         mContext.getContentResolver().delete(mTrayUri.getInternal(), null, null);
+    }
+
+    /**
+     * converts a {@link Cursor} to a {@link TrayItem}
+     * <p>
+     * This is not a secondary constructor in {@link TrayItem} because the columns are a
+     * implementation detail of the provider package
+     *
+     * @param cursor (size > 1)
+     * @return a {@link TrayItem} filled with data
+     */
+    @NonNull
+    static TrayItem cursorToTrayItem(final Cursor cursor) {
+        final String module = cursor.getString(cursor
+                .getColumnIndexOrThrow(TrayContract.Preferences.Columns.MODULE));
+        final String key = cursor.getString(cursor
+                .getColumnIndexOrThrow(TrayContract.Preferences.Columns.KEY));
+        final String migratedKey = cursor.getString(cursor
+                .getColumnIndexOrThrow(TrayContract.Preferences.Columns.MIGRATED_KEY));
+        final String value = cursor.getString(cursor
+                .getColumnIndexOrThrow(TrayContract.Preferences.Columns.VALUE));
+        final Date created = new Date(cursor.getLong(cursor
+                .getColumnIndexOrThrow(TrayContract.Preferences.Columns.CREATED)));
+        final Date updated = new Date(cursor.getLong(cursor
+                .getColumnIndexOrThrow(TrayContract.Preferences.Columns.UPDATED)));
+        return new TrayItem(module, key, migratedKey, value, created, updated);
     }
 }

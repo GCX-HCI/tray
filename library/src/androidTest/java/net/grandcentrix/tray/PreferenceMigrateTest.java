@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.accessor;
+package net.grandcentrix.tray;
 
 import junit.framework.TestCase;
 
-import net.grandcentrix.tray.BuildConfig;
 import net.grandcentrix.tray.migration.Migration;
 import net.grandcentrix.tray.migration.TrayMigration;
 import net.grandcentrix.tray.mock.MockModularizedStorage;
-import net.grandcentrix.tray.provider.TrayItem;
 
 import android.support.annotation.NonNull;
 

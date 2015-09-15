@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.accessor;
-
-import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.storage.ModularizedStorage;
+package net.grandcentrix.tray;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

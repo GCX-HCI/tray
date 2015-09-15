@@ -16,7 +16,7 @@
 
 package net.grandcentrix.tray.migration;
 
-import net.grandcentrix.tray.provider.TrayItem;
+import net.grandcentrix.tray.TrayItem;
 
 import android.content.Context;
 import android.content.SharedPreferences;

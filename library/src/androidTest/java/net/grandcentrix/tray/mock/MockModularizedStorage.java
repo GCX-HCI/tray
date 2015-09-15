@@ -16,8 +16,8 @@
 
 package net.grandcentrix.tray.mock;
 
-import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.storage.ModularizedStorage;
+import net.grandcentrix.tray.TrayItem;
+import net.grandcentrix.tray.ModularizedStorage;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

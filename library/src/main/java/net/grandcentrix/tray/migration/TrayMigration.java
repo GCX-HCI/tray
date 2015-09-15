@@ -16,7 +16,8 @@
 
 package net.grandcentrix.tray.migration;
 
-import net.grandcentrix.tray.provider.TrayItem;
+import net.grandcentrix.tray.TrayItem;
+import net.grandcentrix.tray.migration.Migration;
 
 /**
  * A Migration for {@link TrayItem}s into a preference with {@link

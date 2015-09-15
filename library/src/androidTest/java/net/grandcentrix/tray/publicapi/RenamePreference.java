@@ -2,7 +2,7 @@ package net.grandcentrix.tray.publicapi;
 
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
-import net.grandcentrix.tray.storage.TrayStorage;
+import net.grandcentrix.tray.provider.TrayStorage;
 
 /**
  * Created by pascalwelsch on 6/3/15.

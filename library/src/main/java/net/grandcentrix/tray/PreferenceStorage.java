@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.storage;
+package net.grandcentrix.tray;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

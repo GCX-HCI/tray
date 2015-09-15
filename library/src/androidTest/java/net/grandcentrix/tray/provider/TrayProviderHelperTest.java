@@ -17,15 +17,18 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.AppPreferences;
+import net.grandcentrix.tray.TrayItem;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
-import net.grandcentrix.tray.storage.TrayStorage;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.MatrixCursor;
 import android.net.Uri;
 import android.test.IsolatedContext;
+import android.text.TextUtils;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -53,6 +56,40 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     private TrayProviderHelper mProviderHelper;
 
     private TrayUri mTrayUri;
+
+    public void testCursorToTrayItem() throws Exception{
+
+        final MatrixCursor matrixCursor = new MatrixCursor(new String[]{
+                TrayContract.Preferences.Columns.KEY,
+                TrayContract.Preferences.Columns.VALUE,
+                TrayContract.Preferences.Columns.MODULE,
+                TrayContract.Preferences.Columns.CREATED,
+                TrayContract.Preferences.Columns.UPDATED,
+                TrayContract.Preferences.Columns.MIGRATED_KEY
+        });
+        final Date created = new Date();
+        final Date updated = new Date();
+        matrixCursor.addRow(new Object[]{
+                "key",
+                "value",
+                "module",
+                created.getTime(),
+                updated.getTime(),
+                "migratedKey"
+        });
+        assertTrue(TextUtils.isEmpty(""));
+        assertFalse(TextUtils.isEmpty("asdf"));
+        assertTrue(matrixCursor.moveToFirst());
+
+        final TrayItem item = TrayProviderHelper.cursorToTrayItem(matrixCursor);
+        assertEquals("key", item.key());
+        assertEquals("value", item.value());
+        assertEquals("migratedKey", item.migratedKey());
+        assertEquals("module", item.module());
+        assertEquals(updated, item.updateTime());
+        assertEquals(created, item.created());
+    }
+
 
     public void testClear() throws Exception {
         mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.provider;
+package net.grandcentrix.tray;
 
-import android.database.Cursor;
 import android.support.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
@@ -41,21 +40,6 @@ public class TrayItem {
     private final Date mUpdated;
 
     private final String mValue;
-
-    /*package*/ TrayItem(final Cursor cursor) {
-        mKey = cursor.getString(cursor.getColumnIndexOrThrow(
-                TrayContract.Preferences.Columns.KEY));
-        mValue = cursor.getString(cursor.getColumnIndexOrThrow(
-                TrayContract.Preferences.Columns.VALUE));
-        mModule = cursor.getString(cursor.getColumnIndexOrThrow(
-                TrayContract.Preferences.Columns.MODULE));
-        mCreated = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
-                TrayContract.Preferences.Columns.CREATED)));
-        mUpdated = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(
-                TrayContract.Preferences.Columns.UPDATED)));
-        mMigratedKey = cursor.getString(cursor.getColumnIndexOrThrow(
-                TrayContract.Preferences.Columns.MIGRATED_KEY));
-    }
 
     public TrayItem(final String module, final String key, final String migratedKey,
             final String value, final Date created, final Date updated) {

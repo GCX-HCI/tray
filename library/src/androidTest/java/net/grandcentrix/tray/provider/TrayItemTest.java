@@ -18,6 +18,8 @@ package net.grandcentrix.tray.provider;
 
 import junit.framework.TestCase;
 
+import net.grandcentrix.tray.TrayItem;
+
 import android.database.MatrixCursor;
 import android.text.TextUtils;
 
@@ -26,39 +28,6 @@ import java.util.Date;
 import java.util.Locale;
 
 public class TrayItemTest extends TestCase {
-
-    public void testContentValues() throws Exception {
-
-        final MatrixCursor matrixCursor = new MatrixCursor(new String[]{
-                TrayContract.Preferences.Columns.KEY,
-                TrayContract.Preferences.Columns.VALUE,
-                TrayContract.Preferences.Columns.MODULE,
-                TrayContract.Preferences.Columns.CREATED,
-                TrayContract.Preferences.Columns.UPDATED,
-                TrayContract.Preferences.Columns.MIGRATED_KEY
-        });
-        final Date created = new Date();
-        final Date updated = new Date();
-        matrixCursor.addRow(new Object[]{
-                "key",
-                "value",
-                "module",
-                created.getTime(),
-                updated.getTime(),
-                "migratedKey"
-        });
-        assertTrue(TextUtils.isEmpty(""));
-        assertFalse(TextUtils.isEmpty("asdf"));
-        assertTrue(matrixCursor.moveToFirst());
-
-        final TrayItem item = new TrayItem(matrixCursor);
-        assertEquals("key", item.key());
-        assertEquals("value", item.value());
-        assertEquals("migratedKey", item.migratedKey());
-        assertEquals("module", item.module());
-        assertEquals(updated, item.updateTime());
-        assertEquals(created, item.created());
-    }
 
     public void testNullValues() throws Exception {
         final TrayItem item = new TrayItem(null, null, null, null, null, null);
