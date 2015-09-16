@@ -35,6 +35,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     private static final String TAG = Preferences.class.getSimpleName();
 
+    @NonNull
     private S mStorage;
 
     static boolean isDataTypeSupported(final Object data) {
@@ -54,7 +55,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
      * @param storage the underlying data store for the saved data
      * @param version user defined version. based on this {@link #onUpgrade(int, int)} gets called.
      */
-    public Preferences(final S storage, final int version) {
+    public Preferences(@NonNull final S storage, final int version) {
         mStorage = storage;
 
         changeVersion(version);
@@ -150,6 +151,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
         mStorage.wipe();
     }
 
+    @NonNull
     protected S getStorage() {
         return mStorage;
     }
