@@ -27,7 +27,6 @@ import android.content.Context;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.test.IsolatedContext;
-import android.text.TextUtils;
 
 import java.util.Date;
 import java.util.List;

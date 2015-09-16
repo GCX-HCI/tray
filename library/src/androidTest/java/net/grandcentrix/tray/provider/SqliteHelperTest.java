@@ -17,8 +17,6 @@
 package net.grandcentrix.tray.provider;
 
 
-import net.grandcentrix.tray.provider.SqliteHelper;
-
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
