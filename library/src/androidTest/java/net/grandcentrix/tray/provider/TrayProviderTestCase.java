@@ -17,8 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.BuildConfig;
-import net.grandcentrix.tray.mock.MockProvider;
-import net.grandcentrix.tray.storage.TrayStorage;
+import net.grandcentrix.tray.core.TrayStorage;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
@@ -38,7 +37,7 @@ import java.util.HashMap;
 /**
  * Created by pascalwelsch on 11/21/14.
  */
-public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvider> {
+public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContentProvider> {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static class TrayIsolatedContext extends IsolatedContext {
@@ -105,7 +104,7 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
     private TrayIsolatedContext mIsolatedContext;
 
     public TrayProviderTestCase() {
-        super(TrayProvider.class, MockProvider.AUTHORITY);
+        super(TrayContentProvider.class, MockProvider.AUTHORITY);
     }
 
     public TrayIsolatedContext getProviderMockContext() {
@@ -184,7 +183,7 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayProvide
 
     private void cleanupProvider() {
         TrayContract.setAuthority(MockProvider.AUTHORITY);
-        TrayProvider.setAuthority(MockProvider.AUTHORITY);
+        TrayContentProvider.setAuthority(MockProvider.AUTHORITY);
         try {
             getMockContentResolver().delete(MockProvider.getUserContentUri(), null, null);
             getMockContentResolver().delete(MockProvider.getDeviceContentUri(), null, null);

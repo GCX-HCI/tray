@@ -16,8 +16,7 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.mock.MockProvider;
-import net.grandcentrix.tray.storage.TrayStorage;
+import net.grandcentrix.tray.core.TrayStorage;
 
 import android.content.ContentValues;
 import android.content.pm.ProviderInfo;
@@ -37,8 +36,8 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
     private TrayUri mTrayUri;
 
-    public TrayProvider startupProvider() {
-        final TrayProvider provider = new TrayProvider();
+    public TrayContentProvider startupProvider() {
+        final TrayContentProvider provider = new TrayContentProvider();
         provider.attachInfo(getProviderMockContext(), new ProviderInfo());
         assertTrue(provider.onCreate());
         assertTrue(provider.mUserDbHelper.getWritableDatabase().isOpen());
@@ -70,29 +69,29 @@ public class TrayProviderTest extends TrayProviderTestCase {
     }
 
     public void testGetTable() throws Exception {
-        final TrayProvider trayProvider = new TrayProvider();
+        final TrayContentProvider trayContentProvider = new TrayContentProvider();
         assertEquals(TrayDBHelper.TABLE_NAME,
-                trayProvider.getTable(mTrayUri.get()));
+                trayContentProvider.getTable(mTrayUri.get()));
         assertEquals(TrayDBHelper.TABLE_NAME,
-                trayProvider.getTable(mTrayUri.builder().setModule("module").build()));
+                trayContentProvider.getTable(mTrayUri.builder().setModule("module").build()));
         assertEquals(TrayDBHelper.TABLE_NAME,
-                trayProvider
+                trayContentProvider
                         .getTable(mTrayUri.builder().setModule("module").setKey("key").build()));
 
         assertEquals(TrayDBHelper.INTERNAL_TABLE_NAME,
-                trayProvider.getTable(mTrayUri.getInternal()));
+                trayContentProvider.getTable(mTrayUri.getInternal()));
         assertEquals(TrayDBHelper.INTERNAL_TABLE_NAME,
-                trayProvider.getTable(
+                trayContentProvider.getTable(
                         mTrayUri.builder().setInternal(true).setModule("module").build()));
         assertEquals(TrayDBHelper.INTERNAL_TABLE_NAME,
-                trayProvider.getTable(
+                trayContentProvider.getTable(
                         mTrayUri.builder().setInternal(true).setModule("module").setKey("key")
                                 .build()));
 
         assertEquals(TrayDBHelper.TABLE_NAME,
-                trayProvider.getTable(Uri.parse("http://www.google.com")));
+                trayContentProvider.getTable(Uri.parse("http://www.google.com")));
 
-        assertNull(trayProvider.getTable(null));
+        assertNull(trayContentProvider.getTable(null));
 
     }
 
@@ -159,7 +158,7 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
     public void testQueryUnregisteredProvider() throws Exception {
 
-        final TrayProvider provider = spy(new TrayProvider());
+        final TrayContentProvider provider = spy(new TrayContentProvider());
         provider.mUserDbHelper = spy(new TrayDBHelper(getProviderMockContext()));
         provider.mDeviceDbHelper = spy(new TrayDBHelper(getProviderMockContext()));
         when(provider.mUserDbHelper.getReadableDatabase()).thenReturn(null);
@@ -178,10 +177,10 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
     public void testQueryWrongUri() throws Exception {
         final Uri googleUri = Uri.parse("http://www.google.com");
-        final TrayProvider trayProvider = new TrayProvider();
-        trayProvider.attachInfo(getProviderMockContext(), new ProviderInfo());
+        final TrayContentProvider trayContentProvider = new TrayContentProvider();
+        trayContentProvider.attachInfo(getProviderMockContext(), new ProviderInfo());
         try {
-            trayProvider.query(googleUri, null, null, null, null);
+            trayContentProvider.query(googleUri, null, null, null, null);
             fail();
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("not supported"));
@@ -189,7 +188,7 @@ public class TrayProviderTest extends TrayProviderTestCase {
     }
 
     public void testShouldBackup() throws Exception {
-        final TrayProvider provider = new TrayProvider();
+        final TrayContentProvider provider = new TrayContentProvider();
         final TrayUri trayUri = new TrayUri(getProviderMockContext());
 
         // only &backup=false -> false
@@ -209,7 +208,7 @@ public class TrayProviderTest extends TrayProviderTestCase {
     }
 
     public void testShutdown() throws Exception {
-        final TrayProvider provider = startupProvider();
+        final TrayContentProvider provider = startupProvider();
         final SQLiteDatabase writableDatabase = provider.mUserDbHelper.getWritableDatabase();
         assertTrue(writableDatabase.isOpen());
         provider.shutdown();
@@ -221,7 +220,7 @@ public class TrayProviderTest extends TrayProviderTestCase {
     }
 
     public void testUpdate() throws Exception {
-        final TrayProvider provider = spy(new TrayProvider());
+        final TrayContentProvider provider = spy(new TrayContentProvider());
         provider.mUserDbHelper = spy(new TrayDBHelper(getProviderMockContext()));
         when(provider.mUserDbHelper.getReadableDatabase()).thenReturn(null);
         try {
@@ -241,8 +240,8 @@ public class TrayProviderTest extends TrayProviderTestCase {
     }
 
     void assertInsertUriEqualsNullForUpdateOrInsertError(final int errorCode) {
-        final TrayProvider trayProvider = new TrayProvider();
-        final TrayProvider spy = spy(trayProvider);
+        final TrayContentProvider trayContentProvider = new TrayContentProvider();
+        final TrayContentProvider spy = spy(trayContentProvider);
 
         final Uri mockInsertUri = mTrayUri.builder().setModule("module").setKey("key").build();
         doReturn(null).when(spy).getWritableDatabase(mockInsertUri);
