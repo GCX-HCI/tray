@@ -49,8 +49,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     /**
      * {@link Preferences} allows access to a storage with unfriendly util functions like
-     * versioning
-     * and migrations of data
+     * versioning and migrations of data
      *
      * @param storage the underlying data store for the saved data
      * @param version user defined version. based on this {@link #onUpgrade(int, int)} gets called.
