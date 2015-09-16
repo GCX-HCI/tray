@@ -78,8 +78,6 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
                 updated.getTime(),
                 "migratedKey"
         });
-        assertTrue(TextUtils.isEmpty(""));
-        assertFalse(TextUtils.isEmpty("asdf"));
         assertTrue(matrixCursor.moveToFirst());
 
         final TrayItem item = TrayProviderHelper.cursorToTrayItem(matrixCursor);
