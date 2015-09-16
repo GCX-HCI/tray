@@ -16,6 +16,7 @@
 
 package net.grandcentrix.tray.mock;
 
+import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayStorage;
 
@@ -45,6 +46,18 @@ public class MockTrayStorage extends TrayStorage {
             mData.put(trayItem.key(), trayItem);
         }
         oldStorage.wipe();
+    }
+
+    @Override
+    public void registerOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public void unregisterOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        throw new RuntimeException("not implemented");
     }
 
     @Override
