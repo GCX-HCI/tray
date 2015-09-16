@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.util;
+package net.grandcentrix.tray.provider;
 
 import android.content.ContentValues;
 import android.database.DatabaseUtils;
@@ -35,8 +35,6 @@ import java.util.List;
  * @author Pascal Welsch
  */
 public class SqliteHelper {
-
-    private static final String TAG = SqliteHelper.class.getSimpleName();
 
     /**
      * combines selection a and selection b to (a) AND (b). handles all cases if a or b are

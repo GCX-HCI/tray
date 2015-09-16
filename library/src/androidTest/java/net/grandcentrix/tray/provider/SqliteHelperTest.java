@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package net.grandcentrix.tray.util;
+package net.grandcentrix.tray.provider;
 
+
+import net.grandcentrix.tray.provider.SqliteHelper;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,8 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static net.grandcentrix.tray.util.SqliteHelper.extendSelection;
-import static net.grandcentrix.tray.util.SqliteHelper.extendSelectionArgs;
+import static net.grandcentrix.tray.provider.SqliteHelper.extendSelection;
+import static net.grandcentrix.tray.provider.SqliteHelper.extendSelectionArgs;
 
 public class SqliteHelperTest extends AndroidTestCase {
 
