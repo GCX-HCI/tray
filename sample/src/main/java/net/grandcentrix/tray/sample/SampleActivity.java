@@ -19,9 +19,9 @@ package net.grandcentrix.tray.sample;
 import net.grandcentrix.tray.AppPreferences;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
-import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.core.SharedPreferencesImport;
-import net.grandcentrix.tray.provider.TrayItem;
+import net.grandcentrix.tray.core.TrayItem;
+import net.grandcentrix.tray.core.TrayStorage;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -156,7 +156,6 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onStop() {
         super.onStop();
-
 
         mSharedPreferences.unregisterOnSharedPreferenceChangeListener(mSharedPrefsListener);
         mImportPreference.unregisterOnTrayPreferenceChangeListener(mTrayPrefsListener);
