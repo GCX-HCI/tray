@@ -57,16 +57,6 @@ public class TrayPreferences extends AbstractTrayPreference<ContentProviderStora
         annexModule(oldStorageName, TrayStorage.Type.UNDEFINED);
     }
 
-    public void registerOnTrayPreferenceChangeListener(
-            @NonNull OnTrayPreferenceChangeListener listener) {
-        getStorage().registerOnTrayPreferenceChangeListener(listener);
-    }
-
-    public void unregisterOnTrayPreferenceChangeListener(
-            @NonNull OnTrayPreferenceChangeListener listener) {
-        getStorage().unregisterOnTrayPreferenceChangeListener(listener);
-    }
-
     protected Context getContext() {
         return getStorage().getContext();
     }

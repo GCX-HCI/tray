@@ -18,6 +18,8 @@ package net.grandcentrix.tray.core;
 
 import net.grandcentrix.tray.TrayPreferences;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
@@ -85,4 +87,10 @@ public abstract class TrayStorage implements PreferenceStorage<TrayItem> {
     public Type getType() {
         return mType;
     }
+
+    public abstract void registerOnTrayPreferenceChangeListener(
+            @NonNull OnTrayPreferenceChangeListener listener);
+
+    public abstract void unregisterOnTrayPreferenceChangeListener(
+            @NonNull OnTrayPreferenceChangeListener listener);
 }

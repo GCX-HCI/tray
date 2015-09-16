@@ -132,6 +132,16 @@ public abstract class AbstractTrayPreference<T extends TrayStorage> extends
         }
     }
 
+    public void registerOnTrayPreferenceChangeListener(
+            @NonNull OnTrayPreferenceChangeListener listener) {
+        getStorage().registerOnTrayPreferenceChangeListener(listener);
+    }
+
+    public void unregisterOnTrayPreferenceChangeListener(
+            @NonNull OnTrayPreferenceChangeListener listener) {
+        getStorage().unregisterOnTrayPreferenceChangeListener(listener);
+    }
+
     /**
      * imports all data from an old storage. Use this if you have changed the module name
      * <p>
