@@ -18,10 +18,10 @@ package net.grandcentrix.tray.sample;
 
 import net.grandcentrix.tray.AppPreferences;
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.accessor.OnTrayPreferenceChangeListener;
-import net.grandcentrix.tray.migration.SharedPreferencesImport;
+import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
+import net.grandcentrix.tray.core.TrayStorage;
+import net.grandcentrix.tray.core.SharedPreferencesImport;
 import net.grandcentrix.tray.provider.TrayItem;
-import net.grandcentrix.tray.storage.TrayStorage;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

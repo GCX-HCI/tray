@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray;
 
+import net.grandcentrix.tray.core.PreferenceAccessor;
+
 import android.content.Context;
 
 /**
@@ -24,7 +26,7 @@ import android.content.Context;
  * Default implementation of the {@link TrayPreferences} which uses
  * the app package name as module name.
  * <p>
- * Use this {@link net.grandcentrix.tray.accessor.PreferenceAccessor} to save your preferences of
+ * Use this {@link PreferenceAccessor} to save your preferences of
  * your app independent of a single app module. It's not a good practice to put all preferences in
  * a
  * single module. Extend the {@link TrayPreferences} and gain the functionality to remove all

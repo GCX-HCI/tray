@@ -24,7 +24,7 @@
         <uses-library android:name="android.test.runner" />
 
         <provider
-            android:name=".provider.TrayProvider"
+            android:name=".provider.TrayContentProvider"
             android:authorities="net.grandcentrix.tray.preferences.test"
             android:exported="false"
             android:multiprocess="false"

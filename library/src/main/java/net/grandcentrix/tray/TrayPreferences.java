@@ -16,10 +16,11 @@
 
 package net.grandcentrix.tray;
 
-import net.grandcentrix.tray.accessor.ModularizedTrayPreferences;
-import net.grandcentrix.tray.accessor.OnTrayPreferenceChangeListener;
-import net.grandcentrix.tray.accessor.Preferences;
-import net.grandcentrix.tray.storage.TrayStorage;
+import net.grandcentrix.tray.core.AbstractTrayPreference;
+import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
+import net.grandcentrix.tray.core.Preferences;
+import net.grandcentrix.tray.core.TrayStorage;
+import net.grandcentrix.tray.provider.ContentProviderStorage;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -27,21 +28,20 @@ import android.support.annotation.NonNull;
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
- * A {@link Preferences} where the module name depends on the
- * developer. Extending this class should be preferred compared to the usage of the {@link
- * AppPreferences}.
+ * A {@link Preferences} where the module name depends on the developer. Extending this class
+ * should be preferred compared to the usage of the {@link AppPreferences}.
  * <p>
  * This class gives the developer the opportunity to remove whole modules without knowing each
  * single preference key.
  * <p>
- * Communicates with the {@link net.grandcentrix.tray.storage.TrayStorage} to store the preferences
- * into a {@link android.content.ContentProvider}
+ * Communicates with the {@link ContentProviderStorage} to store the preferences into a {@link
+ * android.content.ContentProvider}
  */
-public class TrayPreferences extends ModularizedTrayPreferences<TrayStorage> {
+public class TrayPreferences extends AbstractTrayPreference<ContentProviderStorage> {
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
             final int version, final TrayStorage.Type type) {
-        super(new TrayStorage(context, module, type), version);
+        super(new ContentProviderStorage(context, module, type), version);
     }
 
     public TrayPreferences(@NonNull final Context context, @NonNull final String module,
@@ -50,7 +50,7 @@ public class TrayPreferences extends ModularizedTrayPreferences<TrayStorage> {
     }
 
     public void annexModule(final String oldStorageName, final TrayStorage.Type type) {
-        super.annex(new TrayStorage(getContext(), oldStorageName, type));
+        super.annex(new ContentProviderStorage(getContext(), oldStorageName, type));
     }
 
     public void annexModule(final String oldStorageName) {
