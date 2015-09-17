@@ -66,15 +66,17 @@ public class ContentProviderStorage extends TrayStorage {
 
         @Override
         public void onChange(final boolean selfChange) {
-            // for sdk version 15 and below we cannot detect which exact data was changed. This will
-            // return all data for this module
-            final Uri uri = mTrayUri.builder().setModule(getModuleName()).build();
-            onChange(selfChange, uri);
+            onChange(selfChange, null);
         }
 
         @Override
-        public void onChange(final boolean selfChange, final Uri uri) {
-            Log.v(TAG, "changed uri: " + uri);
+        public void onChange(final boolean selfChange, Uri uri) {
+            if (uri == null) {
+                // for sdk version 15 and below we cannot detect which exact data was changed. This will
+                // return all data for this module
+                uri = mTrayUri.builder().setModule(getModuleName()).build();
+            }
+
             final List<TrayItem> trayItems = mProviderHelper.queryProvider(uri);
             for (final Map.Entry<OnTrayPreferenceChangeListener, Handler> entry
                     : mListeners.entrySet()) {
@@ -230,7 +232,8 @@ public class ContentProviderStorage extends TrayStorage {
     }
 
     /**
-     * registers a listener for changed data which gets called asynchronously when a change from the
+     * registers a listener for changed data which gets called asynchronously when a change from
+     * the
      * {@link android.content.ContentProvider} was detected
      * <p>
      * sdk version 15 is only partially supported. the listener will provide all data for this
