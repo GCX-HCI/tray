@@ -35,6 +35,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,7 +72,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
     private final OnTrayPreferenceChangeListener mTrayPrefsListener
             = new OnTrayPreferenceChangeListener() {
         @Override
-        public void onSharedPreferenceChanged(final List<TrayItem> items) {
+        public void onSharedPreferenceChanged(final Collection<TrayItem> items) {
             Log.v(TAG, "trayPrefs changed items: " + items);
         }
     };
