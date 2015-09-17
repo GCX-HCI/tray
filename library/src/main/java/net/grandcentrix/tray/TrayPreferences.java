@@ -17,7 +17,6 @@
 package net.grandcentrix.tray;
 
 import net.grandcentrix.tray.core.AbstractTrayPreference;
-import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
 import net.grandcentrix.tray.core.Preferences;
 import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.provider.ContentProviderStorage;

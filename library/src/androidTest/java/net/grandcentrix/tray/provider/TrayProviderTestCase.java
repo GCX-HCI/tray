@@ -125,7 +125,7 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
     }
 
     /**
-     * checks the database size by querying the given {@param contenUri}
+     * checks the database size by querying the given {@param contentUri}
      *
      * @param contentUri   uri to query
      * @param expectedSize the number of items you expect
