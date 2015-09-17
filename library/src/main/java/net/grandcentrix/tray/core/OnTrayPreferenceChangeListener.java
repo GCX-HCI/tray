@@ -1,6 +1,6 @@
 package net.grandcentrix.tray.core;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Interface definition for a callback to be invoked when a preference is changed.
@@ -17,5 +17,5 @@ public interface OnTrayPreferenceChangeListener {
      *
      * @param items The {@link TrayItem}s that received the change.
      */
-    void onSharedPreferenceChanged(List<TrayItem> items);
+    void onSharedPreferenceChanged(Collection<TrayItem> items);
 }

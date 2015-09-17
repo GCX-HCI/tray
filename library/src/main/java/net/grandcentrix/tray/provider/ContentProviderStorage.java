@@ -22,10 +22,13 @@ import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayRuntimeException;
 import net.grandcentrix.tray.core.TrayStorage;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -50,35 +53,35 @@ import java.util.WeakHashMap;
  */
 public class ContentProviderStorage extends TrayStorage {
 
-    private class TrayObserver extends ContentObserver {
+    class TrayContentObserver extends ContentObserver {
 
         /**
          * Creates a content observer.
          *
          * @param handler The handler to run {@link #onChange} on, or null if none.
          */
-        public TrayObserver(final Handler handler) {
+        public TrayContentObserver(@NonNull final Handler handler) {
             super(handler);
         }
 
         @Override
-        public boolean deliverSelfNotifications() {
-            return super.deliverSelfNotifications();
-        }
-
-        @Override
         public void onChange(final boolean selfChange) {
-            onChange(selfChange, null);
+            // for sdk version 15 and below we cannot detect which exact data was changed. This will
+            // return all data for this module
+            final Uri uri = mTrayUri.builder().setModule(getModuleName()).build();
+            onChange(selfChange, uri);
         }
 
         @Override
         public void onChange(final boolean selfChange, final Uri uri) {
+            Log.v(TAG, "changed uri: " + uri);
             final List<TrayItem> trayItems = mProviderHelper.queryProvider(uri);
             for (final Map.Entry<OnTrayPreferenceChangeListener, Handler> entry
                     : mListeners.entrySet()) {
                 final OnTrayPreferenceChangeListener listener = entry.getKey();
                 final Handler handler = entry.getValue();
                 if (handler != null) {
+                    // call the listener on the thread where the listener was registered
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -96,16 +99,16 @@ public class ContentProviderStorage extends TrayStorage {
 
     private static final String TAG = ContentProviderStorage.class.getSimpleName();
 
-    private final Context mContext;
-
     /**
      * weak references to the listeners. Only the keys are used.
      */
-    private WeakHashMap<OnTrayPreferenceChangeListener, Handler> mListeners = new WeakHashMap<>();
+    WeakHashMap<OnTrayPreferenceChangeListener, Handler> mListeners = new WeakHashMap<>();
 
-    private ContentObserver mObserver;
+    TrayContentObserver mObserver;
 
-    private Looper mObserverLooper;
+    HandlerThread mObserverThread;
+
+    private final Context mContext;
 
     private final TrayProviderHelper mProviderHelper;
 
@@ -226,6 +229,14 @@ public class ContentProviderStorage extends TrayStorage {
         mProviderHelper.persist(uri, value, migrationKey);
     }
 
+    /**
+     * registers a listener for changed data which gets called asynchronously when a change from the
+     * {@link android.content.ContentProvider} was detected
+     * <p>
+     * sdk version 15 is only partially supported. the listener will provide all data for this
+     * module and not only the changed ones
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void registerOnTrayPreferenceChangeListener(
             @NonNull final OnTrayPreferenceChangeListener listener) {
         // noinspection ConstantConditions
@@ -245,29 +256,32 @@ public class ContentProviderStorage extends TrayStorage {
 
         final Collection<OnTrayPreferenceChangeListener> listeners = mListeners.keySet();
         if (listeners.size() == 1) {
-            // run the observer in it's own thread and start looping after setup and registering the observer
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    // init a looper for this tread
-                    Looper.prepare();
-                    // save looper. otherwise it could never be stopped
-                    mObserverLooper = Looper.myLooper();
 
-                    // noinspection ConstantConditions mObserverLooper is never null, prepare got called
-                    mObserver = new TrayObserver(new Handler(mObserverLooper));
+            final boolean[] registered = {false};
+            // registering a TrayContentObserver requires a LooperThread
+            mObserverThread = new HandlerThread("observer") {
+                @Override
+                protected void onLooperPrepared() {
+                    super.onLooperPrepared();
+                    mObserver = new TrayContentObserver(new Handler(getLooper()));
+
+                    // register observer
                     final Uri observingUri = mTrayUri.builder()
                             .setType(getType())
                             .setModule(getModuleName())
                             .build();
-                    // register observer
                     mContext.getContentResolver()
                             .registerContentObserver(observingUri, true, mObserver);
-
-                    // no code will be executed after loop. It's an endless loop
-                    Looper.loop();
+                    registered[0] = true;
                 }
-            }).start();
+            };
+            mObserverThread.start();
+
+            while (true) {
+                if (registered[0]) {
+                    break;
+                }
+            }
         }
     }
 
@@ -310,10 +324,10 @@ public class ContentProviderStorage extends TrayStorage {
         mListeners.remove(listener);
         if (mListeners.size() == 0) {
             mContext.getContentResolver().unregisterContentObserver(mObserver);
-            if (mObserverLooper != null) {
-                mObserverLooper.quit();
-                mObserverLooper = null;
-            }
+            // cleanup
+            mObserver = null;
+            mObserverThread.quit();
+            mObserverThread = null;
         }
     }
 
