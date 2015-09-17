@@ -38,14 +38,14 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     final String TEST_STRING2 = "fooBar2";
 
     public void testClear() throws Exception {
-        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(), "testClear1",
-                TrayStorage.Type.USER);
-        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(), "testClear2",
-                TrayStorage.Type.USER);
-        final ContentProviderStorage storage3 = new ContentProviderStorage(getProviderMockContext(), "testClear3",
-                TrayStorage.Type.DEVICE);
-        final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(), "testClear4",
-                TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
+                "testClear1", TrayStorage.Type.USER);
+        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(),
+                "testClear2", TrayStorage.Type.USER);
+        final ContentProviderStorage storage3 = new ContentProviderStorage(getProviderMockContext(),
+                "testClear3", TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(),
+                "testClear4", TrayStorage.Type.DEVICE);
         storage1.put(TEST_KEY, TEST_STRING);
         storage2.put(TEST_KEY, TEST_STRING);
         storage3.put(TEST_KEY, TEST_STRING);
@@ -79,10 +79,10 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
 
         // test clear for undefined.
         // tricky because it's not clear which database has to be updated
-        final ContentProviderStorage undefinedDevice = new ContentProviderStorage(getProviderMockContext(), "testClear4",
-                TrayStorage.Type.UNDEFINED);
-        final ContentProviderStorage undefinedUser = new ContentProviderStorage(getProviderMockContext(), "testClear2",
-                TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefinedDevice = new ContentProviderStorage(
+                getProviderMockContext(), "testClear4", TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefinedUser = new ContentProviderStorage(
+                getProviderMockContext(), "testClear2", TrayStorage.Type.UNDEFINED);
 
         undefinedDevice.clear();
 
@@ -107,11 +107,11 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testDeviceAndUserWithSameName() throws Exception {
-        final ContentProviderStorage userStorage = new ContentProviderStorage(getProviderMockContext(), "sameName",
-                TrayStorage.Type.USER);
+        final ContentProviderStorage userStorage = new ContentProviderStorage(
+                getProviderMockContext(), "sameName", TrayStorage.Type.USER);
         userStorage.setVersion(100);
-        final ContentProviderStorage deviceStorage = new ContentProviderStorage(getProviderMockContext(), "sameName",
-                TrayStorage.Type.DEVICE);
+        final ContentProviderStorage deviceStorage = new ContentProviderStorage(
+                getProviderMockContext(), "sameName", TrayStorage.Type.DEVICE);
         deviceStorage.setVersion(200);
 
         assertEquals(100, userStorage.getVersion());
@@ -153,8 +153,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         /**
          * undefined
          */
-        final ContentProviderStorage undefinedStorage = new ContentProviderStorage(getProviderMockContext(), "sameName",
-                TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefinedStorage = new ContentProviderStorage(
+                getProviderMockContext(), "sameName", TrayStorage.Type.UNDEFINED);
         // get returns now two items!!!! order is not defined
         final TrayItem trayItem1 = undefinedStorage.get(TEST_KEY);
         assertNotNull(trayItem1);
@@ -186,14 +186,14 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testGetAll() throws Exception {
-        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(), "testGetAll1",
-                TrayStorage.Type.USER);
-        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(), "testGetAll2",
-                TrayStorage.Type.USER);
-        final ContentProviderStorage storage3 = new ContentProviderStorage(getProviderMockContext(), "testGetAll3",
-                TrayStorage.Type.DEVICE);
-        final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(), "testGetAll4",
-                TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
+                "testGetAll1", TrayStorage.Type.USER);
+        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(),
+                "testGetAll2", TrayStorage.Type.USER);
+        final ContentProviderStorage storage3 = new ContentProviderStorage(getProviderMockContext(),
+                "testGetAll3", TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(),
+                "testGetAll4", TrayStorage.Type.DEVICE);
         storage1.put(TEST_KEY, "1");
         storage2.put(TEST_KEY, "2");
         storage3.put(TEST_KEY, "3");
@@ -217,10 +217,10 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(1, all4.size());
         assertEquals("4", all4.iterator().next().value());
 
-        final ContentProviderStorage undefinedDevice = new ContentProviderStorage(getProviderMockContext(), "testGetAll4",
-                TrayStorage.Type.UNDEFINED);
-        final ContentProviderStorage undefinedUser = new ContentProviderStorage(getProviderMockContext(), "testGetAll2",
-                TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefinedDevice = new ContentProviderStorage(
+                getProviderMockContext(), "testGetAll4", TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefinedUser = new ContentProviderStorage(
+                getProviderMockContext(), "testGetAll2", TrayStorage.Type.UNDEFINED);
 
         final Collection<TrayItem> allD = undefinedDevice.getAll();
         assertEquals(1, allD.size());
@@ -232,8 +232,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testGetDevice() throws Exception {
-        final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(), "testGet_Device",
-                TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(),
+                "testGet_Device", TrayStorage.Type.DEVICE);
         assertNull(storage.get("test"));
 
         storage.put("test", "foo");
@@ -244,8 +244,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testGetUser() throws Exception {
-        final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(), "testGet_User",
-                TrayStorage.Type.USER);
+        final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(),
+                "testGet_User", TrayStorage.Type.USER);
         assertNull(storage.get("test"));
 
         storage.put("test", "foo");
@@ -256,9 +256,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testPutDevice() throws Exception {
-        final ContentProviderStorage storage =
-                new ContentProviderStorage(getProviderMockContext(), "testPut_Device",
-                        TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(),
+                "testPut_Device", TrayStorage.Type.DEVICE);
         storage.put(TEST_KEY, TEST_STRING);
         assertDeviceDatabaseSize(1);
         assertUserDatabaseSize(0);
@@ -302,8 +301,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testReadDataWithUndefinedStorageFromDeviceStore() throws Exception {
-        final ContentProviderStorage original = new ContentProviderStorage(getProviderMockContext(), "storageName",
-                TrayStorage.Type.DEVICE);
+        final ContentProviderStorage original = new ContentProviderStorage(getProviderMockContext(),
+                "storageName", TrayStorage.Type.DEVICE);
         original.setVersion(26);
         original.put(TEST_KEY, "someValue");
         assertNotNull(original.get(TEST_KEY));
@@ -312,8 +311,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testReadDataWithUndefinedStorageFromUserStore() throws Exception {
-        final ContentProviderStorage original = new ContentProviderStorage(getProviderMockContext(), "storageName",
-                TrayStorage.Type.USER);
+        final ContentProviderStorage original = new ContentProviderStorage(getProviderMockContext(),
+                "storageName", TrayStorage.Type.USER);
         original.setVersion(25);
         original.put(TEST_KEY, TEST_STRING);
 
@@ -321,14 +320,14 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testRemove() throws Exception {
-        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(), "testRemove1",
-                TrayStorage.Type.USER);
-        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(), "testRemove2",
-                TrayStorage.Type.USER);
-        final ContentProviderStorage storage3 = new ContentProviderStorage(getProviderMockContext(), "testRemove3",
-                TrayStorage.Type.DEVICE);
-        final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(), "testRemove4",
-                TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
+                "testRemove1", TrayStorage.Type.USER);
+        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(),
+                "testRemove2", TrayStorage.Type.USER);
+        final ContentProviderStorage storage3 = new ContentProviderStorage(getProviderMockContext(),
+                "testRemove3", TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(),
+                "testRemove4", TrayStorage.Type.DEVICE);
         storage1.put(TEST_KEY, TEST_STRING);
         storage1.put(TEST_KEY2, TEST_STRING2);
         storage2.put(TEST_KEY, TEST_STRING);
@@ -356,10 +355,10 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(2, storage4.getAll().size());
         assertNotNull(storage3.get(TEST_KEY2));
 
-        final ContentProviderStorage undefinedDevice = new ContentProviderStorage(getProviderMockContext(), "testRemove4",
-                TrayStorage.Type.UNDEFINED);
-        final ContentProviderStorage undefinedUser = new ContentProviderStorage(getProviderMockContext(), "testRemove2",
-                TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefinedDevice = new ContentProviderStorage(
+                getProviderMockContext(), "testRemove4", TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefinedUser = new ContentProviderStorage(
+                getProviderMockContext(), "testRemove2", TrayStorage.Type.UNDEFINED);
 
         undefinedDevice.remove(TEST_KEY);
         assertEquals(1, storage1.getAll().size());
@@ -377,14 +376,14 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testRemoveIfItemIsNotThere() {
-        final ContentProviderStorage storageUser = new ContentProviderStorage(getProviderMockContext(),
-                "testRemoveIfItemIsNotThere_User", TrayStorage.Type.USER);
+        final ContentProviderStorage storageUser = new ContentProviderStorage(
+                getProviderMockContext(), "testRemoveIfItemIsNotThere_User", TrayStorage.Type.USER);
         storageUser.put(TEST_KEY2, TEST_STRING);
         storageUser.remove(TEST_KEY);
         assertUserDatabaseSize(1);
 
-        final ContentProviderStorage storageDevice = new ContentProviderStorage(getProviderMockContext(),
-                "testRemoveIfItemIsNotThere_Device", TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storageDevice = new ContentProviderStorage(
+                getProviderMockContext(), "testRemoveIfItemIsNotThere_Device", TrayStorage.Type.DEVICE);
         storageDevice.put(TEST_KEY2, TEST_STRING2);
         storageDevice.remove(TEST_KEY);
         assertUserDatabaseSize(1);
@@ -415,8 +414,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(TrayStorage.Type.USER, typeUser);
         final TrayStorage.Type typeDevice = TrayStorage.Type.valueOf("DEVICE");
         assertEquals(TrayStorage.Type.DEVICE, typeDevice);
-        final TrayStorage.Type typeUndefined = TrayStorage.Type
-                .valueOf("UNDEFINED");
+        final TrayStorage.Type typeUndefined = TrayStorage.Type.valueOf("UNDEFINED");
         assertEquals(TrayStorage.Type.UNDEFINED, typeUndefined);
     }
 
@@ -424,7 +422,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
      * writing data and version should fail for an undefined storage type
      */
     public void testUndefinedTypeAccessErrors() throws Exception {
-        final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(), "undefined",
+        final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(),
+                "undefined",
                 TrayStorage.Type.UNDEFINED);
 
         // put
@@ -468,7 +467,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testVersion() throws Exception {
-        final ContentProviderStorage storageUser = new ContentProviderStorage(getProviderMockContext(),
+        final ContentProviderStorage storageUser = new ContentProviderStorage(
+                getProviderMockContext(),
                 "testVersion_User", TrayStorage.Type.USER);
         // default version, not set yet
         assertEquals(0, storageUser.getVersion());
@@ -476,7 +476,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         storageUser.setVersion(25);
         assertEquals(25, storageUser.getVersion());
 
-        final ContentProviderStorage storageDevice = new ContentProviderStorage(getProviderMockContext(),
+        final ContentProviderStorage storageDevice = new ContentProviderStorage(
+                getProviderMockContext(),
                 "testVersion_Device", TrayStorage.Type.DEVICE);
         // default version, not set yet
         assertEquals(0, storageDevice.getVersion());
@@ -498,17 +499,17 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     public void testWipe() throws Exception {
-        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(), "testWipe1",
-                TrayStorage.Type.USER);
+        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
+                "testWipe1", TrayStorage.Type.USER);
         storage1.setVersion(1);
-        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(), "testWipe2",
-                TrayStorage.Type.USER);
+        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(),
+                "testWipe2", TrayStorage.Type.USER);
         storage2.setVersion(1);
-        final ContentProviderStorage storage3 = new ContentProviderStorage(getProviderMockContext(), "testWipe3",
-                TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage3 = new ContentProviderStorage(getProviderMockContext(),
+                "testWipe3", TrayStorage.Type.DEVICE);
         storage3.setVersion(1);
-        final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(), "testWipe4",
-                TrayStorage.Type.DEVICE);
+        final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(),
+                "testWipe4", TrayStorage.Type.DEVICE);
         storage4.setVersion(1);
 
         storage1.put(TEST_KEY, TEST_STRING);
@@ -553,10 +554,10 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
 
         // test clear for undefined.
         // tricky because it's not clear which database has to be updated
-        final ContentProviderStorage undefinedDevice = new ContentProviderStorage(getProviderMockContext(), "testWipe4",
-                TrayStorage.Type.UNDEFINED);
-        final ContentProviderStorage undefinedUser = new ContentProviderStorage(getProviderMockContext(), "testWipe2",
-                TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefinedDevice = new ContentProviderStorage(
+                getProviderMockContext(), "testWipe4", TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefinedUser = new ContentProviderStorage(
+                getProviderMockContext(), "testWipe2", TrayStorage.Type.UNDEFINED);
 
         undefinedDevice.wipe();
 
@@ -584,9 +585,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     private void checkReadDataWithUndefined(final ContentProviderStorage original) {
-        final ContentProviderStorage undefined = new ContentProviderStorage(getProviderMockContext(),
-                original.getModuleName(),
-                TrayStorage.Type.UNDEFINED);
+        final ContentProviderStorage undefined = new ContentProviderStorage(
+                getProviderMockContext(), original.getModuleName(), TrayStorage.Type.UNDEFINED);
 
         assertEquals(TrayStorage.Type.UNDEFINED, undefined.getType());
         assertEquals(original.getAll().size(), undefined.getAll().size());
