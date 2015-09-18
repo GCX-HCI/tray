@@ -24,8 +24,8 @@ import android.support.annotation.NonNull;
  * Created by pascalwelsch on 11/20/14.
  * <p>
  * A storage is now separated in modules (by name) and has a {@link Type} indicating how the data
- * stored will be handled with the Android Auto Backup feature. {@see
- * https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support}
+ * stored will be handled with the Android Auto Backup feature. see
+ * https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support
  */
 public abstract class TrayStorage implements PreferenceStorage<TrayItem> {
 
