@@ -31,7 +31,7 @@ Simple tutorial how to use Tray in your project instead of the SharedPreferences
 
 ```java
 // create a preference accessor. This is for global app preferences.
-final TrayAppPreferences appPreferences = new TrayAppPreferences(getContext()); //this Preference comes for free from the library
+final AppPreferences appPreferences = new AppPreferences(getContext()); // this Preference comes for free from the library
 // save a key value pair
 appPreferences.put("key", "lorem ipsum");
 
@@ -192,37 +192,44 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Versions
 
-##### Version 0.10.0 `02.06.15`
-- `TrayAppPreferences` is now deprecated. Use `AppPreferences` instead (renaming)
-- `TrayModulePreferences` is now deprecated. Use `TrayPreferences` instead to extend from for your own Preferences
-- split up database for user and device specific data for Android M Auto Backup feature
-- `TrayPreferences` has now an optional 3. constructor parameter `TrayStorage.Type`, `USER` or `DEVICE` indicating the internal database (required for Android M Auto Backup). Default is `USER`
-- `Preference` `#onCreate(...)` and `#onUpgrade(...)` aren't abstract anymore
-- `PreferenceAccessor#wipe()` clears the preference data and it's internal data (version)
-- `ModularizedTrayPreferences#annex(ModularizedStorage<TrayItem>)` allows a storage to import another storage, wipes the imported afterwards
-- `TrayPreferences#annexModule(String name)` imports a module by name and wipes it afterwards. This allows renaming of preferences without losing data
-- added `Preferences#getStorage()`
-- added `Preference#getVersion()`
-- created `TrayUri` class + `Builder` because the uri creation for the internal ContentProvider got kind of complex
+##### Version 1.0.0 `18.9.15`
 
-##### Version 0.9.2 `02.06.15`
+- **Android M Auto Backup feature support** (see the [Documentation](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support))
+    - split up database for *user* and *device* specific data (device specific data can now be excluded from the auto backup)
+    - `TrayPreferences` has now an optional 3. constructor parameter `TrayStorage.Type`, `USER` or `DEVICE` indicating the internal database (required for Android M Auto Backup). Default is `USER`
+- **New methods and changes**
+    - `PreferenceAccessor#wipe()` clears the preference data and it's internal data (version)
+    - `TrayPreferences#annexModule(String name)` imports a module by name and wipes it afterwards. This allows renaming of preferences without losing data
+    - `AbstractTrayPreference#annex(ModularizedStorage<TrayItem>)` allows a storage to import another storage, wipes the imported afterwards
+    - `Preference` `#onCreate(...)` and `#onUpgrade(...)` aren't abstract anymore because they don't require an implementation
+- **Deprecations** (will be removed soon)
+    - `TrayAppPreferences` is now deprecated. Use `AppPreferences` instead (renaming)
+    - `TrayModulePreferences` is now deprecated. Use `TrayPreferences` instead to extend from for your own Preferences
+- **Internal structure**
+    - new package structure. merged packages `accessor`, `migration` and `storage` into `core`
+    - package `provider` contains a `TrayStorage` implementation with a `ContentProvider`. Is easy exchangeable with another `TrayStorage` implementation
+    - `ModularizedTrayPreference` is now called `AbstractTrayPreference`
+    - `ModularizedStorage` was renamed to `TrayStorage`
+
+
+>##### Version 0.9.2 `02.06.15`
 - `getContext()` is working in `TrayModulePreference#onCreate`
 
-##### Version 0.9.1 `18.05.15`
+>##### Version 0.9.1 `18.05.15`
 - saving `null` with `mPref.put(KEY, null)` works now
 - access to preference with throwing methods instead of default value (throws ItemNotFoundException). Example: `mPref.getString(KEY);` instead of `mPref.getString(KEY, "defaultValue");`
 - WrongTypeException when accessing a preference with a different type and the data isn't parsable. Float (`10.1f`) -> String works, String (`"10.1"`) -> Float works, String (`"test"`) -> Float throws!
 - javadoc in now included in aar
 
-##### Version 0.9 `27.04.15`
+>##### Version 0.9 `27.04.15`
 - initial public release
 
-##### Version 0.2 - 0.8
+>##### Version 0.2 - 0.8
 - Refactoring
 - 100% Testing
 - Bugfixing
 
-##### Version 0.1 `17.09.14`
+>##### Version 0.1 `17.09.14`
 - first working prototype
 
 
