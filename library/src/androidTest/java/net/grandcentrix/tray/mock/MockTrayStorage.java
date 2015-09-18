@@ -49,18 +49,6 @@ public class MockTrayStorage extends TrayStorage {
     }
 
     @Override
-    public void registerOnTrayPreferenceChangeListener(
-            @NonNull final OnTrayPreferenceChangeListener listener) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public void unregisterOnTrayPreferenceChangeListener(
-            @NonNull final OnTrayPreferenceChangeListener listener) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public void clear() {
         mData.clear();
     }
@@ -89,15 +77,28 @@ public class MockTrayStorage extends TrayStorage {
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
             final Object data) {
+        final TrayItem saved = this.mData.get(key);
         final String value = String.valueOf(data);
-        final TrayItem item = new TrayItem(getModuleName(), key, migrationKey, value, new Date(),
-                new Date());
+        final Date now = new Date();
+        final TrayItem item;
+        if (saved == null) {
+            item = new TrayItem(getModuleName(), key, migrationKey, value, now, now);
+        } else {
+            final Date created = saved.created();
+            item = new TrayItem(getModuleName(), key, migrationKey, value, created, now);
+        }
         this.mData.put(key, item);
     }
 
     @Override
     public void put(@NonNull final String key, final Object data) {
         put(key, null, data);
+    }
+
+    @Override
+    public void registerOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        throw new RuntimeException("register not implemented");
     }
 
     @Override
@@ -108,6 +109,12 @@ public class MockTrayStorage extends TrayStorage {
     @Override
     public void setVersion(final int version) {
         this.mVersion = version;
+    }
+
+    @Override
+    public void unregisterOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        throw new RuntimeException("unregister not implemented");
     }
 
     @Override

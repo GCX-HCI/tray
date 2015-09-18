@@ -20,6 +20,8 @@ import junit.framework.TestCase;
 
 import net.grandcentrix.tray.mock.MockTrayStorage;
 
+import java.util.Collection;
+
 public class AbstractTrayPreferenceTest extends TestCase {
 
     private static final String KEY = "key";
@@ -51,6 +53,36 @@ public class AbstractTrayPreferenceTest extends TestCase {
         modulePreferences.annex(oldStorage);
         assertEquals(1, modulePreferences.getAll().size());
         assertEquals(0, oldPrefs.getAll().size());
+    }
+
+    public void testChangeListener() throws Exception {
+        final MockTrayStorage testChangeListener = new MockTrayStorage("testChangeListener");
+        final MockSimplePreferences prefs = new MockSimplePreferences(
+                testChangeListener, 1);
+
+        try {
+            prefs.registerOnTrayPreferenceChangeListener(new OnTrayPreferenceChangeListener() {
+                @Override
+                public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
+
+                }
+            });
+            fail();
+        } catch (Exception e){
+            assert(e.getMessage().equals("register not implemented"));
+        }
+
+        try {
+            prefs.unregisterOnTrayPreferenceChangeListener(new OnTrayPreferenceChangeListener() {
+                @Override
+                public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
+
+                }
+            });
+            fail();
+        } catch (Exception e){
+            assert(e.getMessage().equals("unregister not implemented"));
+        }
     }
 
     public void testBoolean() throws Exception {

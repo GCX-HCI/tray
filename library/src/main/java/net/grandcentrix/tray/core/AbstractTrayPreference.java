@@ -137,7 +137,7 @@ public abstract class AbstractTrayPreference<T extends TrayStorage> extends
      * This may be called even if a preference is set to its existing value.
      * <p>
      * The listener gets called on the same Looper you call this method. Registering it on the main
-     * tread causes the listener to call on the main thread, too.
+     * tread causes the listener to call on the main thread, too.</p>
      * <p>
      * <strong>Caution:</strong> The storage does not store a strong reference to the listener.
      * You must store a strong reference to the listener, or it will be susceptible to garbage
@@ -145,7 +145,7 @@ public abstract class AbstractTrayPreference<T extends TrayStorage> extends
      * object that will exist as long as you need the listener.</p>
      * <p>
      * don't forget to unregister the listener when no longer needed in {@link
-     * #unregisterOnTrayPreferenceChangeListener(OnTrayPreferenceChangeListener)}
+     * #unregisterOnTrayPreferenceChangeListener(OnTrayPreferenceChangeListener)}</p>
      *
      * @param listener the listener that will run.
      * @see #unregisterOnTrayPreferenceChangeListener(OnTrayPreferenceChangeListener)
