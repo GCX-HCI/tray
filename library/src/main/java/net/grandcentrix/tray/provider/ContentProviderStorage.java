@@ -114,16 +114,19 @@ public class ContentProviderStorage extends TrayStorage {
     /**
      * weak references to the listeners. Only the keys are used.
      */
+    @VisibleForTesting
     WeakHashMap<OnTrayPreferenceChangeListener, Handler> mListeners = new WeakHashMap<>();
 
     /**
      * observes data changes for this storage
      */
+    @VisibleForTesting
     TrayContentObserver mObserver;
 
     /**
      * the looper thread which runs the {@link #mObserver}. Only started when listeners registered
      */
+    @VisibleForTesting
     HandlerThread mObserverThread;
 
     private final Context mContext;
