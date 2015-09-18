@@ -20,6 +20,8 @@ import junit.framework.TestCase;
 
 import net.grandcentrix.tray.mock.MockTrayStorage;
 
+import java.util.Collection;
+
 public class AbstractTrayPreferenceTest extends TestCase {
 
     private static final String KEY = "key";
@@ -57,6 +59,27 @@ public class AbstractTrayPreferenceTest extends TestCase {
         mTrayAccessor.put(KEY, TEST_BOOL);
         assertEquals(TEST_BOOL, mTrayAccessor.getBoolean(KEY, false));
         assertEquals(false, mTrayAccessor.getBoolean(WRONG_KEY, false));
+    }
+
+    public void testChangeListener() throws Exception {
+        final MockTrayStorage mockStorage = new MockTrayStorage("testChangeListener");
+        final MockSimplePreferences prefs = new MockSimplePreferences(
+                mockStorage, 1);
+
+        assertEquals(0, mockStorage.mListeners.size());
+
+        // we just need to check if the listener gets forwarded to the storage
+        final OnTrayPreferenceChangeListener listener = new OnTrayPreferenceChangeListener() {
+            @Override
+            public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
+
+            }
+        };
+        prefs.registerOnTrayPreferenceChangeListener(listener);
+        assertEquals(1, mockStorage.mListeners.size());
+
+        prefs.unregisterOnTrayPreferenceChangeListener(listener);
+        assertEquals(0, mockStorage.mListeners.size());
     }
 
     public void testFloat() throws Exception {

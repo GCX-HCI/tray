@@ -17,18 +17,28 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayRuntimeException;
 import net.grandcentrix.tray.core.TrayStorage;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Created by pascalwelsch on 11/20/14.
@@ -44,9 +54,80 @@ import java.util.List;
  */
 public class ContentProviderStorage extends TrayStorage {
 
+    /**
+     * Forwards changes of this storage to the registered listeners
+     */
+    @VisibleForTesting
+    class TrayContentObserver extends ContentObserver {
+
+        /**
+         * Creates a content observer.
+         *
+         * @param handler The handler to run {@link #onChange} on, or null if none.
+         */
+        public TrayContentObserver(@NonNull final Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public void onChange(final boolean selfChange) {
+            onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(final boolean selfChange, Uri uri) {
+            if (uri == null) {
+                // for sdk version 15 and below we cannot detect which exact data was changed. This will
+                // return all data for this module
+                uri = mTrayUri.builder().setModule(getModuleName()).build();
+            }
+
+            // query only the changed items
+            final List<TrayItem> trayItems = mProviderHelper.queryProvider(uri);
+
+            synchronized (ContentProviderStorage.this) {
+                // notify all registered listeners
+                for (final Map.Entry<OnTrayPreferenceChangeListener, Handler> entry
+                        : mListeners.entrySet()) {
+                    final OnTrayPreferenceChangeListener listener = entry.getKey();
+                    final Handler handler = entry.getValue();
+                    if (handler != null) {
+                        // call the listener on the thread where the listener was registered
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onTrayPreferenceChanged(trayItems);
+                            }
+                        });
+                    } else {
+                        listener.onTrayPreferenceChanged(trayItems);
+                    }
+                }
+            }
+        }
+    }
+
     public static final String VERSION = "version";
 
     private static final String TAG = ContentProviderStorage.class.getSimpleName();
+
+    /**
+     * weak references to the listeners. Only the keys are used.
+     */
+    @VisibleForTesting
+    WeakHashMap<OnTrayPreferenceChangeListener, Handler> mListeners = new WeakHashMap<>();
+
+    /**
+     * observes data changes for this storage
+     */
+    @VisibleForTesting
+    TrayContentObserver mObserver;
+
+    /**
+     * the looper thread which runs the {@link #mObserver}. Only started when listeners registered
+     */
+    @VisibleForTesting
+    HandlerThread mObserverThread;
 
     private final Context mContext;
 
@@ -111,6 +192,10 @@ public class ContentProviderStorage extends TrayStorage {
         return mProviderHelper.queryProvider(uri);
     }
 
+    /**
+     * @return the context {@link android.app.Application} bound to this storage to communicate via
+     * {@link android.content.ContentResolver}
+     */
     public Context getContext() {
         return mContext;
     }
@@ -169,6 +254,69 @@ public class ContentProviderStorage extends TrayStorage {
         mProviderHelper.persist(uri, value, migrationKey);
     }
 
+    /**
+     * registers a listener for changed data which gets called asynchronously when a change from
+     * the {@link TrayContentProvider} was detected
+     * <p>
+     * sdk version 15 is only partially supported. the listener will provide all data for this
+     * module and not only the changed ones because {@link ContentObserver#onChange(boolean, Uri)}
+     * was introduced in sdk version 16
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public void registerOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        // noinspection ConstantConditions
+        if (listener == null) {
+            return;
+        }
+
+        // save a handler associated with the calling looper to call the callback on the same thread
+        // noinspection ConstantConditions
+        Handler handler = null;
+        final Looper looper = Looper.myLooper();
+        if (looper != null) {
+            handler = new Handler(looper);
+        }
+        synchronized (this) {
+            //noinspection ConstantConditions
+            mListeners.put(listener, handler);
+        }
+
+        final Collection<OnTrayPreferenceChangeListener> listeners = mListeners.keySet();
+
+        if (listeners.size() == 1) {
+
+            final boolean[] registered = {false};
+
+            // registering a TrayContentObserver requires a LooperThread
+            mObserverThread = new HandlerThread("observer") {
+                @Override
+                protected void onLooperPrepared() {
+                    super.onLooperPrepared();
+                    mObserver = new TrayContentObserver(new Handler(getLooper()));
+
+                    // register observer
+                    final Uri observingUri = mTrayUri.builder()
+                            .setType(getType())
+                            .setModule(getModuleName())
+                            .build();
+                    mContext.getContentResolver()
+                            .registerContentObserver(observingUri, true, mObserver);
+                    registered[0] = true;
+                }
+            };
+            mObserverThread.start();
+
+            // wait synchronously until the mObserverThread registered the mObserver
+            // cannot use Thread.join(); because the Looper of the HandlerThread runs forever until killed
+            while (true) {
+                if (registered[0]) {
+                    break;
+                }
+            }
+        }
+    }
+
     @Override
     public void remove(@NonNull final String key) {
         //noinspection ConstantConditions
@@ -199,6 +347,24 @@ public class ContentProviderStorage extends TrayStorage {
         mProviderHelper.persist(uri, String.valueOf(version));
     }
 
+    public void unregisterOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        // noinspection ConstantConditions
+        if (listener == null) {
+            return;
+        }
+        synchronized (this) {
+            mListeners.remove(listener);
+        }
+        if (mListeners.size() == 0) {
+            mContext.getContentResolver().unregisterContentObserver(mObserver);
+            // cleanup
+            mObserver = null;
+            mObserverThread.quit();
+            mObserverThread = null;
+        }
+    }
+
     /**
      * clear the data inside the preference and all evidence this preference has ever existed
      * <p>
@@ -215,4 +381,6 @@ public class ContentProviderStorage extends TrayStorage {
                 .build();
         mContext.getContentResolver().delete(uri, null, null);
     }
+
+
 }

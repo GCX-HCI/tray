@@ -16,12 +16,14 @@
 
 package net.grandcentrix.tray.mock;
 
+import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayStorage;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +32,8 @@ import java.util.HashMap;
  * Created by pascalwelsch on 11/21/14.
  */
 public class MockTrayStorage extends TrayStorage {
+
+    public ArrayList<OnTrayPreferenceChangeListener> mListeners = new ArrayList<>();
 
     private HashMap<String, TrayItem> mData = new HashMap<>();
 
@@ -76,15 +80,28 @@ public class MockTrayStorage extends TrayStorage {
     @Override
     public void put(@NonNull final String key, @Nullable final String migrationKey,
             final Object data) {
+        final TrayItem saved = this.mData.get(key);
         final String value = String.valueOf(data);
-        final TrayItem item = new TrayItem(getModuleName(), key, migrationKey, value, new Date(),
-                new Date());
+        final Date now = new Date();
+        final TrayItem item;
+        if (saved == null) {
+            item = new TrayItem(getModuleName(), key, migrationKey, value, now, now);
+        } else {
+            final Date created = saved.created();
+            item = new TrayItem(getModuleName(), key, migrationKey, value, created, now);
+        }
         this.mData.put(key, item);
     }
 
     @Override
     public void put(@NonNull final String key, final Object data) {
         put(key, null, data);
+    }
+
+    @Override
+    public void registerOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        mListeners.add(listener);
     }
 
     @Override
@@ -95,6 +112,12 @@ public class MockTrayStorage extends TrayStorage {
     @Override
     public void setVersion(final int version) {
         this.mVersion = version;
+    }
+
+    @Override
+    public void unregisterOnTrayPreferenceChangeListener(
+            @NonNull final OnTrayPreferenceChangeListener listener) {
+        mListeners.remove(listener);
     }
 
     @Override

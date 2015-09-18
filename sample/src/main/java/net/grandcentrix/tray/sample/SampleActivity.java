@@ -18,8 +18,10 @@ package net.grandcentrix.tray.sample;
 
 import net.grandcentrix.tray.AppPreferences;
 import net.grandcentrix.tray.TrayPreferences;
-import net.grandcentrix.tray.core.TrayStorage;
+import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
 import net.grandcentrix.tray.core.SharedPreferencesImport;
+import net.grandcentrix.tray.core.TrayItem;
+import net.grandcentrix.tray.core.TrayStorage;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -33,6 +35,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -55,6 +58,25 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
     private ImportTrayPreferences mImportPreference;
 
     private SharedPreferences mSharedPreferences;
+
+    private final SharedPreferences.OnSharedPreferenceChangeListener mSharedPrefsListener
+            = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences,
+                final String key) {
+            Log.v(TAG, "sharedPrefs changed key: " + key);
+            updateSharedPrefInfo();
+        }
+    };
+
+    private final OnTrayPreferenceChangeListener mTrayPrefsListener
+            = new OnTrayPreferenceChangeListener() {
+        @Override
+        public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
+            Log.v(TAG, "trayPrefs changed items: " + items);
+            updateSharedPrefInfo();
+        }
+    };
 
     @SuppressWarnings("Annotator")
     @Override
@@ -122,6 +144,17 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
     protected void onStart() {
         super.onStart();
         updateSharedPrefInfo();
+
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(mSharedPrefsListener);
+        mImportPreference.registerOnTrayPreferenceChangeListener(mTrayPrefsListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(mSharedPrefsListener);
+        mImportPreference.unregisterOnTrayPreferenceChangeListener(mTrayPrefsListener);
     }
 
     private void importSharedPref() {
@@ -129,7 +162,6 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                 new SharedPreferencesImport(this, SampleActivity.SHARED_PREF_NAME,
                         SampleActivity.SHARED_PREF_KEY, TRAY_PREF_KEY);
         mImportPreference.migrate(sharedPreferencesImport);
-        updateSharedPrefInfo();
     }
 
     /**
@@ -187,6 +219,5 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         mSharedPreferences.edit()
                 .putString(SHARED_PREF_KEY, data)
                 .apply();
-        updateSharedPrefInfo();
     }
 }
