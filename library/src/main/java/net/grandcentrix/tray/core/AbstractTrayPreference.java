@@ -132,11 +132,35 @@ public abstract class AbstractTrayPreference<T extends TrayStorage> extends
         }
     }
 
+    /**
+     * registers a listener which gets called when a tray preference is changed, added, or removed.
+     * This may be called even if a preference is set to its existing value.
+     * <p>
+     * The listener gets called on the same Looper you call this method. Registering it on the main
+     * tread causes the listener to call on the main thread, too.
+     * <p>
+     * <strong>Caution:</strong> The storage does not store a strong reference to the listener.
+     * You must store a strong reference to the listener, or it will be susceptible to garbage
+     * collection. We recommend you keep a reference to the listener in the instance data of an
+     * object that will exist as long as you need the listener.</p>
+     * <p>
+     * don't forget to unregister the listener when no longer needed in {@link
+     * #unregisterOnTrayPreferenceChangeListener(OnTrayPreferenceChangeListener)}
+     *
+     * @param listener the listener that will run.
+     * @see #unregisterOnTrayPreferenceChangeListener(OnTrayPreferenceChangeListener)
+     */
     public void registerOnTrayPreferenceChangeListener(
             @NonNull OnTrayPreferenceChangeListener listener) {
         getStorage().registerOnTrayPreferenceChangeListener(listener);
     }
 
+    /**
+     * unregisters the previously registered callback
+     *
+     * @param listener The callback that should be unregistered.
+     * @see #registerOnTrayPreferenceChangeListener(OnTrayPreferenceChangeListener)
+     */
     public void unregisterOnTrayPreferenceChangeListener(
             @NonNull OnTrayPreferenceChangeListener listener) {
         getStorage().unregisterOnTrayPreferenceChangeListener(listener);

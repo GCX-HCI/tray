@@ -27,7 +27,7 @@ public class ChangedListenerTest extends TrayProviderTestCase {
         final OnTrayPreferenceChangeListener listener = new OnTrayPreferenceChangeListener() {
 
             @Override
-            public void onSharedPreferenceChanged(final Collection<TrayItem> items) {
+            public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
                 changed.addAll(items);
                 latch.countDown();
             }
@@ -67,7 +67,7 @@ public class ChangedListenerTest extends TrayProviderTestCase {
     public void testUnregister() throws Exception {
         final OnTrayPreferenceChangeListener listener = new OnTrayPreferenceChangeListener() {
             @Override
-            public void onSharedPreferenceChanged(final Collection<TrayItem> items) {
+            public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
 
             }
         };
@@ -98,7 +98,7 @@ public class ChangedListenerTest extends TrayProviderTestCase {
 
         final OnTrayPreferenceChangeListener listener = new OnTrayPreferenceChangeListener() {
             @Override
-            public void onSharedPreferenceChanged(final Collection<TrayItem> items) {
+            public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
                 // check if called on the correct looper if one is set.
                 assertEquals(looperRegisteredOn[0], Looper.myLooper());
 

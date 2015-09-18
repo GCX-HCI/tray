@@ -88,9 +88,30 @@ public abstract class TrayStorage implements PreferenceStorage<TrayItem> {
         return mType;
     }
 
+    /**
+     * registers a listener which gets called when a tray preference is changed, added, or removed.
+     * This may be called even if a preference is set to its existing value.
+     * <p>
+     * <strong>Caution:</strong> The storage does not store a strong reference to the listener.
+     * You must store a strong reference to the listener, or it will be susceptible to garbage
+     * collection. We recommend you keep a reference to the listener in the instance data of an
+     * object that will exist as long as you need the listener.</p>
+     * <p>
+     * don't forget to unregister the listener when no longer needed in {@link
+     * #unregisterOnTrayPreferenceChangeListener(OnTrayPreferenceChangeListener)}
+     *
+     * @param listener the listener that will run.
+     * @see #unregisterOnTrayPreferenceChangeListener(OnTrayPreferenceChangeListener)
+     */
     public abstract void registerOnTrayPreferenceChangeListener(
             @NonNull OnTrayPreferenceChangeListener listener);
 
+    /**
+     * unregisters the previously registered callback
+     *
+     * @param listener The callback that should be unregistered.
+     * @see #registerOnTrayPreferenceChangeListener(OnTrayPreferenceChangeListener)
+     */
     public abstract void unregisterOnTrayPreferenceChangeListener(
             @NonNull OnTrayPreferenceChangeListener listener);
 }

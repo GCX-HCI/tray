@@ -13,9 +13,9 @@ public interface OnTrayPreferenceChangeListener {
      * Called when a tray preference is changed, added, or removed. This may be called even if a
      * preference is set to its existing value.
      * <p/>
-     * This callback will be run on your main thread.
+     * This callback will be run the Looper you registered it i.e. the main Looper
      *
      * @param items The {@link TrayItem}s that received the change.
      */
-    void onSharedPreferenceChanged(Collection<TrayItem> items);
+    void onTrayPreferenceChanged(Collection<TrayItem> items);
 }

@@ -32,6 +32,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import java.util.Collection;
@@ -53,6 +54,10 @@ import java.util.WeakHashMap;
  */
 public class ContentProviderStorage extends TrayStorage {
 
+    /**
+     * Forwards changes of this storage to the registered listeners
+     */
+    @VisibleForTesting
     class TrayContentObserver extends ContentObserver {
 
         /**
@@ -77,7 +82,10 @@ public class ContentProviderStorage extends TrayStorage {
                 uri = mTrayUri.builder().setModule(getModuleName()).build();
             }
 
+            // query only the changed items
             final List<TrayItem> trayItems = mProviderHelper.queryProvider(uri);
+
+            // notify all registered listeners
             for (final Map.Entry<OnTrayPreferenceChangeListener, Handler> entry
                     : mListeners.entrySet()) {
                 final OnTrayPreferenceChangeListener listener = entry.getKey();
@@ -87,11 +95,11 @@ public class ContentProviderStorage extends TrayStorage {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onSharedPreferenceChanged(trayItems);
+                            listener.onTrayPreferenceChanged(trayItems);
                         }
                     });
                 } else {
-                    listener.onSharedPreferenceChanged(trayItems);
+                    listener.onTrayPreferenceChanged(trayItems);
                 }
             }
         }
@@ -106,8 +114,14 @@ public class ContentProviderStorage extends TrayStorage {
      */
     WeakHashMap<OnTrayPreferenceChangeListener, Handler> mListeners = new WeakHashMap<>();
 
+    /**
+     * observes data changes for this storage
+     */
     TrayContentObserver mObserver;
 
+    /**
+     * the looper thread which runs the {@link #mObserver}. Only started when listeners registered
+     */
     HandlerThread mObserverThread;
 
     private final Context mContext;
@@ -173,6 +187,10 @@ public class ContentProviderStorage extends TrayStorage {
         return mProviderHelper.queryProvider(uri);
     }
 
+    /**
+     * @return the context {@link android.app.Application} bound to this storage to communicate via
+     * {@link android.content.ContentResolver}
+     */
     public Context getContext() {
         return mContext;
     }
@@ -233,11 +251,11 @@ public class ContentProviderStorage extends TrayStorage {
 
     /**
      * registers a listener for changed data which gets called asynchronously when a change from
-     * the
-     * {@link android.content.ContentProvider} was detected
+     * the {@link TrayContentProvider} was detected
      * <p>
      * sdk version 15 is only partially supported. the listener will provide all data for this
-     * module and not only the changed ones
+     * module and not only the changed ones because {@link ContentObserver#onChange(boolean, Uri)}
+     * was introduced in sdk version 16
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void registerOnTrayPreferenceChangeListener(
@@ -258,9 +276,11 @@ public class ContentProviderStorage extends TrayStorage {
         mListeners.put(listener, handler);
 
         final Collection<OnTrayPreferenceChangeListener> listeners = mListeners.keySet();
+
         if (listeners.size() == 1) {
 
             final boolean[] registered = {false};
+
             // registering a TrayContentObserver requires a LooperThread
             mObserverThread = new HandlerThread("observer") {
                 @Override
@@ -280,6 +300,8 @@ public class ContentProviderStorage extends TrayStorage {
             };
             mObserverThread.start();
 
+            // wait synchronously until the mObserverThread registered the mObserver
+            // cannot use Thread.join(); because the Looper of the HandlerThread runs forever until killed
             while (true) {
                 if (registered[0]) {
                     break;
