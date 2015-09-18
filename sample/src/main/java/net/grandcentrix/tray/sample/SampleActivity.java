@@ -65,6 +65,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences,
                 final String key) {
             Log.v(TAG, "sharedPrefs changed key: " + key);
+            updateSharedPrefInfo();
         }
     };
 
@@ -73,6 +74,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
             Log.v(TAG, "trayPrefs changed items: " + items);
+            updateSharedPrefInfo();
         }
     };
 
@@ -143,14 +145,8 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         super.onStart();
         updateSharedPrefInfo();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mSharedPreferences.registerOnSharedPreferenceChangeListener(mSharedPrefsListener);
-                mImportPreference.registerOnTrayPreferenceChangeListener(mTrayPrefsListener);
-            }
-        }).start();
-
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(mSharedPrefsListener);
+        mImportPreference.registerOnTrayPreferenceChangeListener(mTrayPrefsListener);
     }
 
     @Override
@@ -166,7 +162,6 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                 new SharedPreferencesImport(this, SampleActivity.SHARED_PREF_NAME,
                         SampleActivity.SHARED_PREF_KEY, TRAY_PREF_KEY);
         mImportPreference.migrate(sharedPreferencesImport);
-        updateSharedPrefInfo();
     }
 
     /**
@@ -224,6 +219,5 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         mSharedPreferences.edit()
                 .putString(SHARED_PREF_KEY, data)
                 .apply();
-        updateSharedPrefInfo();
     }
 }
