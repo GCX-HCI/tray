@@ -85,21 +85,23 @@ public class ContentProviderStorage extends TrayStorage {
             // query only the changed items
             final List<TrayItem> trayItems = mProviderHelper.queryProvider(uri);
 
-            // notify all registered listeners
-            for (final Map.Entry<OnTrayPreferenceChangeListener, Handler> entry
-                    : mListeners.entrySet()) {
-                final OnTrayPreferenceChangeListener listener = entry.getKey();
-                final Handler handler = entry.getValue();
-                if (handler != null) {
-                    // call the listener on the thread where the listener was registered
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onTrayPreferenceChanged(trayItems);
-                        }
-                    });
-                } else {
-                    listener.onTrayPreferenceChanged(trayItems);
+            synchronized (ContentProviderStorage.this) {
+                // notify all registered listeners
+                for (final Map.Entry<OnTrayPreferenceChangeListener, Handler> entry
+                        : mListeners.entrySet()) {
+                    final OnTrayPreferenceChangeListener listener = entry.getKey();
+                    final Handler handler = entry.getValue();
+                    if (handler != null) {
+                        // call the listener on the thread where the listener was registered
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onTrayPreferenceChanged(trayItems);
+                            }
+                        });
+                    } else {
+                        listener.onTrayPreferenceChanged(trayItems);
+                    }
                 }
             }
         }
@@ -272,8 +274,10 @@ public class ContentProviderStorage extends TrayStorage {
         if (looper != null) {
             handler = new Handler(looper);
         }
-        //noinspection ConstantConditions
-        mListeners.put(listener, handler);
+        synchronized (this) {
+            //noinspection ConstantConditions
+            mListeners.put(listener, handler);
+        }
 
         final Collection<OnTrayPreferenceChangeListener> listeners = mListeners.keySet();
 
@@ -346,7 +350,9 @@ public class ContentProviderStorage extends TrayStorage {
         if (listener == null) {
             return;
         }
-        mListeners.remove(listener);
+        synchronized (this) {
+            mListeners.remove(listener);
+        }
         if (mListeners.size() == 0) {
             mContext.getContentResolver().unregisterContentObserver(mObserver);
             // cleanup
