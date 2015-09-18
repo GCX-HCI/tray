@@ -55,40 +55,31 @@ public class AbstractTrayPreferenceTest extends TestCase {
         assertEquals(0, oldPrefs.getAll().size());
     }
 
-    public void testChangeListener() throws Exception {
-        final MockTrayStorage testChangeListener = new MockTrayStorage("testChangeListener");
-        final MockSimplePreferences prefs = new MockSimplePreferences(
-                testChangeListener, 1);
-
-        try {
-            prefs.registerOnTrayPreferenceChangeListener(new OnTrayPreferenceChangeListener() {
-                @Override
-                public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
-
-                }
-            });
-            fail();
-        } catch (Exception e){
-            assert(e.getMessage().equals("register not implemented"));
-        }
-
-        try {
-            prefs.unregisterOnTrayPreferenceChangeListener(new OnTrayPreferenceChangeListener() {
-                @Override
-                public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
-
-                }
-            });
-            fail();
-        } catch (Exception e){
-            assert(e.getMessage().equals("unregister not implemented"));
-        }
-    }
-
     public void testBoolean() throws Exception {
         mTrayAccessor.put(KEY, TEST_BOOL);
         assertEquals(TEST_BOOL, mTrayAccessor.getBoolean(KEY, false));
         assertEquals(false, mTrayAccessor.getBoolean(WRONG_KEY, false));
+    }
+
+    public void testChangeListener() throws Exception {
+        final MockTrayStorage mockStorage = new MockTrayStorage("testChangeListener");
+        final MockSimplePreferences prefs = new MockSimplePreferences(
+                mockStorage, 1);
+
+        assertEquals(0, mockStorage.mListeners.size());
+
+        // we just need to check if the listener gets forwarded to the storage
+        final OnTrayPreferenceChangeListener listener = new OnTrayPreferenceChangeListener() {
+            @Override
+            public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
+
+            }
+        };
+        prefs.registerOnTrayPreferenceChangeListener(listener);
+        assertEquals(1, mockStorage.mListeners.size());
+
+        prefs.unregisterOnTrayPreferenceChangeListener(listener);
+        assertEquals(0, mockStorage.mListeners.size());
     }
 
     public void testFloat() throws Exception {

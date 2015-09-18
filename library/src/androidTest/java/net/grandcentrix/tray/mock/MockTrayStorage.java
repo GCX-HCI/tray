@@ -23,6 +23,7 @@ import net.grandcentrix.tray.core.TrayStorage;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +32,8 @@ import java.util.HashMap;
  * Created by pascalwelsch on 11/21/14.
  */
 public class MockTrayStorage extends TrayStorage {
+
+    public ArrayList<OnTrayPreferenceChangeListener> mListeners = new ArrayList<>();
 
     private HashMap<String, TrayItem> mData = new HashMap<>();
 
@@ -98,7 +101,7 @@ public class MockTrayStorage extends TrayStorage {
     @Override
     public void registerOnTrayPreferenceChangeListener(
             @NonNull final OnTrayPreferenceChangeListener listener) {
-        throw new RuntimeException("register not implemented");
+        mListeners.add(listener);
     }
 
     @Override
@@ -114,7 +117,7 @@ public class MockTrayStorage extends TrayStorage {
     @Override
     public void unregisterOnTrayPreferenceChangeListener(
             @NonNull final OnTrayPreferenceChangeListener listener) {
-        throw new RuntimeException("unregister not implemented");
+        mListeners.remove(listener);
     }
 
     @Override
