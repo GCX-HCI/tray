@@ -151,9 +151,7 @@ If you are using different applicationIds for different buildTypes of flavors re
 ## Project state
 
 Tray is currently in active development by [grandcentrix](http://www.grandcentrix.net/). We decided to go open source after reaching 100% test coverage.
-[grandcentrix](http://www.grandcentrix.net/) uses Tray in production in two apps without problems. 
-
-Before version 1.0 we'd like to have some feedback.
+[grandcentrix](http://www.grandcentrix.net/) uses Tray in production in two apps without problems.
 
 You can follow the development in the [`develop`](https://github.com/grandcentrix/tray/tree/develop) branch.
 
@@ -165,7 +163,7 @@ You can run the coverage report with `./gradlew createDebugCoverageReport`. You'
 
 ![coverage report](http://i.imgur.com/V4OQsiY.png)
 
-Those ~120 tests will help us indicate bugs in the future before we publish them. Don't think the code is 100% bug free based on the test coverage.
+Those ~170 tests will help us indicate bugs in the future before we publish them. Don't think the code is 100% bug free based on the test coverage.
 
 ## Build state
 
@@ -176,7 +174,7 @@ Branch | Status | Coverage
 
 ## ContentProvider is overkill
 
-At first, it was the simpst way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us. see [more informations](https://github.com/grandcentrix/tray/issues/28#issuecomment-108282253)
+At first, it was the simplest way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us. see [more informations](https://github.com/grandcentrix/tray/issues/28#issuecomment-108282253)
 
 If you have found a better solution implement the [`ModularizedStorage`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/storage/ModularizedStorage.java) and contribute to this project! We would appreciate it.
 
@@ -185,14 +183,13 @@ That said, yes the performance isn't as good as the SharedPreferences. But the p
 ## Missing Features
 
 Tray is ready to use without showblockers! But here are some nice to have features for the future:
-- saving `null` doesn't work
 - Reactive wrapper to observe values 
 - no support to save `Set<String>`. Is someone using this?
 - more metadata fields: (i.e. app version code/name)
 
 ## Versions
 
-##### Version 1.0.0 `18.9.15`
+##### Version 1.0.0-rc1 `21.9.15`
 
 - **Android M Auto Backup feature support** (see the [Documentation](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support))
     - split up database for *user* and *device* specific data (device specific data can now be excluded from the auto backup)
