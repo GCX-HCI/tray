@@ -194,12 +194,10 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Roadmap
 
-- Last changes in naming before 1.0
-- rename modules and migrate modules into other modules (and the migration documentation is missing)
-- save additional data types (`Set<String>`, `byte[]`)
-- Observe changes with a `ContentObserver`
 - rx wrapper for changes
+- save additional data types (`Set<String>`, `byte[]`)
 - performance tests
+- memory cache for based on contentobservers
 
 ## Versions
 
