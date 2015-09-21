@@ -19,17 +19,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <application
-        android:allowBackup="true">
+    <application android:allowBackup="true">
 
-        <uses-library android:name="android.test.runner"/>
+        <uses-library android:name="android.test.runner" />
 
         <provider
-            android:name=".provider.TrayProvider"
-            tools:replace="android:authorities"
+            android:name=".provider.TrayContentProvider"
             android:authorities="net.grandcentrix.tray.preferences.test"
             android:exported="false"
-            android:multiprocess="false" />
+            android:multiprocess="false"
+            tools:replace="android:authorities" />
 
     </application>
 

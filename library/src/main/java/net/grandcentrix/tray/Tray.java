@@ -16,8 +16,8 @@
 
 package net.grandcentrix.tray;
 
-import net.grandcentrix.tray.accessor.TrayPreference;
-import net.grandcentrix.tray.provider.TrayItem;
+import net.grandcentrix.tray.core.Preferences;
+import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.provider.TrayProviderHelper;
 
 import android.content.Context;
@@ -30,22 +30,35 @@ import java.util.List;
  * This class works as root library class and first interaction point.
  * <p>
  * Use this library like you would use the {@link android.content.SharedPreferences}, but this
- * works
- * in a multiprocess environment. Saving information in a SyncAdapter#onPerformSync() cycle and
- * reading the information instant in the ui thread is possible.
+ * works in a multiprocess environment. Saving information in a SyncAdapter#onPerformSync() cycle
+ * and reading the information instant in the ui thread is possible.
  * <p>
  * This library works with a {@link android.content.ContentProvider} to persist all data. This
  * requires you to add the provider to the manifest of your app.
  * <p>
  * The {@link android.content.SharedPreferences} uses files to group different preferences. This
  * library uses so called modules. It's common to create a new class extending {@link
- * TrayModulePreferences} for every new module. For simple Apps and the most common preferences is
- * the class {@link TrayAppPreferences} a good start which uses the app package name to group the
+ * TrayPreferences} for every new module. For simple Apps and the most common preferences is
+ * the class {@link AppPreferences} a good start which uses the app package name to group the
  * preferences.
  */
 public class Tray {
 
     private final TrayProviderHelper mProviderHelper;
+
+    /**
+     * clears stated modules.
+     *
+     * @param modules modules excluded when deleting preferences
+     */
+    public static void clear(TrayPreferences... modules) {
+        for (Preferences module : modules) {
+            if (module == null) {
+                continue;
+            }
+            module.clear();
+        }
+    }
 
     public Tray(final Context context) {
         mProviderHelper = new TrayProviderHelper(context);
@@ -59,20 +72,11 @@ public class Tray {
     }
 
     /**
-     * clears stated modules.
-     *
-     * @param modules modules excluded when deleting preferences
-     */
-    public void clear(TrayPreference... modules) {
-        mProviderHelper.clear(modules);
-    }
-
-    /**
      * clears <b>all</b> saved preferences, but the stated modules.
      *
      * @param modules modules excluded when deleting preferences
      */
-    public void clearBut(TrayPreference... modules) {
+    public void clearBut(TrayPreferences... modules) {
         mProviderHelper.clearBut(modules);
     }
 
@@ -83,5 +87,12 @@ public class Tray {
      */
     public List<TrayItem> getAll() {
         return mProviderHelper.getAll();
+    }
+
+    /**
+     * clears <b>all</b> saved preferences. Module independent. <b>Erases everything</b>.
+     */
+    public void wipe() {
+        mProviderHelper.wipe();
     }
 }

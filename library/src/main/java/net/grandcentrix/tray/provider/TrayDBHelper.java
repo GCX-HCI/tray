@@ -21,11 +21,15 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 /**
+ * Helper to access the two internal databases where all tray data are saved
+ * <p>
  * Created by jannisveerkamp on 17.09.14.
  */
+@VisibleForTesting
 public class TrayDBHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_NAME = "TrayPreferences";
@@ -33,6 +37,8 @@ public class TrayDBHelper extends SQLiteOpenHelper {
     public static final String INTERNAL_TABLE_NAME = "TrayInternal";
 
     public static final String DATABASE_NAME = "tray.db";
+
+    public static final String DATABASE_NAME_NO_BACKUP = "tray_backup_excluded.db";
 
     public static final String KEY = "KEY";
 
@@ -93,7 +99,11 @@ public class TrayDBHelper extends SQLiteOpenHelper {
     }
 
     public TrayDBHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this(context, true);
+    }
+
+    public TrayDBHelper(Context context, final boolean backup) {
+        super(context, backup ? DATABASE_NAME : DATABASE_NAME_NO_BACKUP, null, DATABASE_VERSION);
         mCreateVersion = DATABASE_VERSION;
     }
 

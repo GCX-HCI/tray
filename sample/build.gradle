@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "net.grandcentrix.tray.sample"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
 
         resValue "string", "tray__authority", "net.grandcentrix.tray.sample.preferences"
     }
@@ -20,12 +20,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'net.grandcentrix.tray:tray:0.9.1'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    //compile 'net.grandcentrix.tray:tray:0.9.1'
     // for development
-    // compile project(':library')
+    compile project(':library')
 }

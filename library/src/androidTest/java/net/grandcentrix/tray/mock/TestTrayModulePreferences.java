@@ -16,17 +16,30 @@
 
 package net.grandcentrix.tray.mock;
 
-import net.grandcentrix.tray.TrayModulePreferences;
+import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.core.PreferenceStorage;
+import net.grandcentrix.tray.core.TrayItem;
+import net.grandcentrix.tray.core.TrayStorage;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 /**
  * Created by pascalwelsch on 2/26/15.
  */
-public class TestTrayModulePreferences extends TrayModulePreferences {
+public class TestTrayModulePreferences extends TrayPreferences {
 
     public TestTrayModulePreferences(final Context context, final String module) {
         super(context, module, 1);
+    }
+
+    public TestTrayModulePreferences(@NonNull final Context context,
+            @NonNull final String module, final TrayStorage.Type type) {
+        super(context, module, 1, type);
+    }
+
+    public PreferenceStorage<TrayItem> getInternalStorage() {
+        return getStorage();
     }
 
     @Override
