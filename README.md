@@ -17,8 +17,8 @@ Tray is this mentioned _explicit cross-process data management approach_ powered
 - **works multiprocess**
 - stores simple data types as key value pairs
 - automatically saves metadata for each entry (created, last updated, ...)
-- manage your Preferences in modules [TrayModulePreference](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/TrayModulePreferences.java#L37)
-- Delete single modules, all modules, or [all modules except some very important ones](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/Tray.java#L108)
+- manage your Preferences in modules [TrayPreference](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/TrayPreferences.java)
+- Delete single modules, all modules, or [all modules except some very important ones](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/Tray.java#L79)
 - update and migrate your data from one app version to next one with versioned Preferences and a [`onUpgrade()`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/accessor/Preference.java#L69) method
 - Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/migration/SharedPreferencesImport.java)
 - **tray is 100% unit tested!**
