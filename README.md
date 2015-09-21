@@ -163,7 +163,7 @@ Tray has 100% test coverage and we'll try to keep it at that level for stable re
 
 You can run the coverage report with `./gradlew createDebugCoverageReport`. You'll find the output in `library/build/outputs/coverage/debug/index.html` which looks like this:
 
-![coverage report](http://i.imgur.com/V4OQsiY.png)
+![coverage report](https://cloud.githubusercontent.com/assets/1096485/9990484/fe61888c-6061-11e5-890d-a76f1ef60304.png)
 
 You can check the coverage report at [codecov.io](https://codecov.io/github/grandcentrix/tray?branch=master)
 
