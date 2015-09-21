@@ -36,8 +36,10 @@ import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
@@ -85,23 +87,24 @@ public class ContentProviderStorage extends TrayStorage {
             // query only the changed items
             final List<TrayItem> trayItems = mProviderHelper.queryProvider(uri);
 
-            synchronized (ContentProviderStorage.this) {
-                // notify all registered listeners
-                for (final Map.Entry<OnTrayPreferenceChangeListener, Handler> entry
-                        : mListeners.entrySet()) {
-                    final OnTrayPreferenceChangeListener listener = entry.getKey();
-                    final Handler handler = entry.getValue();
-                    if (handler != null) {
-                        // call the listener on the thread where the listener was registered
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onTrayPreferenceChanged(trayItems);
-                            }
-                        });
-                    } else {
-                        listener.onTrayPreferenceChanged(trayItems);
-                    }
+            // clone to get around ConcurrentModificationException
+            final Set<Map.Entry<OnTrayPreferenceChangeListener, Handler>> entries
+                    = new HashSet<>(mListeners.entrySet());
+
+            // notify all registered listeners
+            for (final Map.Entry<OnTrayPreferenceChangeListener, Handler> entry : entries) {
+                final OnTrayPreferenceChangeListener listener = entry.getKey();
+                final Handler handler = entry.getValue();
+                if (handler != null) {
+                    // call the listener on the thread where the listener was registered
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onTrayPreferenceChanged(trayItems);
+                        }
+                    });
+                } else {
+                    listener.onTrayPreferenceChanged(trayItems);
                 }
             }
         }
@@ -277,10 +280,8 @@ public class ContentProviderStorage extends TrayStorage {
         if (looper != null) {
             handler = new Handler(looper);
         }
-        synchronized (this) {
-            //noinspection ConstantConditions
-            mListeners.put(listener, handler);
-        }
+        //noinspection ConstantConditions
+        mListeners.put(listener, handler);
 
         final Collection<OnTrayPreferenceChangeListener> listeners = mListeners.keySet();
 
@@ -353,9 +354,8 @@ public class ContentProviderStorage extends TrayStorage {
         if (listener == null) {
             return;
         }
-        synchronized (this) {
-            mListeners.remove(listener);
-        }
+        mListeners.remove(listener);
+
         if (mListeners.size() == 0) {
             mContext.getContentResolver().unregisterContentObserver(mObserver);
             // cleanup
