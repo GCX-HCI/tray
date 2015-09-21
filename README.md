@@ -114,7 +114,11 @@ Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studi
 ```java
 
 dependencies {
+    // stable
     compile 'net.grandcentrix.tray:tray:0.9.2'
+    
+    // preview
+    compile 'net.grandcentrix.tray:tray:1.0.0-rc1'
 }
 
 ```
