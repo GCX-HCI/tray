@@ -19,8 +19,8 @@ Tray is this mentioned _explicit cross-process data management approach_ powered
 - automatically saves metadata for each entry (created, last updated, ...)
 - manage your Preferences in modules [TrayPreference](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/TrayPreferences.java)
 - Delete single modules, all modules, or [all modules except some very important ones](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/Tray.java#L79)
-- update and migrate your data from one app version to next one with versioned Preferences and a [`onUpgrade()`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/accessor/Preference.java#L69) method
-- Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/migration/SharedPreferencesImport.java)
+- update and migrate your data from one app version to next one with versioned Preferences and a [`onUpgrade()`](https://github.com/grandcentrix/tray/blob/14325e182e225e668218fc539f5de0c9b9e524e7/library/src/main/java/net/grandcentrix/tray/core/Preferences.java#L196) method
+- Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/core/SharedPreferencesImport.java)
 - **tray is 100% unit tested!**
 - 0 lint warnings/errors
 - ![new_badge](https://cloud.githubusercontent.com/assets/1096485/9856970/37791f1c-5b18-11e5-97e4-53b8984c76e1.gif) Android 6.0 [Auto Backup for Apps](https://developer.android.com/preview/backup/index.html) support! [Read more in the wiki](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support)
