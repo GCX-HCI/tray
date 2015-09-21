@@ -2,13 +2,15 @@
 
 [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat)](https://github.com/grandcentrix/tray/blob/master/LICENSE.txt)
 
-If you have read the documentation of the [`SharedPreferences`](http://developer.android.com/reference/android/content/SharedPreferences.html) you might have seen this:
+If you have read the documentation of the [`SharedPreferences`](http://developer.android.com/reference/android/content/SharedPreferences.html) you might have seen one of these warnings:
 
 >Note: currently this class does not support use across multiple processes. This will be added later.
 
-**Sometimes _later_ becomes _never_!**
+**Sometimes _later_ becomes _never_!** Google even deprecated the multiprocess support because it never worked relieable
 
-Tray solves this problem with a [`ContentProvider`](http://developer.android.com/reference/android/content/ContentProvider.html) based storage. Tray also provides an advanced API which makes it super easy to access and maintain your data with upgrade and migrate mechanisms. Welcome to SharedPreferences 2.0 aka Tray.
+[![](https://cloud.githubusercontent.com/assets/1096485/9793296/110575d2-57e5-11e5-9728-34d3597771b8.png)](http://developer.android.com/reference/android/content/Context.html#MODE_MULTI_PROCESS)
+
+Tray is this mentioned _explicit cross-process data management approach_ powered by a [`ContentProvider`](http://developer.android.com/reference/android/content/ContentProvider.html). Tray also provides an advanced API which makes it super easy to access and maintain your data with upgrade and migrate mechanisms. Welcome to SharedPreferences 2.0 aka Tray.
 
 ## Features
 
@@ -163,14 +165,17 @@ You can run the coverage report with `./gradlew createDebugCoverageReport`. You'
 
 ![coverage report](http://i.imgur.com/V4OQsiY.png)
 
+You can check the coverage report at [codecov.io](https://codecov.io/github/grandcentrix/tray?branch=master)
+
 Those ~170 tests will help us indicate bugs in the future before we publish them. Don't think the code is 100% bug free based on the test coverage.
+
 
 ## Build state
 
 Branch | Status | Coverage
 ------------- | ------------- | -------------
-[`master`](https://github.com/grandcentrix/tray/tree/master) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) | ![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=master)
-[`develop`](https://github.com/grandcentrix/tray/tree/develop) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=develop)](https://travis-ci.org/grandcentrix/tray) | ![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=develop)
+[`master`](https://github.com/grandcentrix/tray/tree/master) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) | [![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=master)](https://codecov.io/github/grandcentrix/tray?branch=master)
+[`develop`](https://github.com/grandcentrix/tray/tree/develop) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=develop)](https://travis-ci.org/grandcentrix/tray) | [![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=develop)](https://codecov.io/github/grandcentrix/tray?branch=develop)
 
 ## ContentProvider is overkill
 
@@ -186,6 +191,15 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 - Reactive wrapper to observe values 
 - no support to save `Set<String>`. Is someone using this?
 - more metadata fields: (i.e. app version code/name)
+
+## Roadmap
+
+- Last changes in naming before 1.0
+- rename modules and migrate modules into other modules (and the migration documentation is missing)
+- save additional data types (`Set<String>`, `byte[]`)
+- Observe changes with a `ContentObserver`
+- rx wrapper for changes
+- performance tests
 
 ## Versions
 
