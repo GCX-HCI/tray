@@ -21,9 +21,11 @@ import net.grandcentrix.tray.TrayPreferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.Objects;
+
+import static net.grandcentrix.tray.core.TrayLog.logv;
+import static net.grandcentrix.tray.core.TrayLog.logwtf;
 
 /**
  * Migrates a key value pair from the {@link SharedPreferences} into a {@link
@@ -38,17 +40,18 @@ import java.util.Objects;
  */
 public class SharedPreferencesImport implements TrayMigration {
 
-    private static final String TAG = SharedPreferencesImport.class.getSimpleName();
-
     private final SharedPreferences mPreferences;
 
     private final String mSharedPrefsKey;
+
+    private final String mSharedPrefsName;
 
     private final String mTrayKey;
 
     public SharedPreferencesImport(final Context context, @NonNull final String sharedPrefsName,
             @NonNull final String sharedPrefsKey, @NonNull final String trayKey) {
         mSharedPrefsKey = sharedPrefsKey;
+        mSharedPrefsName = sharedPrefsName;
         mTrayKey = trayKey;
         mPreferences = context.getSharedPreferences(sharedPrefsName, Context.MODE_MULTI_PROCESS);
     }
@@ -72,10 +75,14 @@ public class SharedPreferencesImport implements TrayMigration {
 
     @Override
     public void onPostMigrate(final TrayItem trayItem) {
-        if (trayItem != null) {
-            if (equals(trayItem.value(), getData())) {
-                mPreferences.edit().remove(mSharedPrefsKey).apply();
-            }
+        if (trayItem == null) {
+            logwtf("migration " + this + " failed, saved data in tray is null");
+            return;
+        }
+        if (equals(trayItem.value(), getData())) {
+            logv("removing key '" + mSharedPrefsKey + "' from SharedPreferences '"
+                    + mSharedPrefsName + "'");
+            mPreferences.edit().remove(mSharedPrefsKey).apply();
         }
     }
 
@@ -85,9 +92,18 @@ public class SharedPreferencesImport implements TrayMigration {
             return true;
         }
 
-        Log.v(TAG, "SharedPreference with key '" + mSharedPrefsKey
-                + "' not found. skipped import");
+        logv("key '" + mSharedPrefsKey + "' in SharedPreferences '"
+                + mSharedPrefsName + "' not found. skipped import");
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "SharedPreferencesImport(@" + Integer.toHexString(hashCode()) + "){" +
+                "sharedPrefsName='" + mSharedPrefsName + '\'' +
+                ", sharedPrefsKey='" + mSharedPrefsKey + '\'' +
+                ", trayKey='" + mTrayKey + '\'' +
+                '}';
     }
 
     /**

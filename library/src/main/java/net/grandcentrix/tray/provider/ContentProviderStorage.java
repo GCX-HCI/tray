@@ -42,6 +42,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import static net.grandcentrix.tray.core.TrayLog.logd;
+import static net.grandcentrix.tray.core.TrayLog.logv;
+import static net.grandcentrix.tray.core.TrayLog.logw;
+
 /**
  * Created by pascalwelsch on 11/20/14.
  * <p>
@@ -112,8 +116,6 @@ public class ContentProviderStorage extends TrayStorage {
 
     public static final String VERSION = "version";
 
-    private static final String TAG = ContentProviderStorage.class.getSimpleName();
-
     /**
      * weak references to the listeners. Only the keys are used.
      */
@@ -174,12 +176,12 @@ public class ContentProviderStorage extends TrayStorage {
         final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
         final int size = prefs.size();
         if (size > 1) {
-            Log.w(TAG, "found more than one item for key '" + key
+            logw("found more than one item for key '" + key
                     + "' in module " + getModuleName() + ". "
                     + "This can be caused by using the same name for a device and user specific preference.");
             for (int i = 0; i < prefs.size(); i++) {
                 final TrayItem pref = prefs.get(i);
-                Log.d(TAG, "item #" + i + " " + pref);
+                logd("item #" + i + " " + pref);
             }
         }
         return size > 0 ? prefs.get(0) : null;

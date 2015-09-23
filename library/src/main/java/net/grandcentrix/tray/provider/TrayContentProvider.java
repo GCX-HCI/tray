@@ -32,6 +32,8 @@ import android.util.Log;
 
 import java.util.Date;
 
+import static net.grandcentrix.tray.core.TrayLog.logw;
+
 /**
  * The ContentProvider which stores all data for Tray. It accesses two databases {@link
  * #mDeviceDbHelper} and {@link #mUserDbHelper} with two tables each; the data to store and an
@@ -58,8 +60,6 @@ public class TrayContentProvider extends ContentProvider {
     private static final int INTERNAL_MODULE_PREFERENCE = 120;
 
     private static final int INTERNAL_ALL_PREFERENCE = 130;
-
-    private static final String TAG = TrayContentProvider.class.getSimpleName();
 
     private static UriMatcher sURIMatcher;
 
@@ -187,11 +187,11 @@ public class TrayContentProvider extends ContentProvider {
 
         } else if (status == -1) {
             //throw new SQLiteException("An error occurred while saving preference.");
-            Log.w(TAG, "Couldn't update or insert data. Uri: " + uri);
+            logw("Couldn't update or insert data. Uri: " + uri);
         } else if (status == -2) {
-            Log.w(TAG, "Data is already inserted, no need to insert here");
+            logw("Data is already inserted, no need to insert here");
         } else {
-            Log.w(TAG, "unknown SQLite error");
+            logw("unknown SQLite error");
         }
         return null;
     }

@@ -19,6 +19,8 @@ package net.grandcentrix.tray.core;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import static net.grandcentrix.tray.core.TrayLog.logv;
+
 /**
  * Modular implementation of a {@link Preferences} which allows access to a {@link TrayStorage}.
  *
@@ -155,6 +157,13 @@ public abstract class AbstractTrayPreference<T extends TrayStorage> extends
         getStorage().registerOnTrayPreferenceChangeListener(listener);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(@" + Integer.toHexString(hashCode()) + "){"
+                + "name=" + getName()
+                + "}";
+    }
+
     /**
      * unregisters the previously registered callback
      *
@@ -176,6 +185,7 @@ public abstract class AbstractTrayPreference<T extends TrayStorage> extends
      */
     protected void annex(final T oldStorage) {
         getStorage().annex(oldStorage);
+        logv("annexed " + oldStorage + " to " + this);
     }
 
     /**
