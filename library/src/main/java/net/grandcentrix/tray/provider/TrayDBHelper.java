@@ -17,14 +17,14 @@
 package net.grandcentrix.tray.provider;
 
 
+import net.grandcentrix.tray.core.TrayLog;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-
-import static net.grandcentrix.tray.core.TrayLog.logv;
 
 /**
  * Helper to access the two internal databases where all tray data are saved
@@ -115,10 +115,10 @@ public class TrayDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(final SQLiteDatabase db) {
-        logv(logTag() + "onCreate with version " + mCreateVersion);
+        TrayLog.v(logTag() + "onCreate with version " + mCreateVersion);
 
         createV1(db);
-        logv(logTag() + "created database version 1");
+        TrayLog.v(logTag() + "created database version 1");
 
         if (mCreateVersion > 1) {
             onUpgrade(db, 1, mCreateVersion);
@@ -128,7 +128,7 @@ public class TrayDBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(final SQLiteDatabase db, final int oldVersion,
             final int newVersion) {
-        logv(logTag() + "upgrading Database from version " + oldVersion
+        TrayLog.v(logTag() + "upgrading Database from version " + oldVersion
                 + " to version " + newVersion);
 
         // increase the version here after the upgrade was implemented
@@ -140,7 +140,7 @@ public class TrayDBHelper extends SQLiteOpenHelper {
         switch (oldVersion) {
             case 1:
                 upgradeToV2(db);
-                logv(logTag() + "upgraded Database to version 2");
+                TrayLog.v(logTag() + "upgraded Database to version 2");
                 break;
             default:
                 throw new IllegalArgumentException(

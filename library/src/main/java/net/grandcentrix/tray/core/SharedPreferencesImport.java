@@ -24,9 +24,6 @@ import android.support.annotation.NonNull;
 
 import java.util.Objects;
 
-import static net.grandcentrix.tray.core.TrayLog.logv;
-import static net.grandcentrix.tray.core.TrayLog.logwtf;
-
 /**
  * Migrates a key value pair from the {@link SharedPreferences} into a {@link
  * TrayPreferences}. There is no Migration which imports all data from {@link SharedPreferences}
@@ -76,11 +73,11 @@ public class SharedPreferencesImport implements TrayMigration {
     @Override
     public void onPostMigrate(final TrayItem trayItem) {
         if (trayItem == null) {
-            logwtf("migration " + this + " failed, saved data in tray is null");
+            TrayLog.wtf("migration " + this + " failed, saved data in tray is null");
             return;
         }
         if (equals(trayItem.value(), getData())) {
-            logv("removing key '" + mSharedPrefsKey + "' from SharedPreferences '"
+            TrayLog.v("removing key '" + mSharedPrefsKey + "' from SharedPreferences '"
                     + mSharedPrefsName + "'");
             mPreferences.edit().remove(mSharedPrefsKey).apply();
         }
@@ -92,7 +89,7 @@ public class SharedPreferencesImport implements TrayMigration {
             return true;
         }
 
-        logv("key '" + mSharedPrefsKey + "' in SharedPreferences '"
+        TrayLog.v("key '" + mSharedPrefsKey + "' in SharedPreferences '"
                 + mSharedPrefsName + "' not found. skipped import");
         return false;
     }

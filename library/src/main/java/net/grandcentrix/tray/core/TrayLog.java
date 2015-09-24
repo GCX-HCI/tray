@@ -17,25 +17,25 @@ public class TrayLog {
 
     public static boolean DEBUG = Log.isLoggable(TAG, Log.VERBOSE);
 
-    public static void logd(String s) {
+    public static void d(String s) {
         if (s == null) {
             s = "";
         }
         Log.d(TAG, s);
     }
 
-    public static void loge(String s) {
+    public static void e(String s) {
         if (s == null) {
             s = "";
         }
         Log.e(TAG, s);
     }
 
-    public static void loge(Throwable tr, String s) {
+    public static void e(Throwable tr, String s) {
         Log.e(TAG, s, tr);
     }
 
-    public static void logv(String s) {
+    public static void v(String s) {
         if (DEBUG) {
             if (s == null) {
                 s = "";
@@ -44,21 +44,21 @@ public class TrayLog {
         }
     }
 
-    public static void logw(String s) {
+    public static void w(String s) {
         if (s == null) {
             s = "";
         }
         Log.w(TAG, s);
     }
 
-    public static void logwtf(String s) {
+    public static void wtf(String s) {
         if (s == null) {
             s = "";
         }
         Log.wtf(TAG, s);
     }
 
-    public static void logwtf(Throwable tr, String s) {
+    public static void wtf(Throwable tr, String s) {
         Log.wtf(TAG, s, tr);
     }
 
@@ -71,7 +71,7 @@ public class TrayLog {
      * {@code adb shell setprop log.tag.&lt;tag&gt;}
      */
     public static void setTag(String tag) {
-        logd("Changing log tag to " + tag);
+        d("Changing log tag to " + tag);
         TAG = tag;
 
         // Reinitialize the DEBUG "constant"

@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.R;
+import net.grandcentrix.tray.core.TrayLog;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -28,11 +29,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.util.Date;
-
-import static net.grandcentrix.tray.core.TrayLog.logw;
 
 /**
  * The ContentProvider which stores all data for Tray. It accesses two databases {@link
@@ -187,11 +185,11 @@ public class TrayContentProvider extends ContentProvider {
 
         } else if (status == -1) {
             //throw new SQLiteException("An error occurred while saving preference.");
-            logw("Couldn't update or insert data. Uri: " + uri);
+            TrayLog.w("Couldn't update or insert data. Uri: " + uri);
         } else if (status == -2) {
-            logw("Data is already inserted, no need to insert here");
+            TrayLog.w("Data is already inserted, no need to insert here");
         } else {
-            logw("unknown SQLite error");
+            TrayLog.w("unknown SQLite error");
         }
         return null;
     }

@@ -2,62 +2,55 @@ package net.grandcentrix.tray.core;
 
 import junit.framework.TestCase;
 
-import static net.grandcentrix.tray.core.TrayLog.logd;
-import static net.grandcentrix.tray.core.TrayLog.loge;
-import static net.grandcentrix.tray.core.TrayLog.logv;
-import static net.grandcentrix.tray.core.TrayLog.logw;
-import static net.grandcentrix.tray.core.TrayLog.logwtf;
-import static net.grandcentrix.tray.core.TrayLog.setTag;
-
 /**
  * Created by pascalwelsch on 9/24/15.
  */
 public class TrayLogTest extends TestCase {
 
+    public void testConstructor() throws Exception {
+        try {
+            new TrayLog();
+        } catch (IllegalStateException e) {
+            assertTrue(e.getMessage().contains("no instances"));
+        }
+    }
+
     public void testLogD() throws Exception {
-        logd("text");
-        logd(null);
+        TrayLog.d("text");
+        TrayLog.d(null);
     }
 
     public void testLogE() throws Exception {
-        loge("text");
-        loge(null);
-        loge(new Exception("text"), "text");
-        loge(new Exception("text"), null);
+        TrayLog.e("text");
+        TrayLog.e(null);
+        TrayLog.e(new Exception("text"), "text");
+        TrayLog.e(new Exception("text"), null);
     }
 
     public void testLogV() throws Exception {
         TrayLog.DEBUG = false;
-        logv("text");
-        logv(null);
+        TrayLog.v("text");
+        TrayLog.v(null);
 
         TrayLog.DEBUG = true;
-        logv("text");
-        logv(null);
+        TrayLog.v("text");
+        TrayLog.v(null);
     }
 
     public void testLogW() throws Exception {
-        logw("text");
-        logw(null);
+        TrayLog.w("text");
+        TrayLog.w(null);
     }
 
     public void testLogWtf() throws Exception {
-        logwtf("text");
-        logwtf(null);
-        logwtf(new Exception("text"), "text");
-        logwtf(new Exception("text"), null);
+        TrayLog.wtf("text");
+        TrayLog.wtf(null);
+        TrayLog.wtf(new Exception("text"), "text");
+        TrayLog.wtf(new Exception("text"), null);
     }
 
     public void testSetTag() throws Exception {
-        setTag("myTag");
-        setTag(null);
-    }
-
-    public void testConstructor() throws Exception {
-        try {
-            new TrayLog();
-        } catch (IllegalStateException e){
-            assertTrue(e.getMessage().contains("no instances"));
-        }
+        TrayLog.setTag("myTag");
+        TrayLog.setTag(null);
     }
 }

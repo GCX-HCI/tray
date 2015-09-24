@@ -21,8 +21,8 @@ import android.support.annotation.Nullable;
 
 import java.util.Collection;
 
-import static net.grandcentrix.tray.core.TrayLog.logv;
-import static net.grandcentrix.tray.core.TrayLog.logw;
+import static net.grandcentrix.tray.core.TrayLog.v;
+import static net.grandcentrix.tray.core.TrayLog.w;
 
 /**
  * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}.
@@ -54,7 +54,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     @Override
     public void clear() {
         mStorage.clear();
-        logv("cleared " + this);
+        v("cleared " + this);
     }
 
     @Override
@@ -85,7 +85,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
         for (Migration<T> migration : migrations) {
 
             if (!migration.shouldMigrate()) {
-                logv("not migrating " + migration + " into " + this);
+                v("not migrating " + migration + " into " + this);
                 continue;
             }
 
@@ -93,7 +93,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
             final boolean supportedDataType = isDataTypeSupported(data);
             if (!supportedDataType) {
-                logw("could not migrate '" + migration.getPreviousKey() + "' into " + this
+                w("could not migrate '" + migration.getPreviousKey() + "' into " + this
                         + " because the data type " + data.getClass().getSimpleName()
                         + " is invalid");
                 migration.onPostMigrate(null);
@@ -103,7 +103,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             final String migrationKey = migration.getPreviousKey();
             // save into tray
             getStorage().put(key, migrationKey, data);
-            logv("migrated '" + migrationKey + "'='" + data + "' into " + this +
+            v("migrated '" + migrationKey + "'='" + data + "' into " + this +
                     " (now: '" + key + "'='" + data + "')");
 
             // return the saved data.
@@ -115,42 +115,42 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     @Override
     public void put(@NonNull final String key, final String value) {
         getStorage().put(key, value);
-        logv("put '" + key + "=\"" + value + "\"' into " + this);
+        v("put '" + key + "=\"" + value + "\"' into " + this);
     }
 
     @Override
     public void put(@NonNull final String key, final int value) {
         getStorage().put(key, value);
-        logv("put '" + key + "=" + value + "' into " + this);
+        v("put '" + key + "=" + value + "' into " + this);
     }
 
     @Override
     public void put(@NonNull final String key, final float value) {
         getStorage().put(key, value);
-        logv("put '" + key + "=" + value + "' into " + this);
+        v("put '" + key + "=" + value + "' into " + this);
     }
 
     @Override
     public void put(@NonNull final String key, final long value) {
         getStorage().put(key, value);
-        logv("put '" + key + "=" + value + "' into " + this);
+        v("put '" + key + "=" + value + "' into " + this);
     }
 
     @Override
     public void put(@NonNull final String key, final boolean value) {
         getStorage().put(key, value);
-        logv("put '" + key + "=" + value + "' into " + this);
+        v("put '" + key + "=" + value + "' into " + this);
     }
 
     public void remove(@NonNull final String key) {
         mStorage.remove(key);
-        logv("removed key '" + key + "' from " + this);
+        v("removed key '" + key + "' from " + this);
     }
 
     @Override
     public void wipe() {
         mStorage.wipe();
-        logv("wiped " + this);
+        v("wiped " + this);
     }
 
     @NonNull
@@ -224,14 +224,14 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
         final int version = getStorage().getVersion();
         if (version != newVersion) {
             if (version == 0) {
-                logv("create " + this + " with initial version 0");
+                v("create " + this + " with initial version 0");
                 onCreate(newVersion);
             } else {
                 if (version > newVersion) {
-                    logv("downgrading " + this + "from " + version + " to " + newVersion);
+                    v("downgrading " + this + "from " + version + " to " + newVersion);
                     onDowngrade(version, newVersion);
                 } else {
-                    logv("upgrading " + this + " from " + version + " to " + newVersion);
+                    v("upgrading " + this + " from " + version + " to " + newVersion);
                     onUpgrade(version, newVersion);
                 }
             }
