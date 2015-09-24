@@ -18,10 +18,16 @@ public class TrayLog {
     public static boolean DEBUG = Log.isLoggable(TAG, Log.VERBOSE);
 
     public static void logd(String s) {
+        if (s == null) {
+            s = "";
+        }
         Log.d(TAG, s);
     }
 
     public static void loge(String s) {
+        if (s == null) {
+            s = "";
+        }
         Log.e(TAG, s);
     }
 
@@ -31,15 +37,24 @@ public class TrayLog {
 
     public static void logv(String s) {
         if (DEBUG) {
+            if (s == null) {
+                s = "";
+            }
             Log.v(TAG, s);
         }
     }
 
     public static void logw(String s) {
+        if (s == null) {
+            s = "";
+        }
         Log.w(TAG, s);
     }
 
     public static void logwtf(String s) {
+        if (s == null) {
+            s = "";
+        }
         Log.wtf(TAG, s);
     }
 
@@ -61,5 +76,9 @@ public class TrayLog {
 
         // Reinitialize the DEBUG "constant"
         DEBUG = Log.isLoggable(TAG, Log.VERBOSE);
+    }
+
+    TrayLog() {
+        throw new IllegalStateException("no instances");
     }
 }
