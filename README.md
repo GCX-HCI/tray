@@ -203,7 +203,7 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Versions
 
-##### Version 1.0.0-rcX
+##### Version 1.0.0 preview
 
 ###### 1.0.0-rc2 `24.09.15`
 
