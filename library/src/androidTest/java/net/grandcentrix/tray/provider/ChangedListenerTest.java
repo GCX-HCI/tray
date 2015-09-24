@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class ChangedListenerTest extends TrayProviderTestCase {
 
-    private static final String TAG = ChangedListenerTest.class.getSimpleName();
-
     public void testApiLevel15OnChange() throws Exception {
         final CountDownLatch latch = new CountDownLatch(
                 2); // first time called in checkChangeListener() second time in this test
