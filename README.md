@@ -203,7 +203,13 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Versions
 
-##### Version 1.0.0-rc1 `21.9.15`
+##### Version 1.0.0-rcX
+
+###### 1.0.0-rc2 `24.09.15`
+
+- added logging for all data changing methods. Enable via `adb shell setprop log.tag.Tray VERBOSE`
+
+###### 1.0.0-rc1 `21.09.15`
 
 - **Android M Auto Backup feature support** (see the [Documentation](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support))
     - split up database for *user* and *device* specific data (device specific data can now be excluded from the auto backup)
