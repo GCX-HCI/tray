@@ -18,9 +18,11 @@ package net.grandcentrix.tray.core;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.Collection;
+
+import static net.grandcentrix.tray.core.TrayLog.v;
+import static net.grandcentrix.tray.core.TrayLog.w;
 
 /**
  * Base class that can be used to access and persist simple data to a {@link PreferenceStorage}.
@@ -33,19 +35,8 @@ import java.util.Collection;
 public abstract class Preferences<T, S extends PreferenceStorage<T>>
         implements PreferenceAccessor<T> {
 
-    private static final String TAG = Preferences.class.getSimpleName();
-
     @NonNull
     private S mStorage;
-
-    static boolean isDataTypeSupported(final Object data) {
-        return data instanceof Integer
-                || data instanceof String
-                || data instanceof Long
-                || data instanceof Float
-                || data instanceof Boolean
-                || data == null;
-    }
 
     /**
      * {@link Preferences} allows access to a storage with unfriendly util functions like
@@ -63,6 +54,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     @Override
     public void clear() {
         mStorage.clear();
+        v("cleared " + this);
     }
 
     @Override
@@ -93,6 +85,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
         for (Migration<T> migration : migrations) {
 
             if (!migration.shouldMigrate()) {
+                v("not migrating " + migration + " into " + this);
                 continue;
             }
 
@@ -100,8 +93,9 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
             final boolean supportedDataType = isDataTypeSupported(data);
             if (!supportedDataType) {
-                Log.w(TAG, "could not migrate " + migration.getPreviousKey()
-                        + " because the datatype" + data.getClass().getSimpleName() + "is invalid");
+                w("could not migrate '" + migration.getPreviousKey() + "' into " + this
+                        + " because the data type " + data.getClass().getSimpleName()
+                        + " is invalid");
                 migration.onPostMigrate(null);
                 continue;
             }
@@ -109,6 +103,8 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             final String migrationKey = migration.getPreviousKey();
             // save into tray
             getStorage().put(key, migrationKey, data);
+            v("migrated '" + migrationKey + "'='" + data + "' into " + this +
+                    " (now: '" + key + "'='" + data + "')");
 
             // return the saved data.
             final T item = getStorage().get(key);
@@ -119,35 +115,42 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     @Override
     public void put(@NonNull final String key, final String value) {
         getStorage().put(key, value);
+        v("put '" + key + "=\"" + value + "\"' into " + this);
     }
 
     @Override
     public void put(@NonNull final String key, final int value) {
         getStorage().put(key, value);
+        v("put '" + key + "=" + value + "' into " + this);
     }
 
     @Override
     public void put(@NonNull final String key, final float value) {
         getStorage().put(key, value);
+        v("put '" + key + "=" + value + "' into " + this);
     }
 
     @Override
     public void put(@NonNull final String key, final long value) {
         getStorage().put(key, value);
+        v("put '" + key + "=" + value + "' into " + this);
     }
 
     @Override
     public void put(@NonNull final String key, final boolean value) {
         getStorage().put(key, value);
+        v("put '" + key + "=" + value + "' into " + this);
     }
 
     public void remove(@NonNull final String key) {
         mStorage.remove(key);
+        v("removed key '" + key + "' from " + this);
     }
 
     @Override
     public void wipe() {
         mStorage.wipe();
+        v("wiped " + this);
     }
 
     @NonNull
@@ -176,7 +179,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
      * @see #onUpgrade(int, int)
      */
     protected void onDowngrade(final int oldVersion, final int newVersion) {
-        throw new IllegalStateException("Can't downgrade from version " +
+        throw new IllegalStateException("Can't downgrade " + this + " from version " +
                 oldVersion + " to " + newVersion);
     }
 
@@ -221,15 +224,27 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
         final int version = getStorage().getVersion();
         if (version != newVersion) {
             if (version == 0) {
+                v("create " + this + " with initial version 0");
                 onCreate(newVersion);
             } else {
                 if (version > newVersion) {
+                    v("downgrading " + this + "from " + version + " to " + newVersion);
                     onDowngrade(version, newVersion);
                 } else {
+                    v("upgrading " + this + " from " + version + " to " + newVersion);
                     onUpgrade(version, newVersion);
                 }
             }
         }
         getStorage().setVersion(newVersion);
+    }
+
+    static boolean isDataTypeSupported(final Object data) {
+        return data instanceof Integer
+                || data instanceof String
+                || data instanceof Long
+                || data instanceof Float
+                || data instanceof Boolean
+                || data == null;
     }
 }

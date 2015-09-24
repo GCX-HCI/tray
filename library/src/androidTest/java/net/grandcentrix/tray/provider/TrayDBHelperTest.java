@@ -137,7 +137,7 @@ public class TrayDBHelperTest extends AndroidTestCase {
 
     private TrayDBHelper initDb(final int version, final boolean closeDb) {
         TrayDBHelper dbHelper = new TrayDBHelper(getContext(),
-                TEST_DATABASE_NAME, version);
+                TEST_DATABASE_NAME, true, version);
         dbHelper.getReadableDatabase();
         if (closeDb) {
             dbHelper.close();

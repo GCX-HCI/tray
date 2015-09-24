@@ -155,6 +155,13 @@ public abstract class AbstractTrayPreference<T extends TrayStorage> extends
         getStorage().registerOnTrayPreferenceChangeListener(listener);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(@" + Integer.toHexString(hashCode()) + "){"
+                + "name=" + getName()
+                + "}";
+    }
+
     /**
      * unregisters the previously registered callback
      *
@@ -176,6 +183,7 @@ public abstract class AbstractTrayPreference<T extends TrayStorage> extends
      */
     protected void annex(final T oldStorage) {
         getStorage().annex(oldStorage);
+        TrayLog.v("annexed " + oldStorage + " to " + this);
     }
 
     /**

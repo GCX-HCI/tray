@@ -19,6 +19,7 @@ package net.grandcentrix.tray.provider;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
 import net.grandcentrix.tray.core.TrayItem;
+import net.grandcentrix.tray.core.TrayLog;
 import net.grandcentrix.tray.core.TrayRuntimeException;
 import net.grandcentrix.tray.core.TrayStorage;
 
@@ -33,7 +34,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.util.Log;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -112,8 +112,6 @@ public class ContentProviderStorage extends TrayStorage {
 
     public static final String VERSION = "version";
 
-    private static final String TAG = ContentProviderStorage.class.getSimpleName();
-
     /**
      * weak references to the listeners. Only the keys are used.
      */
@@ -174,12 +172,12 @@ public class ContentProviderStorage extends TrayStorage {
         final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
         final int size = prefs.size();
         if (size > 1) {
-            Log.w(TAG, "found more than one item for key '" + key
+            TrayLog.w("found more than one item for key '" + key
                     + "' in module " + getModuleName() + ". "
                     + "This can be caused by using the same name for a device and user specific preference.");
             for (int i = 0; i < prefs.size(); i++) {
                 final TrayItem pref = prefs.get(i);
-                Log.d(TAG, "item #" + i + " " + pref);
+                TrayLog.d("item #" + i + " " + pref);
             }
         }
         return size > 0 ? prefs.get(0) : null;

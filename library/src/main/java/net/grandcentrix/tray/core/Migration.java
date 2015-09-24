@@ -47,7 +47,7 @@ public interface Migration<T> {
     String getPreviousKey();
 
     /**
-     * @return the key where the data should be accessable in the future with Tray
+     * @return the key where the data should be accessible in the future with Tray
      */
     @NonNull
     String getTrayKey();
@@ -57,8 +57,7 @@ public interface Migration<T> {
      * later which could override newer data saved into Tray after the last import
      *
      * @param importedItem the imported item in tray. <code>null</code> if the import did not work.
-     *                     A
-     *                     invalid data type my be the reason
+     *                     A invalid data type my be the reason
      */
     void onPostMigrate(@Nullable final T importedItem);
 
@@ -68,10 +67,9 @@ public interface Migration<T> {
      * <p>
      * This check is very important, because the migration data should be deleted in {@link
      * #onPostMigrate(Object)}. When starting this migration a second time this method should
-     * return
-     * {@code true}, to skip the migration, or the previous written data will be overridden with
-     * the
-     * value from {@link #getData()} which should be {@code null} after the first migration
+     * return {@code true}, to skip the migration, or the previous written data will be overridden
+     * with the value from {@link #getData()} which should be {@code null} after the first
+     * migration
      *
      * @return true if the import should be canceled
      */
