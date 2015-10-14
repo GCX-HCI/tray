@@ -18,6 +18,7 @@ package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.TrayItem;
+import net.grandcentrix.tray.core.TrayRuntimeException;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -106,26 +107,27 @@ public class TrayProviderHelper {
      * @param key         key for mapping
      * @param previousKey key used before migration
      * @param value       data to save
+     * @return whether the persist was successful
      */
-    public void persist(@NonNull final String module, @NonNull final String key,
+    public boolean persist(@NonNull final String module, @NonNull final String key,
             @Nullable final String previousKey, @Nullable final String value) {
         final Uri uri = mTrayUri.builder()
                 .setModule(module)
                 .setKey(key)
                 .build();
-        persist(uri, value, previousKey);
+        return persist(uri, value, previousKey);
     }
 
-    public void persist(@NonNull final Uri uri, @Nullable String value) {
-        persist(uri, value, null);
+    public boolean persist(@NonNull final Uri uri, @Nullable String value) {
+        return persist(uri, value, null);
     }
 
-    public void persist(@NonNull final Uri uri, @Nullable String value,
+    public boolean persist(@NonNull final Uri uri, @Nullable String value,
             @Nullable final String previousKey) {
         ContentValues values = new ContentValues();
         values.put(TrayContract.Preferences.Columns.VALUE, value);
         values.put(TrayContract.Preferences.Columns.MIGRATED_KEY, previousKey);
-        mContext.getContentResolver().insert(uri, values);
+        return mContext.getContentResolver().insert(uri, values) != null;
     }
 
     /**
@@ -136,15 +138,12 @@ public class TrayProviderHelper {
      * @throws IllegalStateException something is wrong with the provider/database
      */
     @NonNull
-    public List<TrayItem> queryProvider(@NonNull final Uri uri)
-            throws IllegalStateException {
+    public List<TrayItem> queryProvider(@NonNull final Uri uri) throws TrayRuntimeException {
         final Cursor cursor = mContext.getContentResolver().query(uri, null, null, null, null);
 
         // Return Preference if found
         if (cursor == null) {
-            throw new IllegalStateException(
-                    "could not access stored data with uri " + uri
-                            + ". Is the provider registered in the manifest of your application?");
+            throw new TrayRuntimeException("could not access stored data with uri " + uri);
         }
 
         final ArrayList<TrayItem> list = new ArrayList<>();

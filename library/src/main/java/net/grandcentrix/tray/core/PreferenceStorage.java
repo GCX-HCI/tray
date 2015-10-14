@@ -60,8 +60,9 @@ public interface PreferenceStorage<T> {
      * stores a data item.
      *
      * @param item data object
+     * @return whether the put was successful
      */
-    void put(T item);
+    boolean put(T item);
 
     /**
      * same as {@link #put(String, Object)} but with an additional migration key to save where the
@@ -70,8 +71,9 @@ public interface PreferenceStorage<T> {
      * @param key          where to save
      * @param migrationKey where the data came from
      * @param data         what to save
+     * @return whether the put was successful
      */
-    void put(@NonNull final String key, @Nullable final String migrationKey,
+    boolean put(@NonNull final String key, @Nullable final String migrationKey,
             @Nullable final Object data);
 
     /**
@@ -79,15 +81,17 @@ public interface PreferenceStorage<T> {
      *
      * @param key  access key to the data
      * @param data what to save
+     * @return whether the put was successful
      */
-    void put(@NonNull final String key, @Nullable final Object data);
+    boolean put(@NonNull final String key, @Nullable final Object data);
 
     /**
      * removes the item with the given key
      *
      * @param key mapping key for the stored object
+     * @return whether the remove was successful
      */
-    void remove(@NonNull final String key);
+    boolean remove(@NonNull final String key);
 
     /**
      * sets the version of this storage

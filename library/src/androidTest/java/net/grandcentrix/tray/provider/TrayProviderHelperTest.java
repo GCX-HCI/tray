@@ -19,6 +19,7 @@ package net.grandcentrix.tray.provider;
 import net.grandcentrix.tray.AppPreferences;
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.TrayItem;
+import net.grandcentrix.tray.core.TrayRuntimeException;
 import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
@@ -247,7 +248,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         try {
             trayProviderHelper.queryProvider(uri);
             fail();
-        } catch (IllegalStateException e) {
+        } catch (TrayRuntimeException e) {
             assertTrue(e.getMessage().contains(uri.toString()));
         }
     }

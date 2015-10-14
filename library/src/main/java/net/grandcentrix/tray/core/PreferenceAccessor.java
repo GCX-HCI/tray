@@ -161,47 +161,53 @@ public interface PreferenceAccessor<T> {
      *
      * @param key   the key to map the value
      * @param value the data to save
+     * @return whether the put was successful
      */
-    void put(@NonNull final String key, @Nullable final String value);
+    boolean put(@NonNull final String key, @Nullable final String value);
 
     /**
      * saves a {@link Integer} mapped to param key
      *
      * @param key   the key to map the value
      * @param value the data to save
+     * @return whether the put was successful
      */
-    void put(@NonNull final String key, final int value);
+    boolean put(@NonNull final String key, final int value);
 
     /**
      * saves a {@link Float} mapped to param key
      *
      * @param key   the key to map the value
      * @param value the data to save
+     * @return whether the put was successful
      */
-    void put(@NonNull final String key, final float value);
+    boolean put(@NonNull final String key, final float value);
 
     /**
      * saves a {@link Long} mapped to param key
      *
      * @param key   the key to map the value
      * @param value the data to save
+     * @return whether the put was successful
      */
-    void put(@NonNull final String key, final long value);
+    boolean put(@NonNull final String key, final long value);
 
     /**
      * saves a {@link Boolean} mapped to param key
      *
      * @param key   the key to map the value
      * @param value the data to save
+     * @return whether the put was successful
      */
-    void put(@NonNull final String key, final boolean value);
+    boolean put(@NonNull final String key, final boolean value);
 
     /**
      * removes the data associated with param key
      *
      * @param key the key to map the value
+     * @return whether the remove was successful
      */
-    void remove(@NonNull final String key);
+    boolean remove(@NonNull final String key);
 
     /**
      * clear the data inside the preference and all evidence this preference has ever existed

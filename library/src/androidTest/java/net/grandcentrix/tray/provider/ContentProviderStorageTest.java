@@ -22,7 +22,16 @@ import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayRuntimeException;
 import net.grandcentrix.tray.core.TrayStorage;
 
+import org.mockito.internal.util.reflection.Whitebox;
+
+import android.net.Uri;
+
 import java.util.Collection;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by pascalwelsch on 11/21/14.
@@ -46,10 +55,10 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
                 "testClear3", TrayStorage.Type.DEVICE);
         final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(),
                 "testClear4", TrayStorage.Type.DEVICE);
-        storage1.put(TEST_KEY, TEST_STRING);
-        storage2.put(TEST_KEY, TEST_STRING);
-        storage3.put(TEST_KEY, TEST_STRING);
-        storage4.put(TEST_KEY, TEST_STRING);
+        assertTrue(storage1.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage2.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage3.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage4.put(TEST_KEY, TEST_STRING));
         assertUserDatabaseSize(2);
         assertDeviceDatabaseSize(2);
 
@@ -118,11 +127,11 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(200, deviceStorage.getVersion());
 
         // put
-        userStorage.put(TEST_KEY, "A");
-        userStorage.put(TEST_KEY2, "a");
+        assertTrue(userStorage.put(TEST_KEY, "A"));
+        assertTrue(userStorage.put(TEST_KEY2, "a"));
         assertUserDatabaseSize(2);
-        deviceStorage.put(TEST_KEY, "B");
-        deviceStorage.put(TEST_KEY2, "b");
+        assertTrue(deviceStorage.put(TEST_KEY, "B"));
+        assertTrue(deviceStorage.put(TEST_KEY2, "b"));
         assertDeviceDatabaseSize(2);
 
         // get
@@ -145,8 +154,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertDeviceDatabaseSize(1);
 
         // fill up again
-        userStorage.put(TEST_KEY, "A");
-        deviceStorage.put(TEST_KEY, "B");
+        assertTrue(userStorage.put(TEST_KEY, "A"));
+        assertTrue(deviceStorage.put(TEST_KEY, "B"));
         assertUserDatabaseSize(2);
         assertDeviceDatabaseSize(2);
 
@@ -185,6 +194,32 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(0, deviceStorage.getVersion());
     }
 
+    public void testFailedPutDevice() throws Exception {
+        final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(),
+                "testPut_Device", TrayStorage.Type.DEVICE);
+
+        TrayProviderHelper mockHelper = mock(TrayProviderHelper.class);
+        when(mockHelper.persist(any(Uri.class), anyString(), anyString())).thenReturn(false);
+        Whitebox.setInternalState(storage, "mProviderHelper", mockHelper);
+
+        assertFalse(storage.put(TEST_KEY, TEST_STRING));
+        assertDeviceDatabaseSize(0);
+        assertUserDatabaseSize(0);
+    }
+
+    public void testFailedPutUser() throws Exception {
+        final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(),
+                "testPut_Device", TrayStorage.Type.USER);
+
+        TrayProviderHelper mockHelper = mock(TrayProviderHelper.class);
+        when(mockHelper.persist(any(Uri.class), anyString(), anyString())).thenReturn(false);
+        Whitebox.setInternalState(storage, "mProviderHelper", mockHelper);
+
+        assertFalse(storage.put(TEST_KEY, TEST_STRING));
+        assertDeviceDatabaseSize(0);
+        assertUserDatabaseSize(0);
+    }
+
     public void testGetAll() throws Exception {
         final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
                 "testGetAll1", TrayStorage.Type.USER);
@@ -194,10 +229,10 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
                 "testGetAll3", TrayStorage.Type.DEVICE);
         final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(),
                 "testGetAll4", TrayStorage.Type.DEVICE);
-        storage1.put(TEST_KEY, "1");
-        storage2.put(TEST_KEY, "2");
-        storage3.put(TEST_KEY, "3");
-        storage4.put(TEST_KEY, "4");
+        assertTrue(storage1.put(TEST_KEY, "1"));
+        assertTrue(storage2.put(TEST_KEY, "2"));
+        assertTrue(storage3.put(TEST_KEY, "3"));
+        assertTrue(storage4.put(TEST_KEY, "4"));
         assertUserDatabaseSize(2);
         assertDeviceDatabaseSize(2);
 
@@ -236,7 +271,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
                 "testGet_Device", TrayStorage.Type.DEVICE);
         assertNull(storage.get("test"));
 
-        storage.put("test", "foo");
+        assertTrue(storage.put("test", "foo"));
         final TrayItem item = storage.get("test");
         assertNotNull(item);
         assertEquals("test", item.key());
@@ -248,7 +283,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
                 "testGet_User", TrayStorage.Type.USER);
         assertNull(storage.get("test"));
 
-        storage.put("test", "foo");
+        assertTrue(storage.put("test", "foo"));
         final TrayItem item = storage.get("test");
         assertNotNull(item);
         assertEquals("test", item.key());
@@ -258,7 +293,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     public void testPutDevice() throws Exception {
         final ContentProviderStorage storage = new ContentProviderStorage(getProviderMockContext(),
                 "testPut_Device", TrayStorage.Type.DEVICE);
-        storage.put(TEST_KEY, TEST_STRING);
+        assertTrue(storage.put(TEST_KEY, TEST_STRING));
         assertDeviceDatabaseSize(1);
         assertUserDatabaseSize(0);
     }
@@ -272,10 +307,10 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
                 "testPutMultipleModules3", TrayStorage.Type.DEVICE);
         final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(),
                 "testPutMultipleModules4", TrayStorage.Type.DEVICE);
-        storage1.put(TEST_KEY, TEST_STRING);
-        storage2.put(TEST_KEY, TEST_STRING);
-        storage3.put(TEST_KEY, TEST_STRING);
-        storage4.put(TEST_KEY, TEST_STRING);
+        assertTrue(storage1.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage2.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage3.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage4.put(TEST_KEY, TEST_STRING));
         assertUserDatabaseSize(2);
         assertDeviceDatabaseSize(2);
     }
@@ -283,19 +318,19 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     public void testPutNullValue() throws Exception {
         final ContentProviderStorage user = new ContentProviderStorage(getProviderMockContext(),
                 "testPutNullValue_User", TrayStorage.Type.USER);
-        user.put(TEST_KEY, null);
+        assertTrue(user.put(TEST_KEY, null));
         assertUserDatabaseSize(1);
 
         final ContentProviderStorage device = new ContentProviderStorage(getProviderMockContext(),
                 "testPutNullValue_Device", TrayStorage.Type.DEVICE);
-        device.put(TEST_KEY, null);
+        assertTrue(device.put(TEST_KEY, null));
         assertDeviceDatabaseSize(1);
     }
 
     public void testPutUser() throws Exception {
         final ContentProviderStorage storage =
                 new ContentProviderStorage(getProviderMockContext(), "testPut_User", TrayStorage.Type.USER);
-        storage.put(TEST_KEY, TEST_STRING);
+        assertTrue(storage.put(TEST_KEY, TEST_STRING));
         assertUserDatabaseSize(1);
         assertDeviceDatabaseSize(0);
     }
@@ -314,9 +349,18 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         final ContentProviderStorage original = new ContentProviderStorage(getProviderMockContext(),
                 "storageName", TrayStorage.Type.USER);
         original.setVersion(25);
-        original.put(TEST_KEY, TEST_STRING);
+        assertTrue(original.put(TEST_KEY, TEST_STRING));
 
         checkReadDataWithUndefined(original);
+    }
+
+    public void testRemoveFailed() throws Exception {
+        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
+                "testRemove1", TrayStorage.Type.USER);
+        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(),
+                "testRemove2", TrayStorage.Type.DEVICE);
+        assertFalse(storage1.remove(TEST_KEY));
+        assertFalse(storage2.remove(TEST_KEY));
     }
 
     public void testRemove() throws Exception {
@@ -328,14 +372,14 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
                 "testRemove3", TrayStorage.Type.DEVICE);
         final ContentProviderStorage storage4 = new ContentProviderStorage(getProviderMockContext(),
                 "testRemove4", TrayStorage.Type.DEVICE);
-        storage1.put(TEST_KEY, TEST_STRING);
-        storage1.put(TEST_KEY2, TEST_STRING2);
-        storage2.put(TEST_KEY, TEST_STRING);
-        storage2.put(TEST_KEY2, TEST_STRING2);
-        storage3.put(TEST_KEY, TEST_STRING);
-        storage3.put(TEST_KEY2, TEST_STRING2);
-        storage4.put(TEST_KEY, TEST_STRING);
-        storage4.put(TEST_KEY2, TEST_STRING2);
+        assertTrue(storage1.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage1.put(TEST_KEY2, TEST_STRING2));
+        assertTrue(storage2.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage2.put(TEST_KEY2, TEST_STRING2));
+        assertTrue(storage3.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage3.put(TEST_KEY2, TEST_STRING2));
+        assertTrue(storage4.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage4.put(TEST_KEY2, TEST_STRING2));
         assertUserDatabaseSize(4);
         assertDeviceDatabaseSize(4);
 
@@ -378,13 +422,13 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     public void testRemoveIfItemIsNotThere() {
         final ContentProviderStorage storageUser = new ContentProviderStorage(
                 getProviderMockContext(), "testRemoveIfItemIsNotThere_User", TrayStorage.Type.USER);
-        storageUser.put(TEST_KEY2, TEST_STRING);
+        assertTrue(storageUser.put(TEST_KEY2, TEST_STRING));
         storageUser.remove(TEST_KEY);
         assertUserDatabaseSize(1);
 
         final ContentProviderStorage storageDevice = new ContentProviderStorage(
                 getProviderMockContext(), "testRemoveIfItemIsNotThere_Device", TrayStorage.Type.DEVICE);
-        storageDevice.put(TEST_KEY2, TEST_STRING2);
+        assertTrue(storageDevice.put(TEST_KEY2, TEST_STRING2));
         storageDevice.remove(TEST_KEY);
         assertUserDatabaseSize(1);
     }
@@ -512,10 +556,10 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
                 "testWipe4", TrayStorage.Type.DEVICE);
         storage4.setVersion(1);
 
-        storage1.put(TEST_KEY, TEST_STRING);
-        storage2.put(TEST_KEY, TEST_STRING);
-        storage3.put(TEST_KEY, TEST_STRING);
-        storage4.put(TEST_KEY, TEST_STRING);
+        assertTrue(storage1.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage2.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage3.put(TEST_KEY, TEST_STRING));
+        assertTrue(storage4.put(TEST_KEY, TEST_STRING));
 
         assertEquals(1, storage1.getVersion());
         assertEquals(1, storage2.getVersion());
@@ -547,9 +591,9 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(1, storage4.getVersion());
 
         // fill up again
-        storage1.put(TEST_KEY, TEST_STRING);
+        assertTrue(storage1.put(TEST_KEY, TEST_STRING));
         storage1.setVersion(1);
-        storage3.put(TEST_KEY, TEST_STRING);
+        assertTrue(storage3.put(TEST_KEY, TEST_STRING));
         storage3.setVersion(1);
 
         // test clear for undefined.
@@ -598,7 +642,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
     }
 
     private void checkVersionAfterClear(final ContentProviderStorage storage) {
-        storage.put("key", "value");
+        assertTrue(storage.put("key", "value"));
         final TrayItem key = storage.get("key");
         assertNotNull(key);
         assertEquals("value", key.value());

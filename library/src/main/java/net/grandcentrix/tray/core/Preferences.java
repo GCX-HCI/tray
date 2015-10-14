@@ -35,8 +35,16 @@ import static net.grandcentrix.tray.core.TrayLog.w;
 public abstract class Preferences<T, S extends PreferenceStorage<T>>
         implements PreferenceAccessor<T> {
 
+    private static final int CHANGE_VERSION_MAX_RETRIES = 5;
+
+    private boolean mChangeVersionFailed;
+
+    private int mChangeVersionRetries;
+
     @NonNull
     private S mStorage;
+
+    private int mVersion;
 
     /**
      * {@link Preferences} allows access to a storage with unfriendly util functions like
@@ -47,8 +55,17 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
      */
     public Preferences(@NonNull final S storage, final int version) {
         mStorage = storage;
+        mVersion = version;
+        mChangeVersionFailed = false;
+        mChangeVersionRetries = 0;
 
-        changeVersion(version);
+        try {
+            changeVersion(version);
+        } catch (TrayRuntimeException e) {
+            v("failed to change version");
+            mChangeVersionFailed = true;
+            mChangeVersionRetries++;
+        }
     }
 
     @Override
@@ -113,38 +130,56 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     }
 
     @Override
-    public void put(@NonNull final String key, final String value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final String value) {
+        if (checkIfChangeVersionFailed()) {
+            return false;
+        }
         v("put '" + key + "=\"" + value + "\"' into " + this);
+        return getStorage().put(key, value);
     }
 
     @Override
-    public void put(@NonNull final String key, final int value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final int value) {
+        if (checkIfChangeVersionFailed()) {
+            return false;
+        }
         v("put '" + key + "=" + value + "' into " + this);
+        return getStorage().put(key, value);
     }
 
     @Override
-    public void put(@NonNull final String key, final float value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final float value) {
+        if (checkIfChangeVersionFailed()) {
+            return false;
+        }
         v("put '" + key + "=" + value + "' into " + this);
+        return getStorage().put(key, value);
     }
 
     @Override
-    public void put(@NonNull final String key, final long value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final long value) {
+        if (checkIfChangeVersionFailed()) {
+            return false;
+        }
         v("put '" + key + "=" + value + "' into " + this);
+        return getStorage().put(key, value);
     }
 
     @Override
-    public void put(@NonNull final String key, final boolean value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final boolean value) {
+        if (checkIfChangeVersionFailed()) {
+            return false;
+        }
         v("put '" + key + "=" + value + "' into " + this);
+        return getStorage().put(key, value);
     }
 
-    public void remove(@NonNull final String key) {
-        mStorage.remove(key);
+    public boolean remove(@NonNull final String key) {
+        if (checkIfChangeVersionFailed()) {
+            return false;
+        }
         v("removed key '" + key + "' from " + this);
+        return getStorage().remove(key);
     }
 
     @Override
@@ -237,6 +272,24 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             }
         }
         getStorage().setVersion(newVersion);
+    }
+
+    private boolean checkIfChangeVersionFailed() {
+        if (mChangeVersionFailed) {
+            try {
+                changeVersion(mVersion);
+                mChangeVersionFailed = false;
+                return false;
+            } catch (TrayRuntimeException e) {
+                v("failed to change version: " + mChangeVersionRetries);
+                if (mChangeVersionRetries >= CHANGE_VERSION_MAX_RETRIES) {
+                    mChangeVersionFailed = false;
+                }
+                mChangeVersionRetries++;
+                return true;
+            }
+        }
+        return false;
     }
 
     static boolean isDataTypeSupported(final Object data) {

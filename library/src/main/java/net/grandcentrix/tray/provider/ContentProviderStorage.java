@@ -218,13 +218,13 @@ public class ContentProviderStorage extends TrayStorage {
     }
 
     @Override
-    public void put(final TrayItem item) {
-        put(item.key(), item.migratedKey(), item.value());
+    public boolean put(final TrayItem item) {
+        return put(item.key(), item.migratedKey(), item.value());
     }
 
     @Override
-    public void put(@NonNull final String key, @Nullable final Object data) {
-        put(key, null, data);
+    public boolean put(@NonNull final String key, @Nullable final Object data) {
+        return put(key, null, data);
     }
 
     /**
@@ -236,9 +236,10 @@ public class ContentProviderStorage extends TrayStorage {
      * @param key          where to save
      * @param migrationKey where the data came from
      * @param data         what to save
+     * @return whether the put was successful
      */
     @Override
-    public void put(@NonNull final String key, @Nullable final String migrationKey,
+    public boolean put(@NonNull final String key, @Nullable final String migrationKey,
             @Nullable final Object data) {
         if (getType() == Type.UNDEFINED) {
             throw new TrayRuntimeException(
@@ -252,7 +253,7 @@ public class ContentProviderStorage extends TrayStorage {
                 .setModule(getModuleName())
                 .setKey(key)
                 .build();
-        mProviderHelper.persist(uri, value, migrationKey);
+        return mProviderHelper.persist(uri, value, migrationKey);
     }
 
     /**
@@ -317,7 +318,7 @@ public class ContentProviderStorage extends TrayStorage {
     }
 
     @Override
-    public void remove(@NonNull final String key) {
+    public boolean remove(@NonNull final String key) {
         //noinspection ConstantConditions
         if (key == null) {
             throw new IllegalArgumentException(
@@ -328,7 +329,7 @@ public class ContentProviderStorage extends TrayStorage {
                 .setModule(getModuleName())
                 .setKey(key)
                 .build();
-        mContext.getContentResolver().delete(uri, null, null);
+        return mContext.getContentResolver().delete(uri, null, null) > 0;
     }
 
     @Override
