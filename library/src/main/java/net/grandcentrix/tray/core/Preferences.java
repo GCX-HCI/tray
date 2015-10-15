@@ -35,7 +35,7 @@ import static net.grandcentrix.tray.core.TrayLog.w;
 public abstract class Preferences<T, S extends PreferenceStorage<T>>
         implements PreferenceAccessor<T> {
 
-    private static final int CHANGE_VERSION_MAX_RETRIES = 5;
+    public static final int CHANGE_VERSION_MAX_RETRIES = 5;
 
     private int mChangeVersionRetries;
 
