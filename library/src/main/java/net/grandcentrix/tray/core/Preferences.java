@@ -37,9 +37,9 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     private static final int CHANGE_VERSION_MAX_RETRIES = 5;
 
-    private boolean mChangeVersionFailed;
-
     private int mChangeVersionRetries;
+
+    private boolean mChangeVersionSucceeded;
 
     @NonNull
     private S mStorage;
@@ -56,16 +56,10 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     public Preferences(@NonNull final S storage, final int version) {
         mStorage = storage;
         mVersion = version;
-        mChangeVersionFailed = false;
+        mChangeVersionSucceeded = false;
         mChangeVersionRetries = 0;
 
-        try {
-            changeVersion(version);
-        } catch (TrayRuntimeException e) {
-            v("failed to change version");
-            mChangeVersionFailed = true;
-            mChangeVersionRetries++;
-        }
+        isVersionChangeChecked();
     }
 
     @Override
@@ -131,7 +125,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     @Override
     public boolean put(@NonNull final String key, final String value) {
-        if (checkIfChangeVersionFailed()) {
+        if (!isVersionChangeChecked()) {
             return false;
         }
         v("put '" + key + "=\"" + value + "\"' into " + this);
@@ -140,7 +134,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     @Override
     public boolean put(@NonNull final String key, final int value) {
-        if (checkIfChangeVersionFailed()) {
+        if (!isVersionChangeChecked()) {
             return false;
         }
         v("put '" + key + "=" + value + "' into " + this);
@@ -149,7 +143,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     @Override
     public boolean put(@NonNull final String key, final float value) {
-        if (checkIfChangeVersionFailed()) {
+        if (!isVersionChangeChecked()) {
             return false;
         }
         v("put '" + key + "=" + value + "' into " + this);
@@ -158,7 +152,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     @Override
     public boolean put(@NonNull final String key, final long value) {
-        if (checkIfChangeVersionFailed()) {
+        if (!isVersionChangeChecked()) {
             return false;
         }
         v("put '" + key + "=" + value + "' into " + this);
@@ -167,7 +161,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     @Override
     public boolean put(@NonNull final String key, final boolean value) {
-        if (checkIfChangeVersionFailed()) {
+        if (!isVersionChangeChecked()) {
             return false;
         }
         v("put '" + key + "=" + value + "' into " + this);
@@ -175,7 +169,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     }
 
     public boolean remove(@NonNull final String key) {
-        if (checkIfChangeVersionFailed()) {
+        if (!isVersionChangeChecked()) {
             return false;
         }
         v("removed key '" + key + "' from " + this);
@@ -274,22 +268,31 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
         getStorage().setVersion(newVersion);
     }
 
-    private boolean checkIfChangeVersionFailed() {
-        if (mChangeVersionFailed) {
+    /**
+     * Checks whether {@link #changeVersion} was performed successfully yet. If not it will invoke
+     * it. However there is a limit of {@link #CHANGE_VERSION_MAX_RETRIES} retries.
+     * <p>
+     * Normally changeVersion shouldn't fail at all.
+     *
+     * @return whether {@link #changeVersion} was successfully invoked
+     */
+    private boolean isVersionChangeChecked() {
+        if (!mChangeVersionSucceeded) {
             try {
                 changeVersion(mVersion);
-                mChangeVersionFailed = false;
-                return false;
+                mChangeVersionSucceeded = true;
+                return true;
             } catch (TrayRuntimeException e) {
-                v("failed to change version: " + mChangeVersionRetries);
+                e.printStackTrace();
+                v("failed to change version - number of retries: " + mChangeVersionRetries);
                 if (mChangeVersionRetries >= CHANGE_VERSION_MAX_RETRIES) {
-                    mChangeVersionFailed = false;
+                    mChangeVersionSucceeded = true;
                 }
                 mChangeVersionRetries++;
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     static boolean isDataTypeSupported(final Object data) {
