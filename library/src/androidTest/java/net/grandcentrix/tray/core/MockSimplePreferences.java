@@ -25,6 +25,8 @@ import android.support.annotation.NonNull;
  */
 public class MockSimplePreferences extends AbstractTrayPreference<MockTrayStorage> {
 
+    private boolean mBreakStorage = false;
+
     public MockSimplePreferences(final int version) {
         super(new MockTrayStorage("test"), version);
     }
@@ -33,5 +35,18 @@ public class MockSimplePreferences extends AbstractTrayPreference<MockTrayStorag
             @NonNull final MockTrayStorage storage,
             final int version) {
         super(storage, version);
+    }
+
+    public void breakStorage() {
+        mBreakStorage = true;
+    }
+
+    @Override
+    boolean isVersionChangeChecked() {
+        if (mBreakStorage) {
+            return false;
+        } else {
+            return super.isVersionChangeChecked();
+        }
     }
 }

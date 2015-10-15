@@ -57,8 +57,8 @@ public class PreferenceTest extends TestCase {
 
     public void testClear() throws Exception {
         final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
-        mockPreference.put("a", "a");
-        mockPreference.put("b", "b");
+        assertTrue(mockPreference.put("a", "a"));
+        assertTrue(mockPreference.put("b", "b"));
         assertEquals(mockPreference.getAll().size(), 2);
 
         mockPreference.clear();
@@ -71,8 +71,8 @@ public class PreferenceTest extends TestCase {
         assertNotNull(all);
         assertEquals(0, all.size());
 
-        mockPreference.put("test", "test");
-        mockPreference.put("foo", "foo");
+        assertTrue(mockPreference.put("test", "test"));
+        assertTrue(mockPreference.put("foo", "foo"));
 
         final Collection<TrayItem> all2 = mockPreference.getAll();
         assertNotNull(all2);
@@ -81,7 +81,7 @@ public class PreferenceTest extends TestCase {
 
     public void testGetPref() throws Exception {
         final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
-        mockPreference.put("key", "value");
+        assertTrue(mockPreference.put("key", "value"));
         final TrayItem item = mockPreference.getPref("key");
         assertNotNull(item);
         assertEquals("key", item.key());
@@ -144,46 +144,83 @@ public class PreferenceTest extends TestCase {
     public void testPut() throws Exception {
         final MockSimplePreferences pref = new MockSimplePreferences(1);
         // String
-        pref.put("a", "a");
+        assertTrue(pref.put("a", "a"));
         assertEquals("a", pref.getString("a", ""));
 
         // Int
-        pref.put("a", 1);
+        assertTrue(pref.put("a", 1));
         assertEquals(1, pref.getInt("a", 0));
 
         // Long
-        pref.put("a", 5l);
+        assertTrue(pref.put("a", 5l));
         assertEquals(5l, pref.getLong("a", 0l));
 
         // Float
-        pref.put("a", 10f);
+        assertTrue(pref.put("a", 10f));
         assertEquals(10f, pref.getFloat("a", 0f));
 
         // Boolean
-        pref.put("a", true);
+        assertTrue(pref.put("a", true));
         assertEquals(true, pref.getBoolean("a", false));
+    }
+
+    public void testPutFailed() throws Exception {
+        final MockSimplePreferences pref = new MockSimplePreferences(1);
+        pref.breakStorage();
+
+        // String
+        assertFalse(pref.put("a", "a"));
+        assertEquals("", pref.getString("a", ""));
+
+        // Int
+        assertFalse(pref.put("a", 1));
+        assertEquals(0, pref.getInt("a", 0));
+
+        // Long
+        assertFalse(pref.put("a", 5l));
+        assertEquals(0l, pref.getLong("a", 0l));
+
+        // Float
+        assertFalse(pref.put("a", 10f));
+        assertEquals(0f, pref.getFloat("a", 0f));
+
+        // Boolean
+        assertFalse(pref.put("a", true));
+        assertEquals(false, pref.getBoolean("a", false));
     }
 
     public void testRemove() throws Exception {
         final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
-        mockPreference.put("test", "test");
-        mockPreference.put("foo", "foo");
+        assertTrue(mockPreference.put("test", "test"));
+        assertTrue(mockPreference.put("foo", "foo"));
 
         final Collection<TrayItem> all2 = mockPreference.getAll();
         assertNotNull(all2);
         assertEquals(2, all2.size());
 
-        mockPreference.remove("test");
+        assertTrue(mockPreference.remove("test"));
 
         final Collection<TrayItem> all1 = mockPreference.getAll();
         assertNotNull(all1);
         assertEquals(1, all2.size());
 
-        mockPreference.remove("foo");
+        assertTrue(mockPreference.remove("foo"));
 
         final Collection<TrayItem> all = mockPreference.getAll();
         assertNotNull(all);
         assertEquals(0, all.size());
+    }
+
+    public void testRemoveFailed() throws Exception {
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
+        assertTrue(mockPreference.put("test", "test"));
+
+        // This fails because the preference doesn't exist
+        assertFalse(mockPreference.remove("foo"));
+
+        // Mock failure due to storage problem
+        mockPreference.breakStorage();
+        assertFalse(mockPreference.remove("test"));
     }
 
     public void testVersionChange() throws Exception {

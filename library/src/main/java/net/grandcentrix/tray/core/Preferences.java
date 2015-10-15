@@ -276,7 +276,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
      *
      * @return whether {@link #changeVersion} was successfully invoked
      */
-    private boolean isVersionChangeChecked() {
+    /*package*/ boolean isVersionChangeChecked() {
         if (!mChangeVersionSucceeded) {
             try {
                 changeVersion(mVersion);
