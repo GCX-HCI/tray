@@ -35,10 +35,6 @@ import static net.grandcentrix.tray.core.TrayLog.w;
 public abstract class Preferences<T, S extends PreferenceStorage<T>>
         implements PreferenceAccessor<T> {
 
-    public static final int CHANGE_VERSION_MAX_RETRIES = 5;
-
-    private int mChangeVersionRetries;
-
     private boolean mChangeVersionSucceeded;
 
     @NonNull
@@ -57,7 +53,6 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
         mStorage = storage;
         mVersion = version;
         mChangeVersionSucceeded = false;
-        mChangeVersionRetries = 0;
 
         isVersionChangeChecked();
     }
@@ -270,7 +265,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     /**
      * Checks whether {@link #changeVersion} was performed successfully yet. If not it will invoke
-     * it. However there is a limit of {@link #CHANGE_VERSION_MAX_RETRIES} retries.
+     * it.
      * <p>
      * Normally changeVersion shouldn't fail at all.
      *
@@ -284,11 +279,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
                 return true;
             } catch (TrayRuntimeException e) {
                 e.printStackTrace();
-                v("failed to change version - number of retries: " + mChangeVersionRetries);
-                if (mChangeVersionRetries >= CHANGE_VERSION_MAX_RETRIES) {
-                    mChangeVersionSucceeded = true;
-                }
-                mChangeVersionRetries++;
+                v("failed to change version");
                 return false;
             }
         }

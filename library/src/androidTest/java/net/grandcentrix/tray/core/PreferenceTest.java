@@ -20,6 +20,8 @@ import junit.framework.TestCase;
 
 import net.grandcentrix.tray.mock.MockTrayStorage;
 
+import org.mockito.internal.util.reflection.Whitebox;
+
 import android.annotation.SuppressLint;
 
 import java.util.Collection;
@@ -223,20 +225,6 @@ public class PreferenceTest extends TestCase {
         assertFalse(mockPreference.remove("test"));
     }
 
-    public void testVersionChangeRetryPolicy() throws Exception {
-        final MockSimplePreferences mockPreference = new MockSimplePreferences(1) {
-            @Override
-            synchronized void changeVersion(final int newVersion) {
-                throw new TrayRuntimeException("something very very bad happened :-(");
-            }
-        };
-
-        for(int i = 0; i < Preferences.CHANGE_VERSION_MAX_RETRIES; i++) {
-            assertFalse(mockPreference.isVersionChangeChecked());
-        }
-        assertTrue(mockPreference.isVersionChangeChecked());
-    }
-
     public void testVersionChange() throws Exception {
         final HashMap<String, String> map = new HashMap<>();
         final MockSimplePreferences mockPreference = new MockSimplePreferences(1) {
@@ -264,6 +252,18 @@ public class PreferenceTest extends TestCase {
         mockPreference.changeVersion(1);
         assertTrue(map.containsKey("down"));
         assertFalse(map.containsKey("up"));
+    }
+
+    public void testVersionChangeFailed() throws Exception {
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(1) {
+            @Override
+            synchronized void changeVersion(final int newVersion) {
+                throw new TrayRuntimeException("something very very bad happened :-(");
+            }
+        };
+
+        assertFalse(mockPreference.isVersionChangeChecked());
+        assertFalse((Boolean) Whitebox.getInternalState(mockPreference, "mChangeVersionSucceeded"));
     }
 
     public void testWipe() throws Exception {
