@@ -24,10 +24,12 @@ import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.test.IsolatedContext;
+import android.test.mock.MockContentProvider;
 
 import java.util.Date;
 import java.util.List;
@@ -193,10 +195,23 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     public void testPersistFail() throws Exception {
-        Uri uri = Uri.parse("quark");
-        TrayProviderHelper providerHelper = mock(TrayProviderHelper.class);
-        assertFalse(providerHelper.persist(uri, "quark^2", null));
-        assertUserDatabaseSize(0);
+        Uri uri = new TrayUri(getProviderMockContext()).get();
+        MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public Uri insert(final Uri uri, final ContentValues values) {
+                return null;
+            }
+        };
+        getProviderMockContext().addProvider(uri.getAuthority(), mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+
+        TrayProviderHelper providerHelper = new TrayProviderHelper(getProviderMockContext());
+
+        assertFalse(providerHelper.persist(uri, STRING_A));
+        assertFalse(providerHelper.persist(uri, STRING_A, null));
+        assertFalse(providerHelper.persist(MODULE_A, STRING_A, null));
+        assertFalse(providerHelper.persist(MODULE_A, STRING_A, null, null));
     }
 
     public void testPersistNull() throws Exception {
