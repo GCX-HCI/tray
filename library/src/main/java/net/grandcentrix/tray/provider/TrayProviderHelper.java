@@ -95,9 +95,9 @@ public class TrayProviderHelper {
      * @param key    key for mapping
      * @param value  data to save
      */
-    public void persist(@NonNull final String module, @NonNull final String key,
+    public boolean persist(@NonNull final String module, @NonNull final String key,
             @NonNull final String value) {
-        persist(module, key, null, value);
+        return persist(module, key, null, value);
     }
 
     /**

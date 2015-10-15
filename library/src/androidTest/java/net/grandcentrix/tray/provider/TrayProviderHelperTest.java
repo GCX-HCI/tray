@@ -58,7 +58,88 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
 
     private TrayUri mTrayUri;
 
-    public void testCursorToTrayItem() throws Exception{
+    public void testClear() throws Exception {
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_B, STRING_B));
+        assertUserDatabaseSize(4);
+
+        mProviderHelper.clear();
+        assertUserDatabaseSize(0);
+    }
+
+    public void testClearBut() throws Exception {
+        // We need a package name in this test, thus creating our own mock context
+        final IsolatedContext context = getProviderMockContext();
+
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_C, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_C, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(context.getPackageName(), KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B));
+        assertUserDatabaseSize(8);
+
+        mProviderHelper.clearBut(new AppPreferences(context),
+                new TestTrayModulePreferences(context, MODULE_A),
+                new TestTrayModulePreferences(context, MODULE_B));
+        assertUserDatabaseSize(6);
+
+        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A),
+                new TestTrayModulePreferences(context, MODULE_B));
+        assertUserDatabaseSize(4);
+
+        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A));
+        assertUserDatabaseSize(2);
+
+        mProviderHelper.clearBut((TrayPreferences) null);
+        assertUserDatabaseSize(0);
+
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(context.getPackageName(), KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B));
+        mProviderHelper.clearBut(new AppPreferences(context));
+        assertUserDatabaseSize(2);
+
+        // Also test empty values (= clear everything)
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+
+        mProviderHelper.clearBut((TrayPreferences) null);
+        assertUserDatabaseSize(0);
+    }
+
+    public void testCreatedTime() throws Exception {
+        final long start = System.currentTimeMillis();
+        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        final List<TrayItem> list = mProviderHelper
+                .queryProvider(getUri(MODULE_A, KEY_A));
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        TrayItem itemA = list.get(0);
+        assertNotNull(itemA.created());
+        assertEqualsWithin(start, itemA.created().getTime(), 50l);
+    }
+
+    public void testCreatedTimeDoesNotChange() throws Exception {
+        testCreatedTime();
+        final TrayItem insertedItem = mProviderHelper.getAll().get(0);
+        final long createdTime = insertedItem.created().getTime();
+
+        Thread.sleep(50);
+
+        // save again
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_B));
+        final long updatedCreatedTime = mProviderHelper.getAll().get(0).created().getTime();
+        assertEquals(createdTime, updatedCreatedTime);
+
+    }
+
+    public void testCursorToTrayItem() throws Exception {
 
         final MatrixCursor matrixCursor = new MatrixCursor(new String[]{
                 TrayContract.Preferences.Columns.KEY,
@@ -89,90 +170,8 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertEquals(created, item.created());
     }
 
-
-    public void testClear() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
-        assertUserDatabaseSize(4);
-
-        mProviderHelper.clear();
-        assertUserDatabaseSize(0);
-    }
-
-    public void testClearBut() throws Exception {
-        // We need a package name in this test, thus creating our own mock context
-        final IsolatedContext context = getProviderMockContext();
-
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_C, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_C, KEY_B, STRING_B);
-        mProviderHelper.persist(context.getPackageName(), KEY_A, STRING_A);
-        mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B);
-        assertUserDatabaseSize(8);
-
-        mProviderHelper.clearBut(new AppPreferences(context),
-                new TestTrayModulePreferences(context, MODULE_A),
-                new TestTrayModulePreferences(context, MODULE_B));
-        assertUserDatabaseSize(6);
-
-        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A),
-                new TestTrayModulePreferences(context, MODULE_B));
-        assertUserDatabaseSize(4);
-
-        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A));
-        assertUserDatabaseSize(2);
-
-        mProviderHelper.clearBut((TrayPreferences) null);
-        assertUserDatabaseSize(0);
-
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(context.getPackageName(), KEY_A, STRING_A);
-        mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B);
-        mProviderHelper.clearBut(new AppPreferences(context));
-        assertUserDatabaseSize(2);
-
-        // Also test empty values (= clear everything)
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-
-        mProviderHelper.clearBut((TrayPreferences) null);
-        assertUserDatabaseSize(0);
-    }
-
-    public void testCreatedTime() throws Exception {
-        final long start = System.currentTimeMillis();
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        final List<TrayItem> list = mProviderHelper
-                .queryProvider(getUri(MODULE_A, KEY_A));
-        assertNotNull(list);
-        assertEquals(1, list.size());
-        TrayItem itemA = list.get(0);
-        assertNotNull(itemA.created());
-        assertEqualsWithin(start, itemA.created().getTime(), 50l);
-    }
-
-    public void testCreatedTimeDoesNotChange() throws Exception {
-        testCreatedTime();
-        final TrayItem insertedItem = mProviderHelper.getAll().get(0);
-        final long createdTime = insertedItem.created().getTime();
-
-        Thread.sleep(50);
-
-        // save again
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_B);
-        final long updatedCreatedTime = mProviderHelper.getAll().get(0).created().getTime();
-        assertEquals(createdTime, updatedCreatedTime);
-
-    }
-
     public void testGetAll() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         final List<TrayItem> all = mProviderHelper.getAll();
         assertEquals(1, all.size());
         assertEquals(STRING_A, all.get(0).value());
@@ -180,40 +179,47 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     public void testGetAllMultiple() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_B, STRING_B));
         final List<TrayItem> all = mProviderHelper.getAll();
         assertEquals(4, all.size());
     }
 
     public void testPersist() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         assertUserDatabaseSize(1);
+    }
+
+    public void testPersistFail() throws Exception {
+        Uri uri = Uri.parse("quark");
+        TrayProviderHelper providerHelper = mock(TrayProviderHelper.class);
+        assertFalse(providerHelper.persist(uri, "quark^2", null));
+        assertUserDatabaseSize(0);
     }
 
     public void testPersistNull() throws Exception {
         //noinspection ConstantConditions
-        mProviderHelper.persist(MODULE_A, KEY_A, null);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, null));
         assertUserDatabaseSize(1);
     }
 
     public void testPersistOverride() {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_B);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_B));
         assertUserDatabaseSize(1);
     }
 
     public void testPersistSameTwoModules() {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
         assertUserDatabaseSize(2);
     }
 
     public void testPersistTwoKeys() {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_A));
         assertUserDatabaseSize(2);
     }
 
@@ -263,7 +269,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     public void testReadParsedProperties() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         final List<TrayItem> list = mProviderHelper
                 .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
@@ -295,7 +301,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     public void testUpdateChanges() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         final List<TrayItem> list = mProviderHelper
                 .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
@@ -305,7 +311,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertNotNull(itemA.updateTime());
 
         Thread.sleep(10);
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_B);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_B));
         final List<TrayItem> list2 = mProviderHelper
                 .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list2);
@@ -316,7 +322,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     public void testUpdateEqualsCreatedAtFirst() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         final List<TrayItem> list = mProviderHelper
                 .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
@@ -348,10 +354,10 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     private void buildQueryDatabase() {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_B, STRING_B));
         assertUserDatabaseSize(4);
     }
 
@@ -368,7 +374,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     private void specialCharTest(final String module, final String key) {
-        mProviderHelper.persist(module, key, STRING_A);
+        assertTrue(mProviderHelper.persist(module, key, STRING_A));
         assertUserDatabaseSize(1);
 
         final List<TrayItem> list = mProviderHelper
