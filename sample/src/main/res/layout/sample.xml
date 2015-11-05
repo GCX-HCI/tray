@@ -1,83 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="8dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/launch_counter"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:padding="8dp">
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Headline"
+        <LinearLayout
+            android:id="@+id/launch_counter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/launch_counter" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/launch_counter_decription" />
+
+            <TextView
+                android:id="@android:id/text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="X times launched" />
+
+            <Button
+                android:id="@+id/reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sample_reset" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/shared_preference_import"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/launch_counter" />
+            android:layout_below="@id/launch_counter"
+            android:layout_marginTop="25dp"
+            android:orientation="vertical">
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Small"
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sharedprefs_import" />
+
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/sharedprefs_import_description" />
+
+            <TextView
+                android:id="@+id/shared_pref_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/write_shared_pref"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sample_write_shared_pref" />
+
+            <Button
+                android:id="@+id/import_shared_pref"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sample_import_sharedpref_in_tray" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/multiprocessTest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="@string/launch_counter_decription" />
+            android:layout_below="@id/shared_preference_import"
+            android:layout_marginTop="25dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@android:id/text1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="X times launched" />
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/multiprocess_test_title" />
 
-        <Button
-            android:id="@+id/reset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sample_reset" />
+            <TextView
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="@string/multiprocess_test_description" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/increase_multiprocess_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_increase_multiprocess_counter" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/read_multiprocess_explaination"
+                android:textSize="12sp" />
 
-    <LinearLayout
-        android:id="@+id/shared_preference_import"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/launch_counter"
-        android:layout_marginTop="25dp"
-        android:orientation="vertical">
+            <Button
+                android:id="@+id/increase_multiprocess_counter_other_process"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/button_increase_multiprocess_counter_other" />
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Headline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sharedprefs_import" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="@string/write_multiprocess_explaination"
+                android:textSize="12sp" />
 
-        <TextView
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="@string/sharedprefs_import_description" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/shared_pref_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/write_shared_pref"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sample_write_shared_pref" />
-
-        <Button
-            android:id="@+id/import_shared_pref"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sample_import_sharedpref_in_tray" />
-
-
-    </LinearLayout>
-
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>

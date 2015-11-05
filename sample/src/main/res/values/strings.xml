@@ -10,4 +10,10 @@
     <string name="launch_counter_decription">restart the app to increase the counter. See? It\'s persistent</string>
     <string name="sharedprefs_import">SharedPreference import</string>
     <string name="sharedprefs_import_description">generate data in the SharedPreferences and import them to the tray preference</string>
+    <string name="multiprocess_test_title">Multi process test</string>
+    <string name="multiprocess_test_description">increases a counter on the main process. Reading it in another process. See the difference between SharedPreferences and Tray\n<b>See logcat for output!</b></string>
+    <string name="button_increase_multiprocess_counter">read in other process</string>
+    <string name="button_increase_multiprocess_counter_other">listen to changes from other process</string>
+    <string name="read_multiprocess_explaination">Click this button fast and you\'ll see the shared preferences having trouble staying in sync. No problem for tray</string>
+    <string name="write_multiprocess_explaination">Only tray is possible to listen to changes made in a different process. The SharedPreferences receive no callback</string>
 </resources>

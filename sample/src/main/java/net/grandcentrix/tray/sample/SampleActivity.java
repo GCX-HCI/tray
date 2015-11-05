@@ -36,7 +36,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+
+import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * Created by pascalwelsch on 2/7/15.
@@ -55,25 +59,44 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
 
     private AppPreferences mAppPrefs;
 
+    private OnTrayPreferenceChangeListener mAppPrefsListener
+            = new OnTrayPreferenceChangeListener() {
+        @Override
+        public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
+            Log.d(TAG, "read in main process: changed " + getNiceString(items));
+        }
+    };
+
     private ImportTrayPreferences mImportPreference;
 
+    private int mMultiProcessCounter = 0;
+
     private SharedPreferences mSharedPreferences;
+
+    private final OnTrayPreferenceChangeListener mImportPrefsListener
+            = new OnTrayPreferenceChangeListener() {
+        @Override
+        public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
+            Log.v(TAG, "trayPrefs changed items: " + getNiceString(items));
+            updateSharedPrefInfo();
+        }
+    };
 
     private final SharedPreferences.OnSharedPreferenceChangeListener mSharedPrefsListener
             = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(final SharedPreferences sharedPreferences,
                 final String key) {
-            Log.v(TAG, "sharedPrefs changed key: " + key);
-            updateSharedPrefInfo();
-        }
-    };
-
-    private final OnTrayPreferenceChangeListener mTrayPrefsListener
-            = new OnTrayPreferenceChangeListener() {
-        @Override
-        public void onTrayPreferenceChanged(final Collection<TrayItem> items) {
-            Log.v(TAG, "trayPrefs changed items: " + items);
+            Object value = null;
+            try {
+                value = mSharedPreferences.getString(key, "");
+            } catch (ClassCastException e) {
+            }
+            try {
+                value = mSharedPreferences.getInt(key, 0);
+            } catch (ClassCastException e) {
+            }
+            Log.d(TAG, "sharedPrefs changed key: '" + key + "' value '" + value + "'");
             updateSharedPrefInfo();
         }
     };
@@ -90,6 +113,12 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.import_shared_pref:
                 importSharedPref();
+                break;
+            case R.id.increase_multiprocess_counter:
+                increaseMultiprocessCounter();
+                break;
+            case R.id.increase_multiprocess_counter_other_process:
+                increaseMultiprocessCounterInOtherProcess();
                 break;
             default:
                 Toast.makeText(this, "not implemented", Toast.LENGTH_SHORT).show();
@@ -138,6 +167,13 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
 
         final Button importInTray = (Button) findViewById(R.id.import_shared_pref);
         importInTray.setOnClickListener(this);
+
+        final Button multiprocessIncreaser = (Button) findViewById(
+                R.id.increase_multiprocess_counter);
+        multiprocessIncreaser.setOnClickListener(this);
+        final Button multiprocessIncreaserOther = (Button) findViewById(
+                R.id.increase_multiprocess_counter_other_process);
+        multiprocessIncreaserOther.setOnClickListener(this);
     }
 
     @Override
@@ -146,7 +182,8 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         updateSharedPrefInfo();
 
         mSharedPreferences.registerOnSharedPreferenceChangeListener(mSharedPrefsListener);
-        mImportPreference.registerOnTrayPreferenceChangeListener(mTrayPrefsListener);
+        mImportPreference.registerOnTrayPreferenceChangeListener(mImportPrefsListener);
+        mAppPrefs.registerOnTrayPreferenceChangeListener(mAppPrefsListener);
     }
 
     @Override
@@ -154,7 +191,20 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         super.onStop();
 
         mSharedPreferences.unregisterOnSharedPreferenceChangeListener(mSharedPrefsListener);
-        mImportPreference.unregisterOnTrayPreferenceChangeListener(mTrayPrefsListener);
+        mImportPreference.unregisterOnTrayPreferenceChangeListener(mImportPrefsListener);
+        mAppPrefs.unregisterOnTrayPreferenceChangeListener(mAppPrefsListener);
+
+    }
+
+    private List<String> getNiceString(final Collection<TrayItem> items) {
+        return Observable.from(items)
+                .map(new Func1<TrayItem, String>() {
+                    @Override
+                    public String call(final TrayItem trayItem) {
+                        return "key: '" + trayItem.key() + "' value '" + trayItem.value() + "'";
+                    }
+                })
+                .toList().toBlocking().first();
     }
 
     private void importSharedPref() {
@@ -162,6 +212,76 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                 new SharedPreferencesImport(this, SampleActivity.SHARED_PREF_NAME,
                         SampleActivity.SHARED_PREF_KEY, TRAY_PREF_KEY);
         mImportPreference.migrate(sharedPreferencesImport);
+    }
+
+    /**
+     * write here read remote
+     * <p>
+     * check logcat to see the what happens
+     */
+    @SuppressLint("CommitPrefEdits")
+    private void increaseMultiprocessCounter() {
+        mMultiProcessCounter++;
+        Log.d(TAG, "write in main process: counter = " + mMultiProcessCounter);
+        mSharedPreferences.edit()
+                .putInt(MultiProcessService.KEY_MULTIPROCESS_COUNTER_SERVICE_READ,
+                        mMultiProcessCounter)
+                .commit();
+        mAppPrefs.put(MultiProcessService.KEY_MULTIPROCESS_COUNTER_SERVICE_READ,
+                mMultiProcessCounter);
+
+        // starting a service in another process to read the values there.
+        MultiProcessService.read(this);
+
+        // sample output
+        // you can see the shared preferences sometimes don't get updated (tray: 15 sharedPrefs: 13)
+        /*
+        11-05 09:06:51.086 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: write in main process: counter = 13
+        11-05 09:06:51.089 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: sharedPrefs changed key: 'multiprocess_counter_read' value '13'
+        11-05 09:06:51.103 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: read in main process: changed [key: 'multiprocess_counter_read' value '13']
+        11-05 09:06:51.105 19901-22324/net.grandcentrix.tray.sample:otherProcess D/MultiProcessService: read in other process => tray: 13 sharedPrefs: 13
+        11-05 09:06:51.303 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: write in main process: counter = 14
+        11-05 09:06:51.308 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: sharedPrefs changed key: 'multiprocess_counter_read' value '14'
+        11-05 09:06:51.320 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: read in main process: changed [key: 'multiprocess_counter_read' value '14']
+        11-05 09:06:51.331 19901-22330/net.grandcentrix.tray.sample:otherProcess D/MultiProcessService: read in other process => tray: 14 sharedPrefs: 13
+        11-05 09:06:51.695 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: write in main process: counter = 15
+        11-05 09:06:51.700 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: sharedPrefs changed key: 'multiprocess_counter_read' value '15'
+        11-05 09:06:51.718 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: read in main process: changed [key: 'multiprocess_counter_read' value '15']
+        11-05 09:06:51.730 19901-22335/net.grandcentrix.tray.sample:otherProcess D/MultiProcessService: read in other process => tray: 15 sharedPrefs: 13
+        11-05 09:06:52.104 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: write in main process: counter = 16
+        11-05 09:06:52.111 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: sharedPrefs changed key: 'multiprocess_counter_read' value '16'
+        11-05 09:06:52.124 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: read in main process: changed [key: 'multiprocess_counter_read' value '16']
+        11-05 09:06:52.154 19901-22344/net.grandcentrix.tray.sample:otherProcess D/MultiProcessService: read in other process => tray: 16 sharedPrefs: 16
+        11-05 09:06:52.287 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: write in main process: counter = 17
+        11-05 09:06:52.289 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: sharedPrefs changed key: 'multiprocess_counter_read' value '17'
+        11-05 09:06:52.303 19901-22346/net.grandcentrix.tray.sample:otherProcess D/MultiProcessService: read in other process => tray: 17 sharedPrefs: 16
+        11-05 09:06:52.307 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: read in main process: changed [key: 'multiprocess_counter_read' value '17']
+        */
+    }
+
+    /**
+     * write remote, get notified here with the listeners
+     * <p>
+     * check logcat to see what happens
+     */
+    private void increaseMultiprocessCounterInOtherProcess() {
+        // the listeners will react to those changes. At least the tray listener because the
+        // listener of the shared preferences has no idea something has changed in the shared prefs
+        // in another process
+        MultiProcessService.write(this);
+
+        // sample output
+        // you can see the shared preferences in the main thread don't get notified
+        /*
+        11-05 09:04:11.302 19901-19914/net.grandcentrix.tray.sample:otherProcess D/MultiProcessService: write in other process: counter = 1
+        11-05 09:04:11.372 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: read in main process: changed [key: 'multiprocess_counter_write' value '1']
+        11-05 09:04:12.375 19901-19932/net.grandcentrix.tray.sample:otherProcess D/MultiProcessService: write in other process: counter = 2
+        11-05 09:04:12.379 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: read in main process: changed [key: 'multiprocess_counter_write' value '2']
+        11-05 09:04:13.909 19901-19957/net.grandcentrix.tray.sample:otherProcess D/MultiProcessService: write in other process: counter = 3
+        11-05 09:04:13.914 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: read in main process: changed [key: 'multiprocess_counter_write' value '3']
+        11-05 09:04:14.792 19901-19966/net.grandcentrix.tray.sample:otherProcess D/MultiProcessService: write in other process: counter = 4
+        11-05 09:04:14.801 19787-19787/net.grandcentrix.tray.sample D/SampleActivity: read in main process: changed [key: 'multiprocess_counter_write' value '4']
+        */
     }
 
     /**
@@ -209,9 +329,8 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         final String sharedPrefData = mSharedPreferences.getString(SHARED_PREF_KEY, "null");
         final String trayData = mImportPreference.getString(TRAY_PREF_KEY, "null");
 
-        info.setText(
-                "SharedPref Data: " + sharedPrefData + "\n"
-                        + "Tray Data: " + trayData);
+        info.setText("SharedPref Data: " + sharedPrefData + "\n"
+                + "Tray Data: " + trayData);
     }
 
     private void writeInSharedPref() {
