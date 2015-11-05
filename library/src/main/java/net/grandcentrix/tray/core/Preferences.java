@@ -235,8 +235,8 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
                     onUpgrade(version, newVersion);
                 }
             }
+            getStorage().setVersion(newVersion);
         }
-        getStorage().setVersion(newVersion);
     }
 
     static boolean isDataTypeSupported(final Object data) {

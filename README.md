@@ -17,10 +17,10 @@ Tray is this mentioned _explicit cross-process data management approach_ powered
 - **works multiprocess**
 - stores simple data types as key value pairs
 - automatically saves metadata for each entry (created, last updated, ...)
-- manage your Preferences in modules [TrayModulePreference](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/TrayModulePreferences.java#L37)
-- Delete single modules, all modules, or [all modules except some very important ones](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/Tray.java#L108)
-- update and migrate your data from one app version to next one with versioned Preferences and a [`onUpgrade()`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/accessor/Preference.java#L69) method
-- Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/migration/SharedPreferencesImport.java)
+- manage your Preferences in modules [TrayPreference](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/TrayPreferences.java)
+- Delete single modules, all modules, or [all modules except some very important ones](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/Tray.java#L79)
+- update and migrate your data from one app version to next one with versioned Preferences and a [`onUpgrade()`](https://github.com/grandcentrix/tray/blob/14325e182e225e668218fc539f5de0c9b9e524e7/library/src/main/java/net/grandcentrix/tray/core/Preferences.java#L196) method
+- Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/core/SharedPreferencesImport.java)
 - **tray is 100% unit tested!**
 - 0 lint warnings/errors
 - ![new_badge](https://cloud.githubusercontent.com/assets/1096485/9856970/37791f1c-5b18-11e5-97e4-53b8984c76e1.gif) Android 6.0 [Auto Backup for Apps](https://developer.android.com/preview/backup/index.html) support! [Read more in the wiki](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support)
@@ -114,7 +114,11 @@ Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studi
 ```java
 
 dependencies {
+    // stable
     compile 'net.grandcentrix.tray:tray:0.9.2'
+    
+    // preview
+    compile 'net.grandcentrix.tray:tray:1.0.0-rc1'
 }
 
 ```
@@ -181,7 +185,7 @@ Branch | Status | Coverage
 
 At first, it was the simplest way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us. see [more informations](https://github.com/grandcentrix/tray/issues/28#issuecomment-108282253)
 
-If you have found a better solution implement the [`ModularizedStorage`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/storage/ModularizedStorage.java) and contribute to this project! We would appreciate it.
+If you have found a better solution implement the [`TrayStorage`](https://github.com/grandcentrix/tray/blob/14325e182e225e668218fc539f5de0c9b9e524e7/library/src/main/java/net/grandcentrix/tray/core/TrayStorage.java) and contribute to this project! We would appreciate it.
 
 That said, yes the performance isn't as good as the SharedPreferences. But the performance is good enough to save/access single key value pairs synchron. If you want to save more you should think about a simple database.
 
@@ -194,12 +198,10 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Roadmap
 
-- Last changes in naming before 1.0
-- rename modules and migrate modules into other modules (and the migration documentation is missing)
-- save additional data types (`Set<String>`, `byte[]`)
-- Observe changes with a `ContentObserver`
 - rx wrapper for changes
+- save additional data types (`Set<String>`, `byte[]`)
 - performance tests
+- memory cache for based on contentobservers
 
 ## Versions
 

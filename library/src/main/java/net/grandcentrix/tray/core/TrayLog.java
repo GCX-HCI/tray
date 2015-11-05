@@ -65,10 +65,12 @@ public class TrayLog {
     /**
      * Customize the log tag for your application, so that other apps
      * using Tray don't mix their logs with yours.
-     * <br />
+     * <p>
      * Enable the log property for your tag before starting your app:
-     * <br />
+     * <p>
      * {@code adb shell setprop log.tag.&lt;tag&gt;}
+     *
+     * @param tag new tag will be used for logging
      */
     public static void setTag(String tag) {
         d("Changing log tag to " + tag);
