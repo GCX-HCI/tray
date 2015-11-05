@@ -118,7 +118,7 @@ dependencies {
     compile 'net.grandcentrix.tray:tray:0.9.2'
     
     // preview
-    compile 'net.grandcentrix.tray:tray:1.0.0-rc1'
+    compile 'net.grandcentrix.tray:tray:1.0.0-rc3'
 }
 
 ```
@@ -198,14 +198,20 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Roadmap
 
-- rx wrapper for changes
-- save additional data types (`Set<String>`, `byte[]`)
 - performance tests
 - memory cache for based on contentobservers
+- rx wrapper for changes
+- save additional data types (`Set<String>`, `byte[]`)
 
 ## Versions
 
 ##### Version 1.0.0 preview
+
+###### 1.0.0-rc3 `05.11.15`
+
+- hotfix for listener on Android 6.0 which has caused a infinity loop #55
+- the sample project includes now a way to test the multi process support compared to the `SharedPreferences`
+- removed unnecessary write operation for every version check #54
 
 ###### 1.0.0-rc2 `24.09.15`
 

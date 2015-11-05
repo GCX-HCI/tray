@@ -2,8 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 apply plugin: 'bintray-release'
 
-def final String VERSION_NAME = "1.0.0-rc2"
-def final int VERSION_CODE = 8
+def final String VERSION_NAME = "1.0.0-rc3"
+def final int VERSION_CODE = 9
 
 android {
     compileSdkVersion 23
