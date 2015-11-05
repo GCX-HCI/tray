@@ -134,6 +134,8 @@ public class ContentProviderStorage extends TrayStorage {
 
     private final TrayProviderHelper mProviderHelper;
 
+    private volatile boolean mRegisteredContentObserver = false;
+
     private final TrayUri mTrayUri;
 
     public ContentProviderStorage(@NonNull final Context context, @NonNull final String module,
@@ -264,7 +266,7 @@ public class ContentProviderStorage extends TrayStorage {
      * was introduced in sdk version 16
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void registerOnTrayPreferenceChangeListener(
+    public synchronized void registerOnTrayPreferenceChangeListener(
             @NonNull final OnTrayPreferenceChangeListener listener) {
         // noinspection ConstantConditions
         if (listener == null) {
@@ -285,8 +287,6 @@ public class ContentProviderStorage extends TrayStorage {
 
         if (listeners.size() == 1) {
 
-            final boolean[] registered = {false};
-
             // registering a TrayContentObserver requires a LooperThread
             mObserverThread = new HandlerThread("observer") {
                 @Override
@@ -301,7 +301,7 @@ public class ContentProviderStorage extends TrayStorage {
                             .build();
                     mContext.getContentResolver()
                             .registerContentObserver(observingUri, true, mObserver);
-                    registered[0] = true;
+                    mRegisteredContentObserver = true;
                 }
             };
             mObserverThread.start();
@@ -309,7 +309,8 @@ public class ContentProviderStorage extends TrayStorage {
             // wait synchronously until the mObserverThread registered the mObserver
             // cannot use Thread.join(); because the Looper of the HandlerThread runs forever until killed
             while (true) {
-                if (registered[0]) {
+                if (mRegisteredContentObserver) {
+                    mRegisteredContentObserver = false;
                     break;
                 }
             }
