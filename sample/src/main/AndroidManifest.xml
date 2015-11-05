@@ -17,6 +17,8 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".MultiProcessService" android:process=":otherProcess"/>
+
     </application>
 
 </manifest>
