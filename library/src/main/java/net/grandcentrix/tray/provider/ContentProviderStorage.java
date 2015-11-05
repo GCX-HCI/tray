@@ -130,11 +130,11 @@ public class ContentProviderStorage extends TrayStorage {
     @VisibleForTesting
     HandlerThread mObserverThread;
 
-    volatile boolean mRegisteredContentObserver = false;
-
     private final Context mContext;
 
     private final TrayProviderHelper mProviderHelper;
+
+    private volatile boolean mRegisteredContentObserver = false;
 
     private final TrayUri mTrayUri;
 
