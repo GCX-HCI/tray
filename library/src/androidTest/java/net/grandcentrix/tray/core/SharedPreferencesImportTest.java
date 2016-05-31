@@ -134,6 +134,17 @@ public class SharedPreferencesImportTest extends TrayProviderTestCase {
         assertEquals(DATA, mSharedPrefs.getString("key", "default")); // data is deleted
     }
 
+    public void testPostMigrateIntegerCorrect() throws Exception {
+        final int DATA = 13;
+        mSharedPrefs.edit().putInt("key", DATA).commit();
+        final SharedPreferencesImport sharedPreferencesImport = new SharedPreferencesImport(
+                getContext(), SHARED_PREF_NAME, "key", "trayKey");
+        final TrayItem trayItem = mock(TrayItem.class);
+        when(trayItem.value()).thenReturn(Integer.toString(DATA));
+        sharedPreferencesImport.onPostMigrate(trayItem);
+        assertEquals(1, mSharedPrefs.getInt("key", 1)); // data is deleted
+    }
+
     public void testPostMigrateWithNull() throws Exception {
         final String DATA = "data";
         mSharedPrefs.edit().putString("key", DATA).commit();

@@ -1,4 +1,9 @@
 language: android
+
+env:
+  global:
+    - ADB_INSTALL_TIMEOUT=20 # minutes (2 minutes by default)
+
 android:
   components:
     # Uncomment the lines below if you want to
