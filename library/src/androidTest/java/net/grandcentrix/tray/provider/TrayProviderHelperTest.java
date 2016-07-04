@@ -238,18 +238,14 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertNotSame(list.get(0).value(), list.get(1).value());
     }
 
-    public void testQueryProviderWithUnregisteredProvider() throws Exception {
+    public void testQueryGotCursorNull() throws Exception {
         final Context context = mock(Context.class);
         final ContentResolver contentResolver = mock(ContentResolver.class);
         when(context.getContentResolver()).thenReturn(contentResolver);
         final TrayProviderHelper trayProviderHelper = new TrayProviderHelper(context);
         final Uri uri = mTrayUri.get();
-        try {
-            trayProviderHelper.queryProvider(uri);
-            fail();
-        } catch (IllegalStateException e) {
-            assertTrue(e.getMessage().contains(uri.toString()));
-        }
+        List<TrayItem> trayItems = trayProviderHelper.queryProvider(uri);
+        assertEquals(0, trayItems.size());
     }
 
     public void testQuerySingle() throws Exception {
