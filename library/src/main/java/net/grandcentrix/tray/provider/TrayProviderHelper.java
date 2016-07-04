@@ -133,26 +133,19 @@ public class TrayProviderHelper {
      *
      * @param uri path to data
      * @return list of items
-     * @throws IllegalStateException something is wrong with the provider/database
      */
     @NonNull
     public List<TrayItem> queryProvider(@NonNull final Uri uri)
             throws IllegalStateException {
         final Cursor cursor = mContext.getContentResolver().query(uri, null, null, null, null);
-
-        // Return Preference if found
-        if (cursor == null) {
-            throw new IllegalStateException(
-                    "could not access stored data with uri " + uri
-                            + ". Is the provider registered in the manifest of your application?");
-        }
-
         final ArrayList<TrayItem> list = new ArrayList<>();
-        for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
-            final TrayItem trayItem = cursorToTrayItem(cursor);
-            list.add(trayItem);
+        if (cursor != null) {
+            for (boolean hasItem = cursor.moveToFirst(); hasItem; hasItem = cursor.moveToNext()) {
+                final TrayItem trayItem = cursorToTrayItem(cursor);
+                list.add(trayItem);
+            }
+            cursor.close();
         }
-        cursor.close();
         return list;
     }
 
