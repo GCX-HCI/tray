@@ -2,8 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 apply plugin: 'bintray-release'
 
-def final String VERSION_NAME = "1.0.0-rc1"
-def final int VERSION_CODE = 7
+def final String VERSION_NAME = "0.10.0"
+def final int VERSION_CODE = 10
 
 android {
     compileSdkVersion 23
@@ -35,7 +35,7 @@ android {
     }
 
     adbOptions {
-        timeOutInMs 30000
+        timeOutInMs 300000
     }
 }
 

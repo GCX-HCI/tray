@@ -17,10 +17,10 @@ Tray is this mentioned _explicit cross-process data management approach_ powered
 - **works multiprocess**
 - stores simple data types as key value pairs
 - automatically saves metadata for each entry (created, last updated, ...)
-- manage your Preferences in modules [TrayModulePreference](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/TrayModulePreferences.java#L37)
-- Delete single modules, all modules, or [all modules except some very important ones](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/Tray.java#L108)
-- update and migrate your data from one app version to next one with versioned Preferences and a [`onUpgrade()`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/accessor/Preference.java#L69) method
-- Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/migration/SharedPreferencesImport.java)
+- manage your Preferences in modules [TrayPreference](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/TrayPreferences.java)
+- Delete single modules, all modules, or [all modules except some very important ones](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/Tray.java#L79)
+- update and migrate your data from one app version to next one with versioned Preferences and a [`onUpgrade()`](https://github.com/grandcentrix/tray/blob/14325e182e225e668218fc539f5de0c9b9e524e7/library/src/main/java/net/grandcentrix/tray/core/Preferences.java#L196) method
+- Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/core/SharedPreferencesImport.java)
 - **tray is 100% unit tested!**
 - 0 lint warnings/errors
 - ![new_badge](https://cloud.githubusercontent.com/assets/1096485/9856970/37791f1c-5b18-11e5-97e4-53b8984c76e1.gif) Android 6.0 [Auto Backup for Apps](https://developer.android.com/preview/backup/index.html) support! [Read more in the wiki](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support)
@@ -114,7 +114,7 @@ Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studi
 ```java
 
 dependencies {
-    compile 'net.grandcentrix.tray:tray:0.9.2'
+    compile 'net.grandcentrix.tray:tray:0.10.0'
 }
 
 ```
@@ -181,7 +181,7 @@ Branch | Status | Coverage
 
 At first, it was the simplest way to use IPC with [`Binder`](http://developer.android.com/reference/android/os/Binder.html) to solve the multiprocess problem. Using the `ContentProvider` with a database turned out to be very handy when it comes to save metadata. We thought about replacing the database with the real `SharedPreferences` to boost the performance (the SharedPreferences do not access the disk for every read/write action which causes the multiprocess problem btw) but the metadata seemed to be more valuable to us. see [more informations](https://github.com/grandcentrix/tray/issues/28#issuecomment-108282253)
 
-If you have found a better solution implement the [`ModularizedStorage`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/storage/ModularizedStorage.java) and contribute to this project! We would appreciate it.
+If you have found a better solution implement the [`TrayStorage`](https://github.com/grandcentrix/tray/blob/14325e182e225e668218fc539f5de0c9b9e524e7/library/src/main/java/net/grandcentrix/tray/core/TrayStorage.java) and contribute to this project! We would appreciate it.
 
 That said, yes the performance isn't as good as the SharedPreferences. But the performance is good enough to save/access single key value pairs synchron. If you want to save more you should think about a simple database.
 
@@ -194,23 +194,29 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Roadmap
 
-- Last changes in naming before 1.0
-- rename modules and migrate modules into other modules (and the migration documentation is missing)
-- save additional data types (`Set<String>`, `byte[]`)
-- Observe changes with a `ContentObserver`
-- rx wrapper for changes
 - performance tests
+- memory cache for based on contentobservers
+- prevent app crashes due to database errors
+- rx wrapper for changes
+- save additional data types (`Set<String>`, `byte[]`)
 
 ## Versions
 
-##### Version 1.0.0 preview
+##### Version 0.10.0 `31.05.16`
+- All features and changes of the 1.0.0-rc preview builds
+- #65 Fix deletion of non string migrated shared preferences.
 
-###### 1.0.0-rc2 `24.09.15`
+>##### Version 1.0.0 preview - postponed until the memory cache is ready
 
+>###### 1.0.0-rc3 `05.11.15`
+- hotfix for listener on Android 6.0 which has caused a infinity loop #55
+- the sample project includes now a way to test the multi process support compared to the `SharedPreferences`
+- removed unnecessary write operation for every version check #54
+
+>###### 1.0.0-rc2 `24.09.15`
 - added logging for all data changing methods. Enable via `adb shell setprop log.tag.Tray VERBOSE`
 
-###### 1.0.0-rc1 `21.09.15`
-
+>###### 1.0.0-rc1 `21.09.15`
 - **Android M Auto Backup feature support** (see the [Documentation](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support))
     - split up database for *user* and *device* specific data (device specific data can now be excluded from the auto backup)
     - `TrayPreferences` has now an optional 3. constructor parameter `TrayStorage.Type`, `USER` or `DEVICE` indicating the internal database (required for Android M Auto Backup). Default is `USER`
@@ -229,24 +235,24 @@ Tray is ready to use without showblockers! But here are some nice to have featur
     - `ModularizedStorage` was renamed to `TrayStorage`
 
 
->##### Version 0.9.2 `02.06.15`
+##### Version 0.9.2 `02.06.15`
 - `getContext()` is working in `TrayModulePreference#onCreate`
 
->##### Version 0.9.1 `18.05.15`
+##### Version 0.9.1 `18.05.15`
 - saving `null` with `mPref.put(KEY, null)` works now
 - access to preference with throwing methods instead of default value (throws ItemNotFoundException). Example: `mPref.getString(KEY);` instead of `mPref.getString(KEY, "defaultValue");`
 - WrongTypeException when accessing a preference with a different type and the data isn't parsable. Float (`10.1f`) -> String works, String (`"10.1"`) -> Float works, String (`"test"`) -> Float throws!
 - javadoc in now included in aar
 
->##### Version 0.9 `27.04.15`
+##### Version 0.9 `27.04.15`
 - initial public release
 
->##### Version 0.2 - 0.8
+##### Version 0.2 - 0.8
 - Refactoring
 - 100% Testing
 - Bugfixing
 
->##### Version 0.1 `17.09.14`
+##### Version 0.1 `17.09.14`
 - first working prototype
 
 
