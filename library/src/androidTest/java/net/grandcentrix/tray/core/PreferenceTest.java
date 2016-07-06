@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 
 import net.grandcentrix.tray.mock.MockTrayStorage;
 
+import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.Whitebox;
 
 import android.annotation.SuppressLint;
@@ -63,8 +64,24 @@ public class PreferenceTest extends TestCase {
         assertTrue(mockPreference.put("b", "b"));
         assertEquals(mockPreference.getAll().size(), 2);
 
-        mockPreference.clear();
+        assertTrue(mockPreference.clear());
         assertEquals(mockPreference.getAll().size(), 0);
+    }
+
+    public void testClearFails() throws Exception {
+        final TrayStorage storage = new MockTrayStorage("test") {
+            @Override
+            public boolean clear() {
+                return false;
+            }
+        };
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(storage, 1);
+        assertTrue(mockPreference.put("a", "a"));
+        assertTrue(mockPreference.put("b", "b"));
+        assertEquals(mockPreference.getAll().size(), 2);
+
+        assertFalse(mockPreference.clear());
+        assertEquals(mockPreference.getAll().size(), 2);
     }
 
     public void testGetAll() throws Exception {
@@ -255,12 +272,11 @@ public class PreferenceTest extends TestCase {
     }
 
     public void testVersionChangeFailed() throws Exception {
-        final MockSimplePreferences mockPreference = new MockSimplePreferences(1) {
-            @Override
-            synchronized void changeVersion(final int newVersion) {
-                throw new TrayRuntimeException("something very very bad happened :-(");
-            }
-        };
+
+        final TrayStorage storage = Mockito.mock(TrayStorage.class);
+        Mockito.when(storage.getVersion())
+                .thenThrow(new TrayException("something very very bad happened :-("));
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(storage, 1);
 
         assertFalse(mockPreference.isVersionChangeChecked());
         assertFalse((Boolean) Whitebox.getInternalState(mockPreference, "mChangeVersionSucceeded"));
@@ -269,7 +285,14 @@ public class PreferenceTest extends TestCase {
     public void testWipe() throws Exception {
         final MockSimplePreferences preferences = new MockSimplePreferences(1);
         assertEquals(1, preferences.getVersion());
-        preferences.wipe();
+        assertTrue(preferences.wipe());
         assertEquals(0, preferences.getVersion());
+    }
+
+    public void testWipeFailed() throws Exception {
+        final TrayStorage storage = Mockito.mock(TrayStorage.class);
+        Mockito.when(storage.wipe()).thenReturn(false);
+        final MockSimplePreferences preferences = new MockSimplePreferences(storage, 1);
+        assertFalse(preferences.wipe());
     }
 }

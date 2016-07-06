@@ -58,9 +58,10 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     }
 
     @Override
-    public void clear() {
-        mStorage.clear();
-        v("cleared " + this);
+    public boolean clear() {
+        final boolean cleared = mStorage.clear();
+        v("cleared " + (cleared ? "successful" : "failed") + " " + this);
+        return cleared;
     }
 
     @Override
@@ -77,7 +78,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     /**
      * @return the version of this preference
      */
-    public int getVersion() {
+    public int getVersion() throws TrayException {
         return mStorage.getVersion();
     }
 
@@ -172,9 +173,10 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     }
 
     @Override
-    public void wipe() {
-        mStorage.wipe();
-        v("wiped " + this);
+    public boolean wipe() {
+        final boolean wiped = mStorage.wipe();
+        v("wipe " + (wiped ? "successful" : "failed") + " " + this);
+        return wiped;
     }
 
     @NonNull
@@ -245,21 +247,28 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             throw new IllegalArgumentException("Version must be >= 1, was " + newVersion);
         }
 
-        final int version = getStorage().getVersion();
-        if (version != newVersion) {
-            if (version == 0) {
-                v("create " + this + " with initial version 0");
-                onCreate(newVersion);
-            } else {
-                if (version > newVersion) {
-                    v("downgrading " + this + "from " + version + " to " + newVersion);
-                    onDowngrade(version, newVersion);
+        try {
+            final int version = getStorage().getVersion();
+            if (version != newVersion) {
+                if (version == 0) {
+                    v("create " + this + " with initial version 0");
+                    onCreate(newVersion);
                 } else {
-                    v("upgrading " + this + " from " + version + " to " + newVersion);
-                    onUpgrade(version, newVersion);
+                    if (version > newVersion) {
+                        v("downgrading " + this + "from " + version + " to " + newVersion);
+                        onDowngrade(version, newVersion);
+                    } else {
+                        v("upgrading " + this + " from " + version + " to " + newVersion);
+                        onUpgrade(version, newVersion);
+                    }
                 }
+                getStorage().setVersion(newVersion);
             }
-            getStorage().setVersion(newVersion);
+            // mark this module as successfully version checked
+            mChangeVersionSucceeded = true;
+        } catch (TrayException e) {
+            e.printStackTrace();
+            v("could not change the version, retrying with the next interaction");
         }
     }
 
@@ -273,17 +282,9 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
      */
     /*package*/ boolean isVersionChangeChecked() {
         if (!mChangeVersionSucceeded) {
-            try {
-                changeVersion(mVersion);
-                mChangeVersionSucceeded = true;
-                return true;
-            } catch (TrayRuntimeException e) {
-                e.printStackTrace();
-                v("failed to change version");
-                return false;
-            }
+            changeVersion(mVersion);
         }
-        return true;
+        return mChangeVersionSucceeded;
     }
 
     static boolean isDataTypeSupported(final Object data) {

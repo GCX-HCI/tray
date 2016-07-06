@@ -189,7 +189,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
 
         // undefinedStorage.getVersion() would return random 100 or 200. more likely 100 because it was inserted before
 
-        undefinedStorage.wipe();
+        assertTrue(undefinedStorage.wipe());
         assertEquals(0, userStorage.getVersion());
         assertEquals(0, deviceStorage.getVersion());
     }
@@ -329,7 +329,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
 
     public void testPutUser() throws Exception {
         final ContentProviderStorage storage =
-                new ContentProviderStorage(getProviderMockContext(), "testPut_User", TrayStorage.Type.USER);
+                new ContentProviderStorage(getProviderMockContext(), "testPut_User",
+                        TrayStorage.Type.USER);
         assertTrue(storage.put(TEST_KEY, TEST_STRING));
         assertUserDatabaseSize(1);
         assertDeviceDatabaseSize(0);
@@ -352,15 +353,6 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertTrue(original.put(TEST_KEY, TEST_STRING));
 
         checkReadDataWithUndefined(original);
-    }
-
-    public void testRemoveFailed() throws Exception {
-        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
-                "testRemove1", TrayStorage.Type.USER);
-        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(),
-                "testRemove2", TrayStorage.Type.DEVICE);
-        assertFalse(storage1.remove(TEST_KEY));
-        assertFalse(storage2.remove(TEST_KEY));
     }
 
     public void testRemove() throws Exception {
@@ -419,6 +411,15 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertNotNull(undefinedUser.get(TEST_KEY2));
     }
 
+    public void testRemoveFailed() throws Exception {
+        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
+                "testRemove1", TrayStorage.Type.USER);
+        final ContentProviderStorage storage2 = new ContentProviderStorage(getProviderMockContext(),
+                "testRemove2", TrayStorage.Type.DEVICE);
+        assertFalse(storage1.remove(TEST_KEY));
+        assertFalse(storage2.remove(TEST_KEY));
+    }
+
     public void testRemoveIfItemIsNotThere() {
         final ContentProviderStorage storageUser = new ContentProviderStorage(
                 getProviderMockContext(), "testRemoveIfItemIsNotThere_User", TrayStorage.Type.USER);
@@ -427,7 +428,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertUserDatabaseSize(1);
 
         final ContentProviderStorage storageDevice = new ContentProviderStorage(
-                getProviderMockContext(), "testRemoveIfItemIsNotThere_Device", TrayStorage.Type.DEVICE);
+                getProviderMockContext(), "testRemoveIfItemIsNotThere_Device",
+                TrayStorage.Type.DEVICE);
         assertTrue(storageDevice.put(TEST_KEY2, TEST_STRING2));
         storageDevice.remove(TEST_KEY);
         assertUserDatabaseSize(1);
@@ -542,6 +544,22 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         checkVersionAfterClear(storage);
     }
 
+
+    public void testWipeFails() throws Exception {
+        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
+                "testWipe1", TrayStorage.Type.USER){
+            @Override
+            public boolean clear() {
+                return false;
+            }
+        };
+        storage1.setVersion(1);
+        assertTrue(storage1.put(TEST_KEY, TEST_STRING));
+        assertEquals(1, storage1.getVersion());
+
+        assertFalse(storage1.wipe());
+    }
+
     public void testWipe() throws Exception {
         final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
                 "testWipe1", TrayStorage.Type.USER);
@@ -566,7 +584,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(1, storage3.getVersion());
         assertEquals(1, storage4.getVersion());
 
-        storage1.wipe();
+        assertTrue(storage1.wipe());
 
         assertEquals(0, storage1.getAll().size());
         assertEquals(1, storage2.getAll().size());
@@ -578,7 +596,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(1, storage3.getVersion());
         assertEquals(1, storage4.getVersion());
 
-        storage3.wipe();
+        assertTrue(storage3.wipe());
 
         assertEquals(0, storage1.getAll().size());
         assertEquals(1, storage2.getAll().size());
@@ -592,9 +610,9 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
 
         // fill up again
         assertTrue(storage1.put(TEST_KEY, TEST_STRING));
-        storage1.setVersion(1);
+        assertTrue(storage1.setVersion(1));
         assertTrue(storage3.put(TEST_KEY, TEST_STRING));
-        storage3.setVersion(1);
+        assertTrue(storage3.setVersion(1));
 
         // test clear for undefined.
         // tricky because it's not clear which database has to be updated
@@ -603,7 +621,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         final ContentProviderStorage undefinedUser = new ContentProviderStorage(
                 getProviderMockContext(), "testWipe2", TrayStorage.Type.UNDEFINED);
 
-        undefinedDevice.wipe();
+        assertTrue(undefinedDevice.wipe());
 
         assertEquals(1, storage1.getAll().size());
         assertEquals(1, storage2.getAll().size());
@@ -615,7 +633,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(1, storage3.getVersion());
         assertEquals(0, storage4.getVersion());
 
-        undefinedUser.wipe();
+        assertTrue(undefinedUser.wipe());
 
         assertEquals(1, storage1.getAll().size());
         assertEquals(0, storage2.getAll().size());
@@ -628,7 +646,8 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(0, storage4.getVersion());
     }
 
-    private void checkReadDataWithUndefined(final ContentProviderStorage original) {
+    private void checkReadDataWithUndefined(final ContentProviderStorage original)
+            throws Exception {
         final ContentProviderStorage undefined = new ContentProviderStorage(
                 getProviderMockContext(), original.getModuleName(), TrayStorage.Type.UNDEFINED);
 
@@ -641,7 +660,7 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(original.getModuleName(), undefined.getModuleName());
     }
 
-    private void checkVersionAfterClear(final ContentProviderStorage storage) {
+    private void checkVersionAfterClear(final ContentProviderStorage storage) throws Exception {
         assertTrue(storage.put("key", "value"));
         final TrayItem key = storage.get("key");
         assertNotNull(key);

@@ -18,6 +18,7 @@ package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.TrayPreferences;
 import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
+import net.grandcentrix.tray.core.TrayException;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayLog;
 import net.grandcentrix.tray.core.TrayRuntimeException;
@@ -85,7 +86,7 @@ public class ContentProviderStorage extends TrayStorage {
             }
 
             // query only the changed items
-            final List<TrayItem> trayItems = mProviderHelper.queryProvider(uri);
+            final List<TrayItem> trayItems = mProviderHelper.queryProviderSafe(uri);
 
             // clone to get around ConcurrentModificationException
             final Set<Map.Entry<OnTrayPreferenceChangeListener, Handler>> entries
@@ -151,16 +152,17 @@ public class ContentProviderStorage extends TrayStorage {
         for (final TrayItem trayItem : oldStorage.getAll()) {
             put(trayItem);
         }
+        // ignore result
         oldStorage.wipe();
     }
 
     @Override
-    public void clear() {
+    public boolean clear() {
         final Uri uri = mTrayUri.builder()
                 .setModule(getModuleName())
                 .setType(getType())
                 .build();
-        mContext.getContentResolver().delete(uri, null, null);
+        return mProviderHelper.remove(uri);
     }
 
     @Override
@@ -171,7 +173,7 @@ public class ContentProviderStorage extends TrayStorage {
                 .setModule(getModuleName())
                 .setKey(key)
                 .build();
-        final List<TrayItem> prefs = mProviderHelper.queryProvider(uri);
+        final List<TrayItem> prefs = mProviderHelper.queryProviderSafe(uri);
         final int size = prefs.size();
         if (size > 1) {
             TrayLog.w("found more than one item for key '" + key
@@ -192,7 +194,7 @@ public class ContentProviderStorage extends TrayStorage {
                 .setType(getType())
                 .setModule(getModuleName())
                 .build();
-        return mProviderHelper.queryProvider(uri);
+        return mProviderHelper.queryProviderSafe(uri);
     }
 
     /**
@@ -204,7 +206,7 @@ public class ContentProviderStorage extends TrayStorage {
     }
 
     @Override
-    public int getVersion() {
+    public int getVersion() throws TrayException {
         final Uri internalUri = mTrayUri.builder()
                 .setInternal(true)
                 .setType(getType())
@@ -330,11 +332,11 @@ public class ContentProviderStorage extends TrayStorage {
                 .setModule(getModuleName())
                 .setKey(key)
                 .build();
-        return mContext.getContentResolver().delete(uri, null, null) > 0;
+        return mProviderHelper.removeAndCount(uri) > 0;
     }
 
     @Override
-    public void setVersion(final int version) {
+    public boolean setVersion(final int version) {
         if (getType() == Type.UNDEFINED) {
             throw new TrayRuntimeException(
                     "writing data into a storage with type UNDEFINED is forbidden. Only Read and delete is allowed.");
@@ -345,7 +347,7 @@ public class ContentProviderStorage extends TrayStorage {
                 .setModule(getModuleName())
                 .setKey(VERSION)
                 .build();
-        mProviderHelper.persist(uri, String.valueOf(version));
+        return mProviderHelper.persist(uri, String.valueOf(version));
     }
 
     public void unregisterOnTrayPreferenceChangeListener(
@@ -372,15 +374,19 @@ public class ContentProviderStorage extends TrayStorage {
      *
      * @see #clear()
      */
-    public void wipe() {
-        clear();
+    public boolean wipe() {
+        final boolean cleared = clear();
+
+        if (!cleared) {
+            // clear wasn't successful, don't even start clearing the internal stuff
+            return false;
+        }
+
         final Uri uri = mTrayUri.builder()
                 .setInternal(true)
                 .setType(getType())
                 .setModule(getModuleName())
                 .build();
-        mContext.getContentResolver().delete(uri, null, null);
+        return mProviderHelper.remove(uri);
     }
-
-
 }

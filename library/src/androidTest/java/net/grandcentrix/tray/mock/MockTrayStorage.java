@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.mock;
 
 import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
+import net.grandcentrix.tray.core.TrayException;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayStorage;
 
@@ -52,8 +53,9 @@ public class MockTrayStorage extends TrayStorage {
     }
 
     @Override
-    public void clear() {
+    public boolean clear() {
         mData.clear();
+        return true;
     }
 
     @Override
@@ -68,7 +70,7 @@ public class MockTrayStorage extends TrayStorage {
     }
 
     @Override
-    public int getVersion() {
+    public int getVersion() throws TrayException {
         return mVersion;
     }
 
@@ -111,8 +113,9 @@ public class MockTrayStorage extends TrayStorage {
     }
 
     @Override
-    public void setVersion(final int version) {
+    public boolean setVersion(final int version) {
         this.mVersion = version;
+        return true;
     }
 
     @Override
@@ -122,8 +125,9 @@ public class MockTrayStorage extends TrayStorage {
     }
 
     @Override
-    public void wipe() {
+    public boolean wipe() {
         mData.clear();
         mVersion = 0;
+        return true;
     }
 }

@@ -32,10 +32,11 @@ public interface PreferenceStorage<T> {
      * clears the storage by deleting all of its content. But doesn't clear metadata like the
      * version. to do so, use {@link #wipe()}
      *
+     * @return true when successful, false otherwise
      * @see #wipe()
      * @see #getVersion()
      */
-    void clear();
+    boolean clear();
 
     /**
      * @param key mapping key for the stored object
@@ -54,7 +55,7 @@ public interface PreferenceStorage<T> {
      * @return the current version of this storage
      * @see #setVersion(int)
      */
-    int getVersion();
+    int getVersion() throws TrayException;
 
     /**
      * stores a data item.
@@ -97,15 +98,17 @@ public interface PreferenceStorage<T> {
      * sets the version of this storage
      *
      * @param version should be &gt; 0
+     * @return true when successful, false otherwise
      */
-    void setVersion(final int version);
+    boolean setVersion(final int version);
 
     /**
      * deleted this storage like it has never existed. removed saved data and all possible meta
      * data
      *
+     * @return true when successful, false otherwise
      * @see #clear()
      */
-    void wipe();
+    boolean wipe();
 
 }

@@ -31,8 +31,9 @@ public interface PreferenceAccessor<T> {
     /**
      * clears all data in this preference. Access with {@code get} methods will return {@link
      * ItemNotFoundException} or the {@code defaultValue}
+     * @return true when successful, false otherwise
      */
-    void clear();
+    boolean clear();
 
     /**
      * @return all data stored in the preference
@@ -213,8 +214,8 @@ public interface PreferenceAccessor<T> {
      * clear the data inside the preference and all evidence this preference has ever existed
      * <p>
      * also cleans internal information like the version for this preference
-     *
+     * @return true when successful, false otherwise
      * @see #clear()
      */
-    void wipe();
+    boolean wipe();
 }
