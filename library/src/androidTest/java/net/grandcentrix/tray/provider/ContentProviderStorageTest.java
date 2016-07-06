@@ -544,22 +544,6 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         checkVersionAfterClear(storage);
     }
 
-
-    public void testWipeFails() throws Exception {
-        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
-                "testWipe1", TrayStorage.Type.USER){
-            @Override
-            public boolean clear() {
-                return false;
-            }
-        };
-        storage1.setVersion(1);
-        assertTrue(storage1.put(TEST_KEY, TEST_STRING));
-        assertEquals(1, storage1.getVersion());
-
-        assertFalse(storage1.wipe());
-    }
-
     public void testWipe() throws Exception {
         final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
                 "testWipe1", TrayStorage.Type.USER);
@@ -644,6 +628,21 @@ public class ContentProviderStorageTest extends TrayProviderTestCase {
         assertEquals(0, storage2.getVersion());
         assertEquals(1, storage3.getVersion());
         assertEquals(0, storage4.getVersion());
+    }
+
+    public void testWipeFails() throws Exception {
+        final ContentProviderStorage storage1 = new ContentProviderStorage(getProviderMockContext(),
+                "testWipe1", TrayStorage.Type.USER) {
+            @Override
+            public boolean clear() {
+                return false;
+            }
+        };
+        storage1.setVersion(1);
+        assertTrue(storage1.put(TEST_KEY, TEST_STRING));
+        assertEquals(1, storage1.getVersion());
+
+        assertFalse(storage1.wipe());
     }
 
     private void checkReadDataWithUndefined(final ContentProviderStorage original)

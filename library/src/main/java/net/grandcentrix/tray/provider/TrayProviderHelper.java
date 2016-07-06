@@ -67,6 +67,8 @@ public class TrayProviderHelper {
      * clears <b>all</b> {@link TrayPreferences} but the modules stated.
      *
      * @param modules modules excluded when deleting preferences
+     * @return true when successful, false otherwise. true doesn't indicate that something got
+     * cleared, it just means no error occurred
      */
     public boolean clearBut(TrayPreferences... modules) {
         String selection = null;
@@ -110,6 +112,7 @@ public class TrayProviderHelper {
      * @param module module name
      * @param key    key for mapping
      * @param value  data to save
+     * @return true when successfully written
      */
     public boolean persist(@NonNull final String module, @NonNull final String key,
             @NonNull final String value) {
@@ -123,7 +126,7 @@ public class TrayProviderHelper {
      * @param key         key for mapping
      * @param previousKey key used before migration
      * @param value       data to save
-     * @return whether the persist was successful
+     * @return true when successfully written
      */
     public boolean persist(@NonNull final String module, @NonNull final String key,
             @Nullable final String previousKey, @Nullable final String value) {
@@ -156,7 +159,7 @@ public class TrayProviderHelper {
      *
      * @param uri path to data
      * @return list of items
-     * @throws IllegalStateException something is wrong with the provider/database
+     * @throws TrayException when something is wrong with the provider/database
      */
     @NonNull
     public List<TrayItem> queryProvider(@NonNull final Uri uri) throws TrayException {
@@ -201,6 +204,7 @@ public class TrayProviderHelper {
     /**
      * removes items for the given Uri
      *
+     * @param uri what to remove, use {@link TrayUri#builder()} to build a valid uri
      * @return true when delete runs without error. doesn't care about the delete result int
      */
     public boolean remove(final Uri uri) {
@@ -214,8 +218,9 @@ public class TrayProviderHelper {
     }
 
     /**
-     * removes items for the given Uri
+     * removes items for the given Uri and returns the count of the deleted items
      *
+     * @param uri what to remove, use {@link TrayUri#builder()} to build a valid uri
      * @return number of deleted rows
      */
     public int removeAndCount(final Uri uri) {

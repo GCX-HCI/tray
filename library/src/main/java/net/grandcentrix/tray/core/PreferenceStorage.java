@@ -54,6 +54,7 @@ public interface PreferenceStorage<T> {
     /**
      * @return the current version of this storage
      * @see #setVersion(int)
+     * @throws TrayException when the version couldn't be read
      */
     int getVersion() throws TrayException;
 

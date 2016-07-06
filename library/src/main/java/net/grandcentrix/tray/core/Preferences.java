@@ -77,6 +77,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     /**
      * @return the version of this preference
+     * @throws TrayException when the version couldn't be read
      */
     public int getVersion() throws TrayException {
         return mStorage.getVersion();
