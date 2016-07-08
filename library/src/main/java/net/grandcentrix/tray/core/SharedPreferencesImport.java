@@ -76,7 +76,7 @@ public class SharedPreferencesImport implements TrayMigration {
             TrayLog.wtf("migration " + this + " failed, saved data in tray is null");
             return;
         }
-        if (equals(trayItem.value(), getData())) {
+        if (equals(trayItem.value(), getData().toString())) {
             TrayLog.v("removing key '" + mSharedPrefsKey + "' from SharedPreferences '"
                     + mSharedPrefsName + "'");
             mPreferences.edit().remove(mSharedPrefsKey).apply();

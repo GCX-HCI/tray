@@ -114,11 +114,7 @@ Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studi
 ```java
 
 dependencies {
-    // stable
-    compile 'net.grandcentrix.tray:tray:0.9.2'
-    
-    // preview
-    compile 'net.grandcentrix.tray:tray:1.0.0-rc1'
+    compile 'net.grandcentrix.tray:tray:0.10.0'
 }
 
 ```
@@ -198,21 +194,29 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Roadmap
 
-- rx wrapper for changes
-- save additional data types (`Set<String>`, `byte[]`)
 - performance tests
 - memory cache for based on contentobservers
+- prevent app crashes due to database errors
+- rx wrapper for changes
+- save additional data types (`Set<String>`, `byte[]`)
 
 ## Versions
 
-##### Version 1.0.0 preview
+##### Version 0.10.0 `31.05.16`
+- All features and changes of the 1.0.0-rc preview builds
+- #65 Fix deletion of non string migrated shared preferences.
 
-###### 1.0.0-rc2 `24.09.15`
+>##### Version 1.0.0 preview - postponed until the memory cache is ready
 
+>###### 1.0.0-rc3 `05.11.15`
+- hotfix for listener on Android 6.0 which has caused a infinity loop #55
+- the sample project includes now a way to test the multi process support compared to the `SharedPreferences`
+- removed unnecessary write operation for every version check #54
+
+>###### 1.0.0-rc2 `24.09.15`
 - added logging for all data changing methods. Enable via `adb shell setprop log.tag.Tray VERBOSE`
 
-###### 1.0.0-rc1 `21.09.15`
-
+>###### 1.0.0-rc1 `21.09.15`
 - **Android M Auto Backup feature support** (see the [Documentation](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support))
     - split up database for *user* and *device* specific data (device specific data can now be excluded from the auto backup)
     - `TrayPreferences` has now an optional 3. constructor parameter `TrayStorage.Type`, `USER` or `DEVICE` indicating the internal database (required for Android M Auto Backup). Default is `USER`
@@ -231,24 +235,24 @@ Tray is ready to use without showblockers! But here are some nice to have featur
     - `ModularizedStorage` was renamed to `TrayStorage`
 
 
->##### Version 0.9.2 `02.06.15`
+##### Version 0.9.2 `02.06.15`
 - `getContext()` is working in `TrayModulePreference#onCreate`
 
->##### Version 0.9.1 `18.05.15`
+##### Version 0.9.1 `18.05.15`
 - saving `null` with `mPref.put(KEY, null)` works now
 - access to preference with throwing methods instead of default value (throws ItemNotFoundException). Example: `mPref.getString(KEY);` instead of `mPref.getString(KEY, "defaultValue");`
 - WrongTypeException when accessing a preference with a different type and the data isn't parsable. Float (`10.1f`) -> String works, String (`"10.1"`) -> Float works, String (`"test"`) -> Float throws!
 - javadoc in now included in aar
 
->##### Version 0.9 `27.04.15`
+##### Version 0.9 `27.04.15`
 - initial public release
 
->##### Version 0.2 - 0.8
+##### Version 0.2 - 0.8
 - Refactoring
 - 100% Testing
 - Bugfixing
 
->##### Version 0.1 `17.09.14`
+##### Version 0.1 `17.09.14`
 - first working prototype
 
 

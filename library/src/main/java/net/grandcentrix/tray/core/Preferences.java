@@ -35,8 +35,12 @@ import static net.grandcentrix.tray.core.TrayLog.w;
 public abstract class Preferences<T, S extends PreferenceStorage<T>>
         implements PreferenceAccessor<T> {
 
+    private boolean mChangeVersionSucceeded;
+
     @NonNull
     private S mStorage;
+
+    private int mVersion;
 
     /**
      * {@link Preferences} allows access to a storage with unfriendly util functions like
@@ -47,14 +51,17 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
      */
     public Preferences(@NonNull final S storage, final int version) {
         mStorage = storage;
+        mVersion = version;
+        mChangeVersionSucceeded = false;
 
-        changeVersion(version);
+        isVersionChangeChecked();
     }
 
     @Override
-    public void clear() {
-        mStorage.clear();
-        v("cleared " + this);
+    public boolean clear() {
+        final boolean cleared = mStorage.clear();
+        v("cleared " + (cleared ? "successful" : "failed") + " " + this);
+        return cleared;
     }
 
     @Override
@@ -70,8 +77,9 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
 
     /**
      * @return the version of this preference
+     * @throws TrayException when the version couldn't be read
      */
-    public int getVersion() {
+    public int getVersion() throws TrayException {
         return mStorage.getVersion();
     }
 
@@ -113,44 +121,63 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     }
 
     @Override
-    public void put(@NonNull final String key, final String value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final String value) {
+        if (!isVersionChangeChecked()) {
+            return false;
+        }
         v("put '" + key + "=\"" + value + "\"' into " + this);
+        return getStorage().put(key, value);
     }
 
     @Override
-    public void put(@NonNull final String key, final int value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final int value) {
+        if (!isVersionChangeChecked()) {
+            return false;
+        }
         v("put '" + key + "=" + value + "' into " + this);
+        return getStorage().put(key, value);
     }
 
     @Override
-    public void put(@NonNull final String key, final float value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final float value) {
+        if (!isVersionChangeChecked()) {
+            return false;
+        }
         v("put '" + key + "=" + value + "' into " + this);
+        return getStorage().put(key, value);
     }
 
     @Override
-    public void put(@NonNull final String key, final long value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final long value) {
+        if (!isVersionChangeChecked()) {
+            return false;
+        }
         v("put '" + key + "=" + value + "' into " + this);
+        return getStorage().put(key, value);
     }
 
     @Override
-    public void put(@NonNull final String key, final boolean value) {
-        getStorage().put(key, value);
+    public boolean put(@NonNull final String key, final boolean value) {
+        if (!isVersionChangeChecked()) {
+            return false;
+        }
         v("put '" + key + "=" + value + "' into " + this);
+        return getStorage().put(key, value);
     }
 
-    public void remove(@NonNull final String key) {
-        mStorage.remove(key);
+    public boolean remove(@NonNull final String key) {
+        if (!isVersionChangeChecked()) {
+            return false;
+        }
         v("removed key '" + key + "' from " + this);
+        return getStorage().remove(key);
     }
 
     @Override
-    public void wipe() {
-        mStorage.wipe();
-        v("wiped " + this);
+    public boolean wipe() {
+        final boolean wiped = mStorage.wipe();
+        v("wipe " + (wiped ? "successful" : "failed") + " " + this);
+        return wiped;
     }
 
     @NonNull
@@ -221,22 +248,44 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             throw new IllegalArgumentException("Version must be >= 1, was " + newVersion);
         }
 
-        final int version = getStorage().getVersion();
-        if (version != newVersion) {
-            if (version == 0) {
-                v("create " + this + " with initial version 0");
-                onCreate(newVersion);
-            } else {
-                if (version > newVersion) {
-                    v("downgrading " + this + "from " + version + " to " + newVersion);
-                    onDowngrade(version, newVersion);
+        try {
+            final int version = getStorage().getVersion();
+            if (version != newVersion) {
+                if (version == 0) {
+                    v("create " + this + " with initial version 0");
+                    onCreate(newVersion);
                 } else {
-                    v("upgrading " + this + " from " + version + " to " + newVersion);
-                    onUpgrade(version, newVersion);
+                    if (version > newVersion) {
+                        v("downgrading " + this + "from " + version + " to " + newVersion);
+                        onDowngrade(version, newVersion);
+                    } else {
+                        v("upgrading " + this + " from " + version + " to " + newVersion);
+                        onUpgrade(version, newVersion);
+                    }
                 }
+                getStorage().setVersion(newVersion);
             }
-            getStorage().setVersion(newVersion);
+            // mark this module as successfully version checked
+            mChangeVersionSucceeded = true;
+        } catch (TrayException e) {
+            e.printStackTrace();
+            v("could not change the version, retrying with the next interaction");
         }
+    }
+
+    /**
+     * Checks whether {@link #changeVersion} was performed successfully yet. If not it will invoke
+     * it.
+     * <p>
+     * Normally changeVersion shouldn't fail at all.
+     *
+     * @return whether {@link #changeVersion} was successfully invoked
+     */
+    /*package*/ boolean isVersionChangeChecked() {
+        if (!mChangeVersionSucceeded) {
+            changeVersion(mVersion);
+        }
+        return mChangeVersionSucceeded;
     }
 
     static boolean isDataTypeSupported(final Object data) {

@@ -112,6 +112,14 @@ public class TrayContentProvider extends ContentProvider {
         return rows;
     }
 
+    public SQLiteDatabase getReadableDatabase(final Uri uri) {
+        if (shouldBackup(uri)) {
+            return mUserDbHelper.getReadableDatabase();
+        } else {
+            return mDeviceDbHelper.getReadableDatabase();
+        }
+    }
+
     /**
      * @param uri localtion of the data
      * @return correct sqlite table for the given uri
@@ -186,8 +194,6 @@ public class TrayContentProvider extends ContentProvider {
         } else if (status == -1) {
             //throw new SQLiteException("An error occurred while saving preference.");
             TrayLog.w("Couldn't update or insert data. Uri: " + uri);
-        } else if (status == -2) {
-            TrayLog.w("Data is already inserted, no need to insert here");
         } else {
             TrayLog.w("unknown SQLite error");
         }
@@ -256,7 +262,7 @@ public class TrayContentProvider extends ContentProvider {
             cursor = new MergeCursor(new Cursor[]{cursor1, cursor2});
         } else {
             // Query
-            cursor = builder.query(getWritableDatabase(uri), projection, selection,
+            cursor = builder.query(getReadableDatabase(uri), projection, selection,
                     selectionArgs, null, null, sortOrder);
         }
 

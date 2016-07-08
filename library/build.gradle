@@ -2,8 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 apply plugin: 'bintray-release'
 
-def final String VERSION_NAME = "1.0.0-rc2"
-def final int VERSION_CODE = 8
+def final String VERSION_NAME = "0.10.0"
+def final int VERSION_CODE = 10
 
 android {
     compileSdkVersion 23
@@ -16,6 +16,8 @@ android {
         versionName VERSION_NAME
 
         resValue "string", "tray__authority", "com.example.preferences"
+
+        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -35,7 +37,7 @@ android {
     }
 
     adbOptions {
-        timeOutInMs 30000
+        timeOutInMs 300000
     }
 }
 
@@ -44,7 +46,7 @@ dependencies {
 
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestCompile 'com.google.dexmaker:dexmaker:1.2'
-    androidTestCompile 'com.android.support.test:runner:0.3'
+    androidTestCompile 'com.android.support.test:runner:0.4'
     testCompile 'org.mockito:mockito-core:1.9.5'
     testCompile 'junit:junit:4.12'
 }

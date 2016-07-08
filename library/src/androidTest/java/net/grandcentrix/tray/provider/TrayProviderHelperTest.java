@@ -18,15 +18,19 @@ package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.AppPreferences;
 import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.core.TrayException;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayStorage;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
 import android.test.IsolatedContext;
+import android.test.mock.MockContentProvider;
 
 import java.util.Date;
 import java.util.List;
@@ -57,7 +61,119 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
 
     private TrayUri mTrayUri;
 
-    public void testCursorToTrayItem() throws Exception{
+    public void testClear() throws Exception {
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_B, STRING_B));
+        assertUserDatabaseSize(4);
+
+        assertTrue(mProviderHelper.clear());
+        assertUserDatabaseSize(0);
+    }
+
+    public void testClearBut() throws Exception {
+        // We need a package name in this test, thus creating our own mock context
+        final IsolatedContext context = getProviderMockContext();
+
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_C, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_C, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(context.getPackageName(), KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B));
+        assertUserDatabaseSize(8);
+
+        mProviderHelper.clearBut(new AppPreferences(context),
+                new TestTrayModulePreferences(context, MODULE_A),
+                new TestTrayModulePreferences(context, MODULE_B));
+        assertUserDatabaseSize(6);
+
+        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A),
+                new TestTrayModulePreferences(context, MODULE_B));
+        assertUserDatabaseSize(4);
+
+        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A));
+        assertUserDatabaseSize(2);
+
+        mProviderHelper.clearBut((TrayPreferences) null);
+        assertUserDatabaseSize(0);
+
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(context.getPackageName(), KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B));
+        mProviderHelper.clearBut(new AppPreferences(context));
+        assertUserDatabaseSize(2);
+
+        // Also test empty values (= clear everything)
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+
+        mProviderHelper.clearBut((TrayPreferences) null);
+        assertUserDatabaseSize(0);
+    }
+
+    public void testClearButFails() throws Exception {
+
+        Uri uri = new TrayUri(getProviderMockContext()).get();
+        MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(uri.getAuthority(), mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+
+        assertFalse(mProviderHelper.clearBut(new AppPreferences(getProviderMockContext())));
+    }
+
+    public void testClearFails() throws Exception {
+        Uri uri = new TrayUri(getProviderMockContext()).get();
+        MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(uri.getAuthority(), mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+
+        assertFalse(mProviderHelper.clear());
+    }
+
+    public void testCreatedTime() throws Exception {
+        final long start = System.currentTimeMillis();
+        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        final List<TrayItem> list = mProviderHelper
+                .queryProvider(getUri(MODULE_A, KEY_A));
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        TrayItem itemA = list.get(0);
+        assertNotNull(itemA.created());
+        assertEqualsWithin(start, itemA.created().getTime(), 50l);
+    }
+
+    public void testCreatedTimeDoesNotChange() throws Exception {
+        testCreatedTime();
+        final TrayItem insertedItem = mProviderHelper.getAll().get(0);
+        final long createdTime = insertedItem.created().getTime();
+
+        Thread.sleep(50);
+
+        // save again
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_B));
+        final long updatedCreatedTime = mProviderHelper.getAll().get(0).created().getTime();
+        assertEquals(createdTime, updatedCreatedTime);
+
+    }
+
+    public void testCursorToTrayItem() throws Exception {
 
         final MatrixCursor matrixCursor = new MatrixCursor(new String[]{
                 TrayContract.Preferences.Columns.KEY,
@@ -88,90 +204,8 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertEquals(created, item.created());
     }
 
-
-    public void testClear() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
-        assertUserDatabaseSize(4);
-
-        mProviderHelper.clear();
-        assertUserDatabaseSize(0);
-    }
-
-    public void testClearBut() throws Exception {
-        // We need a package name in this test, thus creating our own mock context
-        final IsolatedContext context = getProviderMockContext();
-
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_C, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_C, KEY_B, STRING_B);
-        mProviderHelper.persist(context.getPackageName(), KEY_A, STRING_A);
-        mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B);
-        assertUserDatabaseSize(8);
-
-        mProviderHelper.clearBut(new AppPreferences(context),
-                new TestTrayModulePreferences(context, MODULE_A),
-                new TestTrayModulePreferences(context, MODULE_B));
-        assertUserDatabaseSize(6);
-
-        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A),
-                new TestTrayModulePreferences(context, MODULE_B));
-        assertUserDatabaseSize(4);
-
-        mProviderHelper.clearBut(new TestTrayModulePreferences(context, MODULE_A));
-        assertUserDatabaseSize(2);
-
-        mProviderHelper.clearBut((TrayPreferences) null);
-        assertUserDatabaseSize(0);
-
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(context.getPackageName(), KEY_A, STRING_A);
-        mProviderHelper.persist(context.getPackageName(), KEY_B, STRING_B);
-        mProviderHelper.clearBut(new AppPreferences(context));
-        assertUserDatabaseSize(2);
-
-        // Also test empty values (= clear everything)
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-
-        mProviderHelper.clearBut((TrayPreferences) null);
-        assertUserDatabaseSize(0);
-    }
-
-    public void testCreatedTime() throws Exception {
-        final long start = System.currentTimeMillis();
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        final List<TrayItem> list = mProviderHelper
-                .queryProvider(getUri(MODULE_A, KEY_A));
-        assertNotNull(list);
-        assertEquals(1, list.size());
-        TrayItem itemA = list.get(0);
-        assertNotNull(itemA.created());
-        assertEqualsWithin(start, itemA.created().getTime(), 50l);
-    }
-
-    public void testCreatedTimeDoesNotChange() throws Exception {
-        testCreatedTime();
-        final TrayItem insertedItem = mProviderHelper.getAll().get(0);
-        final long createdTime = insertedItem.created().getTime();
-
-        Thread.sleep(50);
-
-        // save again
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_B);
-        final long updatedCreatedTime = mProviderHelper.getAll().get(0).created().getTime();
-        assertEquals(createdTime, updatedCreatedTime);
-
-    }
-
     public void testGetAll() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         final List<TrayItem> all = mProviderHelper.getAll();
         assertEquals(1, all.size());
         assertEquals(STRING_A, all.get(0).value());
@@ -179,40 +213,76 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     public void testGetAllMultiple() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_B, STRING_B));
         final List<TrayItem> all = mProviderHelper.getAll();
         assertEquals(4, all.size());
     }
 
     public void testPersist() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         assertUserDatabaseSize(1);
+    }
+
+    public void testPersistFail() throws Exception {
+        Uri uri = new TrayUri(getProviderMockContext()).get();
+        MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public Uri insert(final Uri uri, final ContentValues values) {
+                return null;
+            }
+        };
+        getProviderMockContext().addProvider(uri.getAuthority(), mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+
+        TrayProviderHelper providerHelper = new TrayProviderHelper(getProviderMockContext());
+
+        assertFalse(providerHelper.persist(uri, STRING_A));
+        assertFalse(providerHelper.persist(uri, STRING_A, null));
+        assertFalse(providerHelper.persist(MODULE_A, STRING_A, null));
+        assertFalse(providerHelper.persist(MODULE_A, STRING_A, null, null));
+    }
+
+    public void testPersistFails() throws Exception {
+
+        Uri uri = new TrayUri(getProviderMockContext()).get();
+        MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(uri.getAuthority(), mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+
+        assertFalse(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
     }
 
     public void testPersistNull() throws Exception {
         //noinspection ConstantConditions
-        mProviderHelper.persist(MODULE_A, KEY_A, null);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, null));
         assertUserDatabaseSize(1);
     }
 
     public void testPersistOverride() {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_B);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_B));
         assertUserDatabaseSize(1);
     }
 
     public void testPersistSameTwoModules() {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
         assertUserDatabaseSize(2);
     }
 
     public void testPersistTwoKeys() {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_A));
         assertUserDatabaseSize(2);
     }
 
@@ -227,6 +297,32 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     public void testQueryFailed() throws Exception {
         buildQueryDatabase();
 
+    }
+
+    public void testQueryFails() throws Exception {
+
+        Uri uri = new TrayUri(getProviderMockContext()).get();
+        MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public Cursor query(final Uri uri, final String[] projection,
+                    final String selection, final String[] selectionArgs,
+                    final String sortOrder) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(uri.getAuthority(), mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+
+        try {
+            mProviderHelper.queryProvider(getUri(MODULE_A, KEY_A));
+            fail("did not throw");
+        } catch (TrayException e) {
+            e.getCause().getMessage().equals("something serious is wrong");
+        }
+
+        final List<TrayItem> trayItems = mProviderHelper.queryProviderSafe(getUri(MODULE_A, KEY_A));
+        assertEquals(0, trayItems.size());
     }
 
     public void testQueryModule() throws Exception {
@@ -247,7 +343,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         try {
             trayProviderHelper.queryProvider(uri);
             fail();
-        } catch (IllegalStateException e) {
+        } catch (TrayException e) {
             assertTrue(e.getMessage().contains(uri.toString()));
         }
     }
@@ -262,7 +358,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     public void testReadParsedProperties() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         final List<TrayItem> list = mProviderHelper
                 .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
@@ -272,6 +368,82 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertEquals(STRING_A, itemA.value());
         assertEquals(KEY_A, itemA.key());
         assertEquals(MODULE_A, itemA.module());
+    }
+
+    public void testRemove() throws Exception {
+        // insert item
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertUserDatabaseSize(1);
+
+        // wrong module
+        assertTrue(mProviderHelper.remove(getUri(MODULE_B, KEY_A)));
+        assertUserDatabaseSize(1);
+
+        // wrong key
+        assertTrue(mProviderHelper.remove(getUri(MODULE_A, KEY_B)));
+        assertUserDatabaseSize(1);
+
+        //correct
+        assertTrue(mProviderHelper.remove(getUri(MODULE_A, KEY_A)));
+        assertUserDatabaseSize(0);
+    }
+
+    public void testRemoveAndCount() throws Exception {
+        // insert item
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertUserDatabaseSize(1);
+
+        // wrong module
+        assertEquals(0, mProviderHelper.removeAndCount(getUri(MODULE_B, KEY_A)));
+        assertUserDatabaseSize(1);
+
+        // wrong key
+        assertEquals(0, mProviderHelper.removeAndCount(getUri(MODULE_A, KEY_B)));
+        assertUserDatabaseSize(1);
+
+        //correct
+        assertEquals(1, mProviderHelper.removeAndCount(getUri(MODULE_A, KEY_A)));
+        assertUserDatabaseSize(0);
+
+        // remove multiple items
+        buildQueryDatabase();
+        assertUserDatabaseSize(4);
+
+        assertEquals(2, mProviderHelper.removeAndCount(getUri(MODULE_A)));
+        assertUserDatabaseSize(2);
+
+        assertEquals(2, mProviderHelper.removeAndCount(getUri(MODULE_B)));
+        assertUserDatabaseSize(0);
+    }
+
+    public void testRemoveAndCountFails() throws Exception {
+        Uri uri = new TrayUri(getProviderMockContext()).get();
+        MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(uri.getAuthority(), mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+
+        assertFalse(mProviderHelper.remove(getUri(MODULE_A, KEY_A)));
+    }
+
+    public void testRemoveFails() throws Exception {
+        Uri uri = new TrayUri(getProviderMockContext()).get();
+        MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(uri.getAuthority(), mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+
+        assertEquals(0, mProviderHelper.removeAndCount(getUri(MODULE_A, KEY_A)));
     }
 
     public void testSpecialChars() {
@@ -294,7 +466,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     public void testUpdateChanges() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         final List<TrayItem> list = mProviderHelper
                 .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
@@ -304,7 +476,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertNotNull(itemA.updateTime());
 
         Thread.sleep(10);
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_B);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_B));
         final List<TrayItem> list2 = mProviderHelper
                 .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list2);
@@ -315,7 +487,7 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     public void testUpdateEqualsCreatedAtFirst() throws Exception {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
         final List<TrayItem> list = mProviderHelper
                 .queryProvider(getUri(MODULE_A, KEY_A));
         assertNotNull(list);
@@ -326,11 +498,84 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
         assertEquals(itemA.updateTime(), itemA.created());
     }
 
+    public void testWipe() throws Exception {
+        buildQueryDatabase();
+
+        // also write internal stuff
+        final Uri versionUri = mTrayUri.builder()
+                .setInternal(true)
+                .setType(TrayStorage.Type.USER)
+                .setModule(MODULE_A)
+                .setKey(ContentProviderStorage.VERSION)
+                .build();
+        assertTrue(mProviderHelper.persist(versionUri, "1"));
+        assertEquals("1", mProviderHelper.queryProvider(versionUri).get(0).value());
+
+        assertTrue(mProviderHelper.wipe());
+        assertUserDatabaseSize(0);
+
+        assertEquals(0, mProviderHelper.queryProvider(versionUri).size());
+    }
+
+    public void testWipeFailsDueToClear() throws Exception {
+        final TrayProviderHelper helper = new TrayProviderHelper(getProviderMockContext()) {
+            @Override
+            public boolean clear() {
+                return false;
+            }
+        };
+
+        final Uri internalUri = new TrayUri(getProviderMockContext()).builder()
+                .setInternal(true)
+                .setKey("VERSION")
+                .setModule("myModule")
+                .build();
+        assertTrue(helper.persist(internalUri, "1"));
+        assertEquals("1", helper.queryProvider(internalUri).get(0).value());
+
+        assertTrue(helper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(helper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(helper.persist(MODULE_B, KEY_A, STRING_A));
+        assertTrue(helper.persist(MODULE_B, KEY_B, STRING_B));
+        assertUserDatabaseSize(4);
+
+        assertFalse(helper.wipe());
+        assertUserDatabaseSize(4);
+
+        // internal stuff is there too
+        assertEquals("1", helper.queryProvider(internalUri).get(0).value());
+    }
+
+    public void testWipeFailsHard() throws Exception {
+        Uri uri = new TrayUri(getProviderMockContext()).get();
+        MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(uri.getAuthority(), mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+        final TrayProviderHelper helper = new TrayProviderHelper(
+                getProviderMockContext()) {
+            @Override
+            public boolean clear() {
+                // fake working clear
+                return true;
+            }
+        };
+
+        assertTrue(helper.clear());
+        assertFalse(helper.wipe());
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         mProviderHelper = new TrayProviderHelper(getProviderMockContext());
         mTrayUri = new TrayUri(getProviderMockContext());
+        mProviderHelper.wipe();
     }
 
     @Override
@@ -347,10 +592,10 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     private void buildQueryDatabase() {
-        mProviderHelper.persist(MODULE_A, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_A, KEY_B, STRING_B);
-        mProviderHelper.persist(MODULE_B, KEY_A, STRING_A);
-        mProviderHelper.persist(MODULE_B, KEY_B, STRING_B);
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_A, KEY_B, STRING_B));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_A, STRING_A));
+        assertTrue(mProviderHelper.persist(MODULE_B, KEY_B, STRING_B));
         assertUserDatabaseSize(4);
     }
 
@@ -367,11 +612,10 @@ public class TrayProviderHelperTest extends TrayProviderTestCase {
     }
 
     private void specialCharTest(final String module, final String key) {
-        mProviderHelper.persist(module, key, STRING_A);
+        assertTrue(mProviderHelper.persist(module, key, STRING_A));
         assertUserDatabaseSize(1);
 
-        final List<TrayItem> list = mProviderHelper
-                .queryProvider(getUri(module));
+        final List<TrayItem> list = mProviderHelper.queryProviderSafe(getUri(module));
         assertEquals(1, list.size());
         assertEquals(module, list.get(0).module());
         assertEquals(key, list.get(0).key());

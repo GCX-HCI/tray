@@ -18,7 +18,11 @@ package net.grandcentrix.tray;
 
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
+import net.grandcentrix.tray.provider.MockProvider;
 import net.grandcentrix.tray.provider.TrayProviderTestCase;
+
+import android.net.Uri;
+import android.test.mock.MockContentProvider;
 
 import java.util.Collection;
 
@@ -37,10 +41,10 @@ public class TrayTest extends TrayProviderTestCase {
         module2.put("blubb", "hello");
         mTrayModulePref.put("test", "test");
         assertUserDatabaseSize(2);
-        mTray.clear(mTrayModulePref);
+        Tray.clear(mTrayModulePref);
         assertUserDatabaseSize(1);
 
-        mTray.clear(module2);
+        Tray.clear(module2);
         assertUserDatabaseSize(0);
     }
 
@@ -50,8 +54,29 @@ public class TrayTest extends TrayProviderTestCase {
         module2.put("blubb", "hello");
         mTrayModulePref.put("test", "test");
         assertUserDatabaseSize(2);
-        mTray.clear();
+        assertTrue(mTray.clear());
         assertUserDatabaseSize(0);
+    }
+
+    public void testClearAllFails() throws Exception {
+        final MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(MockProvider.AUTHORITY, mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+        final Tray tray = new Tray(getProviderMockContext());
+
+        final TestTrayModulePreferences module2 =
+                new TestTrayModulePreferences(getProviderMockContext(), "module2");
+        module2.put("blubb", "hello");
+        mTrayModulePref.put("test", "test");
+        assertUserDatabaseSize(2);
+        assertFalse(tray.clear());
+        assertUserDatabaseSize(2);
     }
 
     public void testClearBut() throws Exception {
@@ -64,7 +89,7 @@ public class TrayTest extends TrayProviderTestCase {
         module2.put("test2", "test");
         assertUserDatabaseSize(4);
 
-        mTray.clearBut(module2);
+        assertTrue(mTray.clearBut(module2));
         assertUserDatabaseSize(2);
 
         final AppPreferences appPrefs = new AppPreferences(getProviderMockContext());
@@ -72,11 +97,27 @@ public class TrayTest extends TrayProviderTestCase {
 
         assertUserDatabaseSize(3);
 
-        mTray.clearBut(appPrefs);
+        assertTrue(mTray.clearBut(appPrefs));
         assertUserDatabaseSize(1);
 
-        mTray.clear();
+        assertTrue(mTray.clear());
         assertUserDatabaseSize(0);
+    }
+
+
+    public void testClearButFails() throws Exception {
+        final MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(MockProvider.AUTHORITY, mockContentProvider);
+        getProviderMockContext().enableMockResolver(true);
+        final Tray tray = new Tray(getProviderMockContext());
+
+        tray.clearBut(new AppPreferences(getProviderMockContext()));
     }
 
     public void testClearModules() throws Exception {
@@ -124,10 +165,25 @@ public class TrayTest extends TrayProviderTestCase {
                 new TestTrayModulePreferences(getProviderMockContext(), "module2");
         assertEquals(1, module2.getVersion());
 
-        mTray.wipe();
+        assertTrue(mTray.wipe());
 
         assertEquals(0, mTrayModulePref.getVersion());
         assertEquals(0, module2.getVersion());
+    }
+
+    public void testWipeFails() throws Exception {
+        final MockContentProvider mockContentProvider = new MockContentProvider(
+                getProviderMockContext()) {
+            @Override
+            public int delete(final Uri uri, final String selection, final String[] selectionArgs) {
+                throw new IllegalStateException("something serious is wrong");
+            }
+        };
+        getProviderMockContext().addProvider(MockProvider.AUTHORITY, mockContentProvider);
+        final Tray tray = new Tray(getProviderMockContext());
+        getProviderMockContext().enableMockResolver(true);
+
+        assertFalse(tray.wipe());
     }
 
     @Override

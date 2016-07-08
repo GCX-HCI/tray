@@ -9,15 +9,15 @@ import net.grandcentrix.tray.provider.TrayProviderTestCase;
  */
 public class RenamePreference extends TrayProviderTestCase {
 
-    public void testRename_User() throws Exception {
-        rename(TrayStorage.Type.USER);
-    }
-
     public void testRename_Device() throws Exception {
         rename(TrayStorage.Type.DEVICE);
     }
 
-    private void rename(final TrayStorage.Type type) {
+    public void testRename_User() throws Exception {
+        rename(TrayStorage.Type.USER);
+    }
+
+    private void rename(final TrayStorage.Type type) throws Exception {
         //create old Preference
         final TestTrayModulePreferences oldOne =
                 new TestTrayModulePreferences(getProviderMockContext(), "oldOne", type);
