@@ -32,10 +32,11 @@ public interface PreferenceStorage<T> {
      * clears the storage by deleting all of its content. But doesn't clear metadata like the
      * version. to do so, use {@link #wipe()}
      *
+     * @return true when successful, false otherwise
      * @see #wipe()
      * @see #getVersion()
      */
-    void clear();
+    boolean clear();
 
     /**
      * @param key mapping key for the stored object
@@ -53,15 +54,17 @@ public interface PreferenceStorage<T> {
     /**
      * @return the current version of this storage
      * @see #setVersion(int)
+     * @throws TrayException when the version couldn't be read
      */
-    int getVersion();
+    int getVersion() throws TrayException;
 
     /**
      * stores a data item.
      *
      * @param item data object
+     * @return whether the put was successful
      */
-    void put(T item);
+    boolean put(T item);
 
     /**
      * same as {@link #put(String, Object)} but with an additional migration key to save where the
@@ -70,8 +73,9 @@ public interface PreferenceStorage<T> {
      * @param key          where to save
      * @param migrationKey where the data came from
      * @param data         what to save
+     * @return whether the put was successful
      */
-    void put(@NonNull final String key, @Nullable final String migrationKey,
+    boolean put(@NonNull final String key, @Nullable final String migrationKey,
             @Nullable final Object data);
 
     /**
@@ -79,29 +83,33 @@ public interface PreferenceStorage<T> {
      *
      * @param key  access key to the data
      * @param data what to save
+     * @return whether the put was successful
      */
-    void put(@NonNull final String key, @Nullable final Object data);
+    boolean put(@NonNull final String key, @Nullable final Object data);
 
     /**
      * removes the item with the given key
      *
      * @param key mapping key for the stored object
+     * @return whether the remove was successful
      */
-    void remove(@NonNull final String key);
+    boolean remove(@NonNull final String key);
 
     /**
      * sets the version of this storage
      *
      * @param version should be &gt; 0
+     * @return true when successful, false otherwise
      */
-    void setVersion(final int version);
+    boolean setVersion(final int version);
 
     /**
      * deleted this storage like it has never existed. removed saved data and all possible meta
      * data
      *
+     * @return true when successful, false otherwise
      * @see #clear()
      */
-    void wipe();
+    boolean wipe();
 
 }

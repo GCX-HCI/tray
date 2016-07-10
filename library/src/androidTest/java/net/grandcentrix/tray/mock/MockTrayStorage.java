@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.mock;
 
 import net.grandcentrix.tray.core.OnTrayPreferenceChangeListener;
+import net.grandcentrix.tray.core.TrayException;
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.core.TrayStorage;
 
@@ -52,8 +53,9 @@ public class MockTrayStorage extends TrayStorage {
     }
 
     @Override
-    public void clear() {
+    public boolean clear() {
         mData.clear();
+        return true;
     }
 
     @Override
@@ -68,17 +70,17 @@ public class MockTrayStorage extends TrayStorage {
     }
 
     @Override
-    public int getVersion() {
+    public int getVersion() throws TrayException {
         return mVersion;
     }
 
     @Override
-    public void put(final TrayItem item) {
-        put(item.key(), item.value());
+    public boolean put(final TrayItem item) {
+        return put(item.key(), item.value());
     }
 
     @Override
-    public void put(@NonNull final String key, @Nullable final String migrationKey,
+    public boolean put(@NonNull final String key, @Nullable final String migrationKey,
             final Object data) {
         final TrayItem saved = this.mData.get(key);
         final String value = String.valueOf(data);
@@ -91,11 +93,12 @@ public class MockTrayStorage extends TrayStorage {
             item = new TrayItem(getModuleName(), key, migrationKey, value, created, now);
         }
         this.mData.put(key, item);
+        return true;
     }
 
     @Override
-    public void put(@NonNull final String key, final Object data) {
-        put(key, null, data);
+    public boolean put(@NonNull final String key, final Object data) {
+        return put(key, null, data);
     }
 
     @Override
@@ -105,13 +108,14 @@ public class MockTrayStorage extends TrayStorage {
     }
 
     @Override
-    public void remove(@NonNull final String key) {
-        mData.remove(key);
+    public boolean remove(@NonNull final String key) {
+        return mData.remove(key) != null;
     }
 
     @Override
-    public void setVersion(final int version) {
+    public boolean setVersion(final int version) {
         this.mVersion = version;
+        return true;
     }
 
     @Override
@@ -121,8 +125,9 @@ public class MockTrayStorage extends TrayStorage {
     }
 
     @Override
-    public void wipe() {
+    public boolean wipe() {
         mData.clear();
         mVersion = 0;
+        return true;
     }
 }

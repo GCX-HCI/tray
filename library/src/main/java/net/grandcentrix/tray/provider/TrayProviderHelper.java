@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.core.TrayException;
 import net.grandcentrix.tray.core.TrayItem;
 
 import android.content.ContentValues;
@@ -48,17 +49,28 @@ public class TrayProviderHelper {
 
     /**
      * clears <b>all</b> Preferences saved. Module independent. Erases all preference data
+     *
+     * @return true when successful
      */
-    public void clear() {
-        mContext.getContentResolver().delete(mTrayUri.get(), null, null);
+    public boolean clear() {
+        try {
+            // result can be 0 for an empty module, don't check if rows > 0
+            mContext.getContentResolver().delete(mTrayUri.get(), null, null);
+            return true;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
      * clears <b>all</b> {@link TrayPreferences} but the modules stated.
      *
      * @param modules modules excluded when deleting preferences
+     * @return true when successful, false otherwise. true doesn't indicate that something got
+     * cleared, it just means no error occurred
      */
-    public void clearBut(TrayPreferences... modules) {
+    public boolean clearBut(TrayPreferences... modules) {
         String selection = null;
         String[] selectionArgs = new String[]{};
 
@@ -73,7 +85,14 @@ public class TrayProviderHelper {
                     .extendSelectionArgs(selectionArgs, new String[]{moduleName});
         }
 
-        mContext.getContentResolver().delete(mTrayUri.get(), selection, selectionArgs);
+        try {
+            // result can be 0 for an empty module, don't check if rows > 0
+            mContext.getContentResolver().delete(mTrayUri.get(), selection, selectionArgs);
+            return true;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -83,7 +102,7 @@ public class TrayProviderHelper {
      */
     @NonNull
     public List<TrayItem> getAll() {
-        return queryProvider(mTrayUri.get());
+        return queryProviderSafe(mTrayUri.get());
     }
 
 
@@ -93,10 +112,11 @@ public class TrayProviderHelper {
      * @param module module name
      * @param key    key for mapping
      * @param value  data to save
+     * @return true when successfully written
      */
-    public void persist(@NonNull final String module, @NonNull final String key,
+    public boolean persist(@NonNull final String module, @NonNull final String key,
             @NonNull final String value) {
-        persist(module, key, null, value);
+        return persist(module, key, null, value);
     }
 
     /**
@@ -106,26 +126,32 @@ public class TrayProviderHelper {
      * @param key         key for mapping
      * @param previousKey key used before migration
      * @param value       data to save
+     * @return true when successfully written
      */
-    public void persist(@NonNull final String module, @NonNull final String key,
+    public boolean persist(@NonNull final String module, @NonNull final String key,
             @Nullable final String previousKey, @Nullable final String value) {
         final Uri uri = mTrayUri.builder()
                 .setModule(module)
                 .setKey(key)
                 .build();
-        persist(uri, value, previousKey);
+        return persist(uri, value, previousKey);
     }
 
-    public void persist(@NonNull final Uri uri, @Nullable String value) {
-        persist(uri, value, null);
+    public boolean persist(@NonNull final Uri uri, @Nullable String value) {
+        return persist(uri, value, null);
     }
 
-    public void persist(@NonNull final Uri uri, @Nullable String value,
+    public boolean persist(@NonNull final Uri uri, @Nullable String value,
             @Nullable final String previousKey) {
         ContentValues values = new ContentValues();
         values.put(TrayContract.Preferences.Columns.VALUE, value);
         values.put(TrayContract.Preferences.Columns.MIGRATED_KEY, previousKey);
-        mContext.getContentResolver().insert(uri, values);
+        try {
+            return mContext.getContentResolver().insert(uri, values) != null;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -133,18 +159,21 @@ public class TrayProviderHelper {
      *
      * @param uri path to data
      * @return list of items
-     * @throws IllegalStateException something is wrong with the provider/database
+     * @throws TrayException when something is wrong with the provider/database
      */
     @NonNull
-    public List<TrayItem> queryProvider(@NonNull final Uri uri)
-            throws IllegalStateException {
-        final Cursor cursor = mContext.getContentResolver().query(uri, null, null, null, null);
+    public List<TrayItem> queryProvider(@NonNull final Uri uri) throws TrayException {
+        final Cursor cursor;
+        try {
+            cursor = mContext.getContentResolver().query(uri, null, null, null, null);
+        } catch (Throwable e) {
+            throw new TrayException("Hard error accessing the ContentProvider", e);
+        }
 
         // Return Preference if found
         if (cursor == null) {
-            throw new IllegalStateException(
-                    "could not access stored data with uri " + uri
-                            + ". Is the provider registered in the manifest of your application?");
+            // When running in here, please check if your ContentProvider has the correct authority
+            throw new TrayException("could not access stored data with uri " + uri);
         }
 
         final ArrayList<TrayItem> list = new ArrayList<>();
@@ -157,11 +186,67 @@ public class TrayProviderHelper {
     }
 
     /**
-     * wipes all data, including meta data for the preferences like the current version number.
+     * sends a query for TrayItems to the provider, doesn't throw when the database access couldn't
+     * be established
+     *
+     * @param uri path to data
+     * @return list of items, empty when an error occured
      */
-    public void wipe() {
-        clear();
-        mContext.getContentResolver().delete(mTrayUri.getInternal(), null, null);
+    @NonNull
+    public List<TrayItem> queryProviderSafe(@NonNull final Uri uri) {
+        try {
+            return queryProvider(uri);
+        } catch (TrayException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * removes items for the given Uri
+     *
+     * @param uri what to remove, use {@link TrayUri#builder()} to build a valid uri
+     * @return true when delete runs without error. doesn't care about the delete result int
+     */
+    public boolean remove(final Uri uri) {
+        try {
+            mContext.getContentResolver().delete(uri, null, null);
+            return true;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * removes items for the given Uri and returns the count of the deleted items
+     *
+     * @param uri what to remove, use {@link TrayUri#builder()} to build a valid uri
+     * @return number of deleted rows
+     */
+    public int removeAndCount(final Uri uri) {
+        try {
+            return mContext.getContentResolver().delete(uri, null, null);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    /**
+     * wipes all data, including meta data for the preferences like the current version number.
+     *
+     * @return true for success
+     */
+    public boolean wipe() {
+        if (!clear()) {
+            return false;
+        }
+        try {
+            return mContext.getContentResolver().delete(mTrayUri.getInternal(), null, null) > 0;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**

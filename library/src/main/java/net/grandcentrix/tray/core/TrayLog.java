@@ -35,33 +35,6 @@ public class TrayLog {
         Log.e(TAG, s, tr);
     }
 
-    public static void v(String s) {
-        if (DEBUG) {
-            if (s == null) {
-                s = "";
-            }
-            Log.v(TAG, s);
-        }
-    }
-
-    public static void w(String s) {
-        if (s == null) {
-            s = "";
-        }
-        Log.w(TAG, s);
-    }
-
-    public static void wtf(String s) {
-        if (s == null) {
-            s = "";
-        }
-        Log.wtf(TAG, s);
-    }
-
-    public static void wtf(Throwable tr, String s) {
-        Log.wtf(TAG, s, tr);
-    }
-
     /**
      * Customize the log tag for your application, so that other apps
      * using Tray don't mix their logs with yours.
@@ -78,6 +51,33 @@ public class TrayLog {
 
         // Reinitialize the DEBUG "constant"
         DEBUG = Log.isLoggable(TAG, Log.VERBOSE);
+    }
+
+    public static void v(String s) {
+        if (DEBUG) {
+            if (s == null) {
+                s = "";
+            }
+            Log.v(TAG, s);
+        }
+    }
+
+    public static void w(String s) {
+        if (s == null) {
+            s = "";
+        }
+        Log.w(TAG, s);
+    }
+
+    public static void wtf(Throwable tr, String s) {
+        Log.wtf(TAG, s, tr);
+    }
+
+    public static void wtf(String s) {
+        if (s == null) {
+            s = "";
+        }
+        Log.wtf(TAG, s);
     }
 
     TrayLog() {
