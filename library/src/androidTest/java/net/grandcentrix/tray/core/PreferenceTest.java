@@ -68,6 +68,13 @@ public class PreferenceTest extends TestCase {
         assertEquals(mockPreference.getAll().size(), 0);
     }
 
+    public void testContains() throws Exception {
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
+        assertFalse(mockPreference.contains("a"));
+        assertTrue(mockPreference.put("a", "value"));
+        assertTrue(mockPreference.contains("a"));
+    }
+
     public void testClearFails() throws Exception {
         final TrayStorage storage = new MockTrayStorage("test") {
             @Override

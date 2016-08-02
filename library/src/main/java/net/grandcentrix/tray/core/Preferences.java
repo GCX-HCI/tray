@@ -65,6 +65,11 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
     }
 
     @Override
+    public boolean contains(final String key) {
+        return getPref(key) != null;
+    }
+
+    @Override
     public Collection<T> getAll() {
         return mStorage.getAll();
     }
