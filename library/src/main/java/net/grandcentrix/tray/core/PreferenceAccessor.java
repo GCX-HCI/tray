@@ -37,6 +37,14 @@ public interface PreferenceAccessor<T> {
     boolean clear();
 
     /**
+     * checks if the preference has a value stored for the given key
+     *
+     * @param key the key to map the value
+     * @return true when a value is stored for the key
+     */
+    boolean contains(final String key);
+
+    /**
      * @return all data stored in the preference
      */
     Collection<T> getAll();
