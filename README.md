@@ -103,7 +103,39 @@ public class MyModulePreference extends TrayPreferences {
 
 ### Migrate from SharedPreferences to Tray
 
-`// TODO`
+To migrate values from SharedPreferences you have to create you own preference module. This module will be now store all of your SharedPreferences values.
+
+```java
+public class ImportPreferences extends TrayPreferences {
+
+    // The SharedPreferences name
+    private static final String SHARED_PREFERENCES_FILE_NAME = "PREF_NAME";
+    
+    // The key inside the SHARED_PREFERENCES_NAME
+    private static final String KEY_FIRST_LAUNCH = "KEY_FIRST_LAUNCH";
+    
+    // The new key for this module
+    private static final String KEY_FIRST_LAUNCH_TRAY = "KEY_FIRST_LAUNCH_TRAY";
+    
+    public ImportPreferences(@NonNull Context context) {
+        super(context, "myImportModule", 1);
+    }    
+    
+    // Called only once when the module was created
+    @Override
+    protected void onCreate(int initialVersion) {
+        super.onCreate(initialVersion);
+            
+        // Create a SharedPreferencesImport object
+        SharedPreferencesImport importPref = 
+            new SharedPreferencesImport(getContext(), 
+                SHARED_PREFERENCES_FILE_NAME, KEY_FIRST_LAUNCH, KEY_FIRST_LAUNCH_TRAY);
+            
+        // Finally migrate it
+        migrate(importPref);
+    }
+}
+```
 
 ## Getting Started [![Download](https://api.bintray.com/packages/passsy/maven/Tray/images/download.svg) ](https://bintray.com/passsy/maven/Tray/_latestVersion)
 
