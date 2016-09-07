@@ -146,7 +146,7 @@ Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studi
 ```java
 
 dependencies {
-    compile 'net.grandcentrix.tray:tray:0.10.0'
+    compile 'net.grandcentrix.tray:tray:0.11.0'
 }
 
 ```
@@ -233,6 +233,10 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 - save additional data types (`Set<String>`, `byte[]`)
 
 ## Versions
+
+##### Version 0.11.0 `07.09.16`
+- all accessor methods return `boolean` indicating the success of i.e. `put`, `remove`. They will never again throw an error. #69
+- new `contains()` method #74
 
 ##### Version 0.10.0 `31.05.16`
 - All features and changes of the 1.0.0-rc preview builds
