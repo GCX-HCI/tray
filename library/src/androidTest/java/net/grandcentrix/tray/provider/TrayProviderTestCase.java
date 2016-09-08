@@ -16,14 +16,12 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.BuildConfig;
-import net.grandcentrix.tray.core.TrayStorage;
-
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
@@ -31,6 +29,9 @@ import android.os.Build;
 import android.test.IsolatedContext;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
+
+import net.grandcentrix.tray.BuildConfig;
+import net.grandcentrix.tray.core.TrayStorage;
 
 import java.util.HashMap;
 
@@ -109,6 +110,12 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
 
     public TrayIsolatedContext getProviderMockContext() {
         return mIsolatedContext;
+    }
+
+    public ProviderInfo getMockProviderInfo() {
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = getProviderMockContext().getPackageName() + ".tray";
+        return providerInfo;
     }
 
     protected void assertDatabaseSize(final TrayStorage.Type type, final long expectedSize) {

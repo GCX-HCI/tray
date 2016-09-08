@@ -15,8 +15,6 @@ android {
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
-        resValue "string", "tray__authority", "com.example.preferences"
-
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     }
 

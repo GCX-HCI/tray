@@ -16,12 +16,11 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.R;
-import net.grandcentrix.tray.core.TrayLog;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
+import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.MergeCursor;
@@ -29,6 +28,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+
+import net.grandcentrix.tray.core.TrayLog;
 
 import java.util.Date;
 
@@ -210,11 +211,15 @@ public class TrayContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        setAuthority(getContext().getString(R.string.tray__authority));
-
         mUserDbHelper = new TrayDBHelper(getContext(), true);
         mDeviceDbHelper = new TrayDBHelper(getContext(), false);
         return true;
+    }
+
+    @Override
+    public void attachInfo(Context context, ProviderInfo info) {
+        super.attachInfo(context, info);
+        setAuthority(info.authority);
     }
 
     @Override

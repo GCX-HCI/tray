@@ -16,9 +16,10 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.R;
-
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
@@ -120,8 +121,20 @@ class TrayContract {
 
     @NonNull
     private static String getAuthority(@NonNull final Context context) {
-        return TextUtils.isEmpty(sTestAuthority) ?
-                context.getString(R.string.tray__authority) :
-                sTestAuthority;
+        if (!TextUtils.isEmpty(sTestAuthority)) {
+            return sTestAuthority;
+        }
+        for (PackageInfo pack : context.getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS)) {
+            ProviderInfo[] providers = pack.providers;
+            if (providers != null) {
+                for (ProviderInfo provider : providers) {
+                    if (TextUtils.equals(provider.authority,
+                            context.getApplicationContext().getPackageName() + ".tray")) {
+                        return provider.authority;
+                    }
+                }
+            }
+        }
+        return "com.example.preferences";
     }
 }

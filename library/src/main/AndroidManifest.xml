@@ -6,7 +6,7 @@
 
         <provider
             android:name=".provider.TrayContentProvider"
-            android:authorities="@string/tray__authority"
+            android:authorities="${applicationId}.tray"
             android:exported="false"
             android:multiprocess="false" />
 

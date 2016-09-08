@@ -153,23 +153,14 @@ dependencies {
 
 ##### Set the authority
 
-To set the authority you need to override the string resource of the library with `resValue` in your `build.gradle`
+To set the unique authority you need to set applicationId in your `build.gradle`
 ```java
 android {
     ...
     defaultConfig {
-        applicationId "your.app.id" // this is your unique applicationId
-
-        resValue "string", "tray__authority", "${applicationId}.tray" // add this to set a unique tray authority based on your applicationId
+        applicationId "your.app.id" // this is your unique applicationId as authority prefix
     }
 }
-```
-
-Clean your project afterwards to generate the `/build/generated/res/generated/BUILDTYPE/values/generated.xml` which should then contain the following value:
-
-```xml
-    <!-- Values from default config. -->
-    <item name="tray__authority" type="string">your.app.id.tray</item>
 ```
 
 Tray is based on a ContentProvider. A ContentProvider needs a **unique** authority. When you use the same authority for multiple apps you will be unable to install the app due to a authority conflict with the error message:
