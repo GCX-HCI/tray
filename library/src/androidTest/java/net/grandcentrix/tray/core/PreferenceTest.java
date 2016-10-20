@@ -16,6 +16,7 @@
 
 package net.grandcentrix.tray.core;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import net.grandcentrix.tray.mock.MockTrayStorage;
@@ -301,5 +302,15 @@ public class PreferenceTest extends TestCase {
         Mockito.when(storage.wipe()).thenReturn(false);
         final MockSimplePreferences preferences = new MockSimplePreferences(storage, 1);
         assertFalse(preferences.wipe());
+    }
+
+    public void testEmptyKey() throws Exception {
+        final MockSimplePreferences mockPreference = new MockSimplePreferences(1);
+        try {
+            mockPreference.put("", "test");
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Preference key value cannot be empty.", e.getMessage());
+        }
     }
 }

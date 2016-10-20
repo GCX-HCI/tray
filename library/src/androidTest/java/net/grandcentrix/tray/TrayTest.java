@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray;
 
+import junit.framework.Assert;
+
 import net.grandcentrix.tray.core.TrayItem;
 import net.grandcentrix.tray.mock.TestTrayModulePreferences;
 import net.grandcentrix.tray.provider.MockProvider;
@@ -118,6 +120,17 @@ public class TrayTest extends TrayProviderTestCase {
         final Tray tray = new Tray(getProviderMockContext());
 
         tray.clearBut(new AppPreferences(getProviderMockContext()));
+    }
+
+    public void testEmptyKey() throws Exception {
+        final TestTrayModulePreferences module =
+                new TestTrayModulePreferences(getProviderMockContext(), "module");
+        try {
+            module.put("", "test");
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Preference key value cannot be empty.", e.getMessage());
+        }
     }
 
     public void testClearModules() throws Exception {
