@@ -172,6 +172,7 @@ public interface PreferenceAccessor<T> {
      * @param key   the key to map the value
      * @param value the data to save
      * @return whether the put was successful
+     * @throws IllegalArgumentException empty string value was passed as the key
      */
     boolean put(@NonNull final String key, @Nullable final String value);
 
@@ -181,6 +182,7 @@ public interface PreferenceAccessor<T> {
      * @param key   the key to map the value
      * @param value the data to save
      * @return whether the put was successful
+     * @throws IllegalArgumentException empty string value was passed as the key
      */
     boolean put(@NonNull final String key, final int value);
 
@@ -190,6 +192,7 @@ public interface PreferenceAccessor<T> {
      * @param key   the key to map the value
      * @param value the data to save
      * @return whether the put was successful
+     * @throws IllegalArgumentException empty string value was passed as the key
      */
     boolean put(@NonNull final String key, final float value);
 
@@ -199,6 +202,7 @@ public interface PreferenceAccessor<T> {
      * @param key   the key to map the value
      * @param value the data to save
      * @return whether the put was successful
+     * @throws IllegalArgumentException empty string value was passed as the key
      */
     boolean put(@NonNull final String key, final long value);
 
@@ -208,6 +212,7 @@ public interface PreferenceAccessor<T> {
      * @param key   the key to map the value
      * @param value the data to save
      * @return whether the put was successful
+     * @throws IllegalArgumentException empty string value was passed as the key
      */
     boolean put(@NonNull final String key, final boolean value);
 
