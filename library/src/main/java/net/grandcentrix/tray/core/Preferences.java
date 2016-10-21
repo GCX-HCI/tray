@@ -18,6 +18,7 @@ package net.grandcentrix.tray.core;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.util.Collection;
 
@@ -131,7 +132,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             return false;
         }
         v("put '" + key + "=\"" + value + "\"' into " + this);
-        return getStorage().put(key, value);
+        return putData(key, value);
     }
 
     @Override
@@ -140,7 +141,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             return false;
         }
         v("put '" + key + "=" + value + "' into " + this);
-        return getStorage().put(key, value);
+        return putData(key, value);
     }
 
     @Override
@@ -149,7 +150,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             return false;
         }
         v("put '" + key + "=" + value + "' into " + this);
-        return getStorage().put(key, value);
+        return putData(key, value);
     }
 
     @Override
@@ -158,7 +159,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             return false;
         }
         v("put '" + key + "=" + value + "' into " + this);
-        return getStorage().put(key, value);
+        return putData(key, value);
     }
 
     @Override
@@ -167,7 +168,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
             return false;
         }
         v("put '" + key + "=" + value + "' into " + this);
-        return getStorage().put(key, value);
+        return putData(key, value);
     }
 
     public boolean remove(@NonNull final String key) {
@@ -300,5 +301,12 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
                 || data instanceof Float
                 || data instanceof Boolean
                 || data == null;
+    }
+
+    private boolean putData(String key, Object value) {
+        if (TextUtils.isEmpty(key)) {
+            throw new IllegalArgumentException("Preference key value cannot be empty.");
+        }
+        return getStorage().put(key, value);
     }
 }
