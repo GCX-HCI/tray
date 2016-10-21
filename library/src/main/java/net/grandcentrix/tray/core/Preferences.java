@@ -303,7 +303,7 @@ public abstract class Preferences<T, S extends PreferenceStorage<T>>
                 || data == null;
     }
 
-    boolean putData(String key, Object value) {
+    private boolean putData(String key, Object value) {
         if (TextUtils.isEmpty(key)) {
             throw new IllegalArgumentException("Preference key value cannot be empty.");
         }
