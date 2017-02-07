@@ -146,7 +146,7 @@ Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studi
 ```java
 
 dependencies {
-    compile 'net.grandcentrix.tray:tray:0.11.0'
+    compile 'net.grandcentrix.tray:tray:0.11.1'
 }
 
 ```
