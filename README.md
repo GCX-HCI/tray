@@ -234,6 +234,11 @@ Tray is ready to use without showblockers! But here are some nice to have featur
 
 ## Versions
 
+##### Version 0.11.1 `07.02.17`
+
+- preference key cannot be empty #84
+- `clearBut(TrayPreference)` -> `clearBut(AbstractTrayPreference)` #89
+
 ##### Version 0.11.0 `07.09.16`
 - all accessor methods return `boolean` indicating the success of i.e. `put`, `remove`. They will never again throw an error. #69
 - new `contains()` method #74
