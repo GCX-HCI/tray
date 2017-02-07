@@ -17,6 +17,7 @@
 package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.TrayPreferences;
+import net.grandcentrix.tray.core.AbstractTrayPreference;
 import net.grandcentrix.tray.core.TrayException;
 import net.grandcentrix.tray.core.TrayItem;
 
@@ -70,11 +71,11 @@ public class TrayProviderHelper {
      * @return true when successful, false otherwise. true doesn't indicate that something got
      * cleared, it just means no error occurred
      */
-    public boolean clearBut(TrayPreferences... modules) {
+    public boolean clearBut(AbstractTrayPreference... modules) {
         String selection = null;
         String[] selectionArgs = new String[]{};
 
-        for (final TrayPreferences module : modules) {
+        for (final AbstractTrayPreference module : modules) {
             if (module == null) {
                 continue;
             }
