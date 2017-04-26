@@ -163,6 +163,16 @@ android {
 }
 ```
 
+We will always use your `applicationId` plus `.tray` as suffix for the authority.
+If you don't want to use the "default" authority you can define your own with the following code inside your `AndroidManifest`:
+```xml
+<provider
+    android:name="net.grandcentrix.tray.provider.TrayContentProvider"
+    android:authorities="your.custom.authority"
+    android:exported="false"
+    tools:replace="android:authorities" />
+```
+
 Tray is based on a ContentProvider. A ContentProvider needs a **unique** authority. When you use the same authority for multiple apps you will be unable to install the app due to a authority conflict with the error message:
 
 ```
