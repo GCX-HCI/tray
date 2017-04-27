@@ -17,14 +17,10 @@
 package net.grandcentrix.tray.provider;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 /**
  * Contract defining the data in the {@link TrayContentProvider}. Use {@link TrayProviderHelper} to
@@ -89,30 +85,10 @@ class TrayContract {
         return generateContentUri(context, InternalPreferences.BASE_PATH);
     }
 
-    private static void checkForDefaultAuthority(final @NonNull String authority) {
-        if (authority.equals("com.example.preferences")) {
-            Log.e("Tray", "Tray authority not defined\n"
-                    + "#########################################\n"
-                    + "#########################################\n"
-                    + "#########################################\n"
-                    + "Don't use the default authority from the tray library. Two apps with the same tray authority can't be installed on the same device!\n\n"
-                    + "Override the authority adding a string resource to your project with key: `tray__authority`.\n"
-                    + "The simples way is to add it via gradle:\n"
-                    + ".\n"
-                    + "defaultConfig {\n"
-                    + "resValue \"string\", \"tray__authority\", \"<your.app.package.tray>\"\n"
-                    + "}\n"
-                    + "#########################################\n"
-                    + "#########################################\n"
-                    + "#########################################");
-        }
-    }
-
     @NonNull
     private static Uri generateContentUri(@NonNull final Context context, final String basepath) {
 
         final String authority = getAuthority(context);
-        checkForDefaultAuthority(authority);
         final Uri authorityUri = Uri.parse("content://" + authority);
         //noinspection UnnecessaryLocalVariable
         final Uri contentUri = Uri.withAppendedPath(authorityUri, basepath);
@@ -126,10 +102,12 @@ class TrayContract {
         }
 
         final String authority = TrayContentProvider.mAuthority;
-        if(!TextUtils.isEmpty(authority)) {
+        if (!TextUtils.isEmpty(authority)) {
             return authority;
         }
 
-        return "com.example.preferences";
+        // Should never happen. Otherwise we implemented tray in a wrong way!
+        throw new RuntimeException("Internal tray error."
+                + " Please fill an issue at https://github.com/grandcentrix/tray/issues");
     }
 }

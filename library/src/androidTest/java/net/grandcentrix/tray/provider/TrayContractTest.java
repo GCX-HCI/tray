@@ -1,18 +1,10 @@
 package net.grandcentrix.tray.provider;
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ProviderInfo;
-import android.net.Uri;
-import android.test.AndroidTestCase;
-import android.test.mock.MockContext;
-import android.test.mock.MockPackageManager;
-
 import org.mockito.Mockito;
 
-import java.util.Collections;
-import java.util.List;
+import android.content.Context;
+import android.net.Uri;
+import android.test.AndroidTestCase;
 
 /**
  * Created by pascalwelsch on 4/12/15.
@@ -25,7 +17,8 @@ public class TrayContractTest extends AndroidTestCase {
 
     public void testGenerateContentUri() throws Exception {
         Uri uri = TrayContract.generateContentUri(getContext());
-        assertEquals("content://net.grandcentrix.tray.preferences.test/preferences", uri.toString());
+        assertEquals("content://net.grandcentrix.tray.preferences.test/preferences",
+                uri.toString());
 
         TrayContract.setAuthority("asdf");
         uri = TrayContract.generateContentUri(Mockito.mock(Context.class));
@@ -34,11 +27,25 @@ public class TrayContractTest extends AndroidTestCase {
 
     public void testGenerateInternalContentUri() throws Exception {
         Uri uri = TrayContract.generateInternalContentUri(getContext());
-        assertEquals("content://net.grandcentrix.tray.preferences.test/internal_preferences", uri.toString());
+        assertEquals("content://net.grandcentrix.tray.preferences.test/internal_preferences",
+                uri.toString());
 
         TrayContract.setAuthority("blubb");
         uri = TrayContract.generateInternalContentUri(Mockito.mock(Context.class));
         assertEquals("content://blubb/internal_preferences", uri.toString());
+    }
+
+    public void testGenerateInternalContentUri_WithoutProviderAuthority_AppShouldCrash()
+            throws Exception {
+        TrayContentProvider.mAuthority = null;
+
+        try {
+            TrayContract.generateInternalContentUri(Mockito.mock(Context.class));
+            fail();
+        } catch (RuntimeException e) {
+            assertTrue(e.getMessage().contains("Internal tray error"));
+        }
+
     }
 
     @Override
