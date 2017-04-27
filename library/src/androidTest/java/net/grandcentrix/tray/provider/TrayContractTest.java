@@ -1,13 +1,14 @@
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.R;
+
 import android.content.res.Resources;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 import android.test.mock.MockContext;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -55,17 +56,18 @@ public class TrayContractTest extends AndroidTestCase {
     }
 
     public void testLogcatOutput_ShouldPrintIfTrayAuthorityIsNotDefault() throws Exception {
-        final MockContext stuff = new MockContext() {
+        final Resources mockResources = mock(Resources.class);
+        when(mockResources.getString(R.string.tray__authority))
+                .thenReturn("notDefaultTrayAuthority");
+        final MockContext mockContext = new MockContext() {
             @Override
             public Resources getResources() {
-                final Resources mockResources = mock(Resources.class);
-                when(mockResources.getString(anyInt())).thenReturn(eq("notDefaultTrayAuthority"));
                 return mockResources;
             }
         };
-        TrayContract.generateInternalContentUri(stuff);
+        TrayContract.generateInternalContentUri(mockContext);
 
-        assertTrue(true);
+        verify(mockResources).getString(R.string.tray__authority);
     }
 
     @Override
