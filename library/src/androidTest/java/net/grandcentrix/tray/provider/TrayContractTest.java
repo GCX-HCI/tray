@@ -25,7 +25,7 @@ public class TrayContractTest extends AndroidTestCase {
 
     public void testGenerateContentUri() throws Exception {
         Uri uri = TrayContract.generateContentUri(getContext());
-        assertEquals("content://com.example.preferences/preferences", uri.toString());
+        assertEquals("content://net.grandcentrix.tray.preferences.test/preferences", uri.toString());
 
         TrayContract.setAuthority("asdf");
         uri = TrayContract.generateContentUri(Mockito.mock(Context.class));
@@ -34,44 +34,11 @@ public class TrayContractTest extends AndroidTestCase {
 
     public void testGenerateInternalContentUri() throws Exception {
         Uri uri = TrayContract.generateInternalContentUri(getContext());
-        assertEquals("content://com.example.preferences/internal_preferences", uri.toString());
+        assertEquals("content://net.grandcentrix.tray.preferences.test/internal_preferences", uri.toString());
 
         TrayContract.setAuthority("blubb");
         uri = TrayContract.generateInternalContentUri(Mockito.mock(Context.class));
         assertEquals("content://blubb/internal_preferences", uri.toString());
-    }
-
-    public void testGenerateContentUri2() throws Exception {
-        MockContext mockContext = new MockContext() {
-            @Override
-            public Context getApplicationContext() {
-                return this;
-            }
-
-            @Override
-            public String getPackageName() {
-                return getContext().getPackageName();
-            }
-
-            @Override
-            public PackageManager getPackageManager() {
-                return new MockPackageManager() {
-                    @Override
-                    public List<PackageInfo> getInstalledPackages(int flags) {
-                        if (flags == PackageManager.GET_PROVIDERS) {
-                            PackageInfo packageInfo = new PackageInfo();
-                            ProviderInfo providerInfo = new ProviderInfo();
-                            providerInfo.authority = getContext().getPackageName() + ".tray";
-                            packageInfo.providers = new ProviderInfo[]{providerInfo};
-                            return Collections.singletonList(packageInfo);
-                        }
-                        return super.getInstalledPackages(flags);
-                    }
-                };
-            }
-        };
-        Uri uri = TrayContract.generateContentUri(mockContext);
-        assertEquals("content://" + getContext().getPackageName() + ".tray/preferences", uri.toString());
     }
 
     @Override
