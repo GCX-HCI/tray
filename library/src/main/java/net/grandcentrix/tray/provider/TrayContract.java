@@ -124,17 +124,12 @@ class TrayContract {
         if (!TextUtils.isEmpty(sTestAuthority)) {
             return sTestAuthority;
         }
-        for (PackageInfo pack : context.getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS)) {
-            ProviderInfo[] providers = pack.providers;
-            if (providers != null) {
-                for (ProviderInfo provider : providers) {
-                    if (TextUtils.equals(provider.authority,
-                            context.getApplicationContext().getPackageName() + ".tray")) {
-                        return provider.authority;
-                    }
-                }
-            }
+
+        final String authority = TrayContentProvider.mAuthority;
+        if(!TextUtils.isEmpty(authority)) {
+            return authority;
         }
+
         return "com.example.preferences";
     }
 }

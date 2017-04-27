@@ -16,6 +16,8 @@
 
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.core.TrayLog;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -28,8 +30,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-
-import net.grandcentrix.tray.core.TrayLog;
+import android.support.annotation.Nullable;
 
 import java.util.Date;
 
@@ -65,6 +66,8 @@ public class TrayContentProvider extends ContentProvider {
     TrayDBHelper mDeviceDbHelper;
 
     TrayDBHelper mUserDbHelper;
+
+    static String mAuthority;
 
     @Override
     public int delete(final Uri uri, String selection, String[] selectionArgs) {
@@ -219,7 +222,8 @@ public class TrayContentProvider extends ContentProvider {
     @Override
     public void attachInfo(Context context, ProviderInfo info) {
         super.attachInfo(context, info);
-        setAuthority(info.authority);
+        mAuthority = info.authority;
+        setAuthority(mAuthority);
     }
 
     @Override
