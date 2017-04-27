@@ -1,8 +1,5 @@
 package net.grandcentrix.tray.provider;
 
-import org.mockito.Mockito;
-
-import android.content.Context;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
@@ -21,7 +18,7 @@ public class TrayContractTest extends AndroidTestCase {
                 uri.toString());
 
         TrayContract.setAuthority("asdf");
-        uri = TrayContract.generateContentUri(Mockito.mock(Context.class));
+        uri = TrayContract.generateContentUri(getContext());
         assertEquals("content://asdf/preferences", uri.toString());
     }
 
@@ -31,7 +28,7 @@ public class TrayContractTest extends AndroidTestCase {
                 uri.toString());
 
         TrayContract.setAuthority("blubb");
-        uri = TrayContract.generateInternalContentUri(Mockito.mock(Context.class));
+        uri = TrayContract.generateInternalContentUri(getContext());
         assertEquals("content://blubb/internal_preferences", uri.toString());
     }
 
@@ -40,7 +37,7 @@ public class TrayContractTest extends AndroidTestCase {
         TrayContentProvider.mAuthority = null;
 
         try {
-            TrayContract.generateInternalContentUri(Mockito.mock(Context.class));
+            TrayContract.generateInternalContentUri(getContext());
             fail();
         } catch (RuntimeException e) {
             assertTrue(e.getMessage().contains("Internal tray error"));
