@@ -16,11 +16,14 @@
 
 package net.grandcentrix.tray.provider;
 
+import net.grandcentrix.tray.R;
+
 import android.content.Context;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * Contract defining the data in the {@link TrayContentProvider}. Use {@link TrayProviderHelper} to
@@ -85,6 +88,24 @@ class TrayContract {
         return generateContentUri(context, InternalPreferences.BASE_PATH);
     }
 
+    /**
+     * Inform if someone use the old way to set or override the authority
+     */
+    private static void checkOldWayToSetAuthority(final @NonNull Context context) {
+        if (!"legacyTrayAuthority".equals(context.getString(R.string.tray__authority))) {
+            Log.e("Tray", "You are using a legacy tray method\n"
+                    + "#########################################\n"
+                    + "#########################################\n"
+                    + "#########################################\n"
+                    + "Don't override the authority with `tray__authority`\n"
+                    + "To change the default authority override it inside the AndroidManifest\n"
+                    + "See https://github.com/grandcentrix/tray#set-the-authority for instructions\n"
+                    + "#########################################\n"
+                    + "#########################################\n"
+                    + "#########################################\n");
+        }
+    }
+
     @NonNull
     private static Uri generateContentUri(@NonNull final Context context, final String basepath) {
 
@@ -100,6 +121,8 @@ class TrayContract {
         if (!TextUtils.isEmpty(sTestAuthority)) {
             return sTestAuthority;
         }
+
+        checkOldWayToSetAuthority(context);
 
         final String authority = TrayContentProvider.mAuthority;
         if (!TextUtils.isEmpty(authority)) {
