@@ -1,7 +1,14 @@
 package net.grandcentrix.tray.provider;
 
+import android.content.res.Resources;
 import android.net.Uri;
 import android.test.AndroidTestCase;
+import android.test.mock.MockContext;
+
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by pascalwelsch on 4/12/15.
@@ -34,6 +41,7 @@ public class TrayContractTest extends AndroidTestCase {
 
     public void testGenerateInternalContentUri_WithoutProviderAuthority_AppShouldCrash()
             throws Exception {
+        final String authority = TrayContentProvider.mAuthority;
         TrayContentProvider.mAuthority = null;
 
         try {
@@ -43,6 +51,21 @@ public class TrayContractTest extends AndroidTestCase {
             assertTrue(e.getMessage().contains("Internal tray error"));
         }
 
+        TrayContentProvider.mAuthority = authority;
+    }
+
+    public void testLogcatOutput_ShouldPrintIfTrayAuthorityIsNotDefault() throws Exception {
+        final MockContext stuff = new MockContext() {
+            @Override
+            public Resources getResources() {
+                final Resources mockResources = mock(Resources.class);
+                when(mockResources.getString(anyInt())).thenReturn(eq("notDefaultTrayAuthority"));
+                return mockResources;
+            }
+        };
+        TrayContract.generateInternalContentUri(stuff);
+
+        assertTrue(true);
     }
 
     @Override
