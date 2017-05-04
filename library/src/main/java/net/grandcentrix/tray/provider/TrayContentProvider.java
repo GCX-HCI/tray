@@ -30,7 +30,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.Date;
 
@@ -66,8 +65,6 @@ public class TrayContentProvider extends ContentProvider {
     TrayDBHelper mDeviceDbHelper;
 
     TrayDBHelper mUserDbHelper;
-
-    static String mAuthority;
 
     @Override
     public int delete(final Uri uri, String selection, String[] selectionArgs) {
@@ -222,8 +219,8 @@ public class TrayContentProvider extends ContentProvider {
     @Override
     public void attachInfo(Context context, ProviderInfo info) {
         super.attachInfo(context, info);
-        mAuthority = info.authority;
-        setAuthority(mAuthority);
+        setAuthority(info.authority);
+        TrayLog.v("TrayContentProvider registered for authority: " + info.authority);
     }
 
     @Override
