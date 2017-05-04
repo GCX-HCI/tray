@@ -96,7 +96,7 @@ class TrayContract {
                     + "#########################################\n"
                     + "Don't set the authority with `tray__authority` in your build.gradle.\n"
                     + "To change the default authority override it inside the AndroidManifest\n"
-                    + "See https://github.com/grandcentrix/tray#set-the-authority for instructions\n"
+                    + "See https://github.com/grandcentrix/tray/wiki/Custom-Authority for instructions\n"
                     + "#########################################\n"
                     + "#########################################\n"
                     + "#########################################\n");

@@ -151,37 +151,7 @@ dependencies {
 
 ```
 
-##### Set the authority
-
-To set the unique authority you need to set applicationId in your `build.gradle`
-```java
-android {
-    ...
-    defaultConfig {
-        applicationId "your.app.id" // this is your unique applicationId as authority prefix
-    }
-}
-```
-
-We will always use your `applicationId` plus `.tray` as suffix for the authority.
-If you don't want to use the "default" authority you can define your own with the following code inside your `AndroidManifest`:
-```xml
-<provider
-    android:name="net.grandcentrix.tray.provider.TrayContentProvider"
-    android:authorities="your.custom.authority"
-    android:exported="false"
-    tools:replace="android:authorities" />
-```
-
-Tray is based on a ContentProvider. A ContentProvider needs a **unique** authority. When you use the same authority for multiple apps you will be unable to install the app due to a authority conflict with the error message:
-
-```
-Failure [INSTALL_FAILED_CONFLICTING_PROVIDER]
-```
-
-Changing the authority from one version to another app version is no problem! Tray always uses the same database.
-
-If you are using different applicationIds for different buildTypes of flavors read [this](https://blog.grandcentrix.net/how-to-install-different-app-variants-on-one-android-device/) article.
+More on the `ContentProvider` configuration can be found in the [wiki](https://github.com/grandcentrix/tray/wiki/Custom-Authority)
 
 ## Project state
 
