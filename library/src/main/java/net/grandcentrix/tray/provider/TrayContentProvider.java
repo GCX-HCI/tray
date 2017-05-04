@@ -327,9 +327,6 @@ public class TrayContentProvider extends ContentProvider {
         return !"false".equals(backup);
     }
 
-    /**
-     * @see TrayContract#setAuthority(String)
-     */
     static void setAuthority(final String authority) {
         sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 

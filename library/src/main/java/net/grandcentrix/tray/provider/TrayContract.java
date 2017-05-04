@@ -18,6 +18,7 @@ package net.grandcentrix.tray.provider;
 
 import net.grandcentrix.tray.R;
 import net.grandcentrix.tray.core.TrayLog;
+import net.grandcentrix.tray.core.TrayRuntimeException;
 
 import android.content.Context;
 import android.content.pm.ProviderInfo;
@@ -26,7 +27,6 @@ import android.os.Process;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.List;
@@ -72,24 +72,12 @@ class TrayContract {
         String BASE_PATH = "internal_preferences";
     }
 
-    private static String sTestAuthority;
-
-    private static String sAuthority;
+    @VisibleForTesting
+    static String sAuthority;
 
     @NonNull
     public static Uri generateContentUri(@NonNull final Context context) {
         return generateContentUri(context, Preferences.BASE_PATH);
-    }
-
-    /**
-     * use this only for tests and not in production
-     *
-     * @param authority the new authority for Tray
-     * @see TrayContentProvider#setAuthority(String)
-     */
-    @VisibleForTesting
-    public static void setAuthority(final String authority) {
-        sTestAuthority = authority;
     }
 
     @NonNull
@@ -127,9 +115,6 @@ class TrayContract {
 
     @NonNull
     private static synchronized String getAuthority(@NonNull final Context context) {
-        if (!TextUtils.isEmpty(sTestAuthority)) {
-            return sTestAuthority;
-        }
         if (sAuthority != null) {
             return sAuthority;
         }
@@ -150,7 +135,7 @@ class TrayContract {
         }
 
         // Should never happen. Otherwise we implemented tray in a wrong way!
-        throw new RuntimeException("Internal tray error. "
+        throw new TrayRuntimeException("Internal tray error. "
                 + "Could not find the provider authority. "
                 + "Please fill an issue at https://github.com/grandcentrix/tray/issues");
     }
