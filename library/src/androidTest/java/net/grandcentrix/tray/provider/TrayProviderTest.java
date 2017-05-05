@@ -16,13 +16,12 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.core.TrayStorage;
-
 import android.content.ContentValues;
-import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+
+import net.grandcentrix.tray.core.TrayStorage;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -38,7 +37,7 @@ public class TrayProviderTest extends TrayProviderTestCase {
 
     public TrayContentProvider startupProvider() {
         final TrayContentProvider provider = new TrayContentProvider();
-        provider.attachInfo(getProviderMockContext(), new ProviderInfo());
+        provider.attachInfo(getProviderMockContext(), getMockProviderInfo());
         assertTrue(provider.onCreate());
         assertTrue(provider.mUserDbHelper.getWritableDatabase().isOpen());
         return provider;
@@ -178,7 +177,8 @@ public class TrayProviderTest extends TrayProviderTestCase {
     public void testQueryWrongUri() throws Exception {
         final Uri googleUri = Uri.parse("http://www.google.com");
         final TrayContentProvider trayContentProvider = new TrayContentProvider();
-        trayContentProvider.attachInfo(getProviderMockContext(), new ProviderInfo());
+
+        trayContentProvider.attachInfo(getProviderMockContext(), getMockProviderInfo());
         try {
             trayContentProvider.query(googleUri, null, null, null, null);
             fail();

@@ -15,7 +15,7 @@ android {
         versionCode VERSION_CODE
         versionName VERSION_NAME
 
-        resValue "string", "tray__authority", "com.example.preferences"
+        resValue "string", "tray__authority", "legacyTrayAuthority"
 
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     }

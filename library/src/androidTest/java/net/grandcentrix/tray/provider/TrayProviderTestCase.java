@@ -24,6 +24,9 @@ import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
@@ -31,8 +34,10 @@ import android.os.Build;
 import android.test.IsolatedContext;
 import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
+import android.test.mock.MockPackageManager;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by pascalwelsch on 11/21/14.
@@ -44,7 +49,11 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
 
         boolean mHasMockResolver = false;
 
+        private List<ProviderInfo> mProviderInfos;
+
         private HashMap<String, ContentProvider> mProviders = new HashMap<>();
+
+        private Resources mResources;
 
         private final Context mTargetContext;
 
@@ -99,6 +108,30 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
         public boolean isHasMockResolver() {
             return mHasMockResolver;
         }
+
+        public void setProviderInfos(List<ProviderInfo> providerInfos) {
+            mProviderInfos = providerInfos;
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return new MockPackageManager() {
+                @Override
+                public List<ProviderInfo> queryContentProviders(final String processName,
+                        final int uid, final int flags) {
+                    return mProviderInfos;
+                }
+            };
+        }
+
+        @Override
+        public Resources getResources() {
+            return mResources != null ? mResources : super.getResources();
+        }
+
+        public void setResources(final Resources resources) {
+            mResources = resources;
+        }
     }
 
     private TrayIsolatedContext mIsolatedContext;
@@ -109,6 +142,12 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
 
     public TrayIsolatedContext getProviderMockContext() {
         return mIsolatedContext;
+    }
+
+    public ProviderInfo getMockProviderInfo() {
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = getProviderMockContext().getPackageName() + ".tray";
+        return providerInfo;
     }
 
     protected void assertDatabaseSize(final TrayStorage.Type type, final long expectedSize) {
@@ -182,7 +221,7 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
     }
 
     private void cleanupProvider() {
-        TrayContract.setAuthority(MockProvider.AUTHORITY);
+        TrayContract.sAuthority = MockProvider.AUTHORITY;
         TrayContentProvider.setAuthority(MockProvider.AUTHORITY);
         try {
             getMockContentResolver().delete(MockProvider.getUserContentUri(), null, null);

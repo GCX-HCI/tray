@@ -16,12 +16,13 @@
 
 package net.grandcentrix.tray.provider;
 
-import net.grandcentrix.tray.R;
 import net.grandcentrix.tray.core.TrayLog;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
+import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.MergeCursor;
@@ -210,11 +211,16 @@ public class TrayContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        setAuthority(getContext().getString(R.string.tray__authority));
-
         mUserDbHelper = new TrayDBHelper(getContext(), true);
         mDeviceDbHelper = new TrayDBHelper(getContext(), false);
         return true;
+    }
+
+    @Override
+    public void attachInfo(Context context, ProviderInfo info) {
+        super.attachInfo(context, info);
+        setAuthority(info.authority);
+        TrayLog.v("TrayContentProvider registered for authority: " + info.authority);
     }
 
     @Override
@@ -321,9 +327,6 @@ public class TrayContentProvider extends ContentProvider {
         return !"false".equals(backup);
     }
 
-    /**
-     * @see TrayContract#setAuthority(String)
-     */
     static void setAuthority(final String authority) {
         sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 

@@ -10,8 +10,6 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.1"
-
-        resValue "string", "tray__authority", "net.grandcentrix.tray.sample.preferences"
     }
 
     buildTypes {

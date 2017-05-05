@@ -19,6 +19,12 @@
 
         <service android:name=".MultiProcessService" android:process=":otherProcess"/>
 
+        <!-- example for changing the authority -->
+        <!-- <provider
+            android:name="net.grandcentrix.tray.provider.TrayContentProvider"
+            android:authorities="your.custom.authority"
+            android:exported="false"
+            tools:replace="android:authorities" /> -->
     </application>
 
 </manifest>
