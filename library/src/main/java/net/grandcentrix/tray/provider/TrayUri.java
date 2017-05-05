@@ -24,7 +24,7 @@ class TrayUri {
         private TrayStorage.Type mType = TrayStorage.Type.UNDEFINED;
 
         public Builder(final Context context) {
-            mContext = context.getApplicationContext();
+            mContext = (context.getApplicationContext() == null ? context : context.getApplicationContext());
         }
 
         public Uri build() {
