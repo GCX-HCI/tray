@@ -142,7 +142,7 @@ public class ContentProviderStorage extends TrayStorage {
     public ContentProviderStorage(@NonNull final Context context, @NonNull final String module,
             @NonNull final Type type) {
         super(module, type);
-        mContext = context.getApplicationContext();
+        mContext = (context.getApplicationContext() == null ? context : context.getApplicationContext());
         mTrayUri = new TrayUri(mContext);
         mProviderHelper = new TrayProviderHelper(mContext);
     }
