@@ -78,7 +78,7 @@ public class ReadDifferentFormat extends TrayProviderTestCase {
             assertEquals(Long.MAX_VALUE, mPref.getInt(KEY));
             fail();
         } catch (WrongTypeException e) {
-            assertTrue(e.getMessage().contains("int"));
+            assertTrue(e.getMessage().contains("string"));
         }
     }
 
