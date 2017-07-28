@@ -65,6 +65,30 @@ public class TrayContractTest extends TrayProviderTestCase {
 
         assertEquals("my.custom.authority", TrayContract.sAuthority);
     }
+    
+    public void testGenerateInternalContentUri_WithNameNotFoundExp_AppShouldCrash(){
+        final List<ProviderInfo> mockProviders = new ArrayList<>();
+    
+        ProviderInfo wrongInfo = new ProviderInfo();
+        wrongInfo.authority = "wrong";
+        wrongInfo.name = "wrong";
+        mockProviders.add(wrongInfo);
+    
+        ProviderInfo info = new ProviderInfo();
+        info.authority = "my.custom.authority";
+        info.name = TrayContentProvider.class.getName();
+        mockProviders.add(info);
+    
+        getProviderMockContext().setProviderInfos(mockProviders);
+        getProviderMockContext().setThrowNameNotFoundFromPackageManager(true);
+        
+        try {
+            TrayContract.generateInternalContentUri(getProviderMockContext());
+            fail("did not throw");
+        } catch (TrayRuntimeException e) {
+            assertTrue(e.getMessage().contains("Internal tray error"));
+        }
+    }
 
     public void testGenerateInternalContentUri_WithWrongProviders_AppShouldCrash()
             throws Exception {
