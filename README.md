@@ -2,6 +2,17 @@
 
 [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) [![License](https://img.shields.io/badge/license-Apache%202-green.svg?style=flat)](https://github.com/grandcentrix/tray/blob/master/LICENSE.txt)
 
+## Why I fork this?
+[grandcentrix/tray](https://github.com/grandcentrix/tray)'s ContentProvider is running in the app main process. But sometimes we (as app developers) may want to have it running in another process (say, ":service" process). So this fork allows you to achieve it, by add below into app manifest:
+```
+<!-- move Provider of tray into :service process -->
+        <provider android:authorities="com.vliux.giraffe.tray"
+            android:name="net.grandcentrix.tray.provider.TrayContentProvider"
+            android:process=":service"
+            tools:replace="process"/>
+```
+
+---
 If you have read the documentation of the [`SharedPreferences`](http://developer.android.com/reference/android/content/SharedPreferences.html) you might have seen one of these warnings:
 
 >Note: currently this class does not support use across multiple processes. This will be added later.
