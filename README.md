@@ -23,7 +23,7 @@ Tray is this mentioned _explicit cross-process data management approach_ powered
 - Migrate your current data stored in the SharedPreferences to Tray with [`SharedPreferencesImport`](https://github.com/grandcentrix/tray/blob/master/library/src/main/java/net/grandcentrix/tray/core/SharedPreferencesImport.java)
 - **tray is 100% unit tested!**
 - 0 lint warnings/errors
-- ![new_badge](https://cloud.githubusercontent.com/assets/1096485/9856970/37791f1c-5b18-11e5-97e4-53b8984c76e1.gif) Android 6.0 [Auto Backup for Apps](https://developer.android.com/guide/topics/data/autobackup.html) support! [Read more in the wiki](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support)
+- Android 6.0 [Auto Backup for Apps](https://developer.android.com/guide/topics/data/autobackup.html) support! [Read more in the wiki](https://github.com/grandcentrix/tray/wiki/Android-M-Auto-Backup-for-Apps-support)
 
 ## Usage
 
@@ -174,11 +174,9 @@ Those ~170 tests will help us indicate bugs in the future before we publish them
 
 
 ## Build state
+[![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray)
 
-Branch | Status | Coverage
-------------- | ------------- | -------------
-[`master`](https://github.com/grandcentrix/tray/tree/master) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=master)](https://travis-ci.org/grandcentrix/tray) | [![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=master)](https://codecov.io/github/grandcentrix/tray?branch=master)
-[`develop`](https://github.com/grandcentrix/tray/tree/develop) | [![Build Status](https://travis-ci.org/grandcentrix/tray.svg?branch=develop)](https://travis-ci.org/grandcentrix/tray) | [![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=develop)](https://codecov.io/github/grandcentrix/tray?branch=develop)
+[![codecov.io](http://codecov.io/github/grandcentrix/tray/branch.svg?branch=master)](https://codecov.io/github/grandcentrix/tray?branch=master)
 
 ## ContentProvider is overkill
 
