@@ -141,12 +141,32 @@ public class ImportPreferences extends TrayPreferences {
 
 ##### Add Tray to your project
 
-Tray is available via [jcenter](http://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/)
+###### GitHub Packages
 
-```java
+```gradle
+
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/grandcentrix/tray")
+    }
+}
 
 dependencies {
-    compile 'net.grandcentrix.tray:tray:0.12.0'
+    implementation "net.grandcentrix.tray:tray:0.12.0"
+}
+
+```
+
+###### JCenter (deprecated)
+
+```gradle
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation "net.grandcentrix.tray:tray:0.12.0"
 }
 
 ```
