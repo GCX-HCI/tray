@@ -137,7 +137,7 @@ public class ImportPreferences extends TrayPreferences {
 }
 ```
 
-## Getting Started [![Download](https://api.bintray.com/packages/passsy/maven/Tray/images/download.svg) ](https://bintray.com/passsy/maven/Tray/_latestVersion)
+## Getting Started
 
 ##### Add Tray to your project
 
