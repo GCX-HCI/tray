@@ -149,7 +149,7 @@ public class ImportPreferences extends TrayPreferences {
 
 repositories {
     maven {
-        url = uri("https://maven.pkg.github.com/grandcentrix/tray")
+        url = uri("https://maven.pkg.github.com/GCX-HCI/tray")
     }
 }
 
@@ -174,13 +174,6 @@ dependencies {
 ```
 
 More on the `ContentProvider` configuration can be found in the [wiki](https://github.com/grandcentrix/tray/wiki/Custom-Authority)
-
-## Project state
-
-Tray is currently in active development by [grandcentrix](http://www.grandcentrix.net/). We decided to go open source after reaching 100% test coverage.
-[grandcentrix](http://www.grandcentrix.net/) uses Tray in production in two apps without problems.
-
-You can follow the development in the [`develop`](https://github.com/grandcentrix/tray/tree/develop) branch.
 
 ## Testcoverage 100%
 
