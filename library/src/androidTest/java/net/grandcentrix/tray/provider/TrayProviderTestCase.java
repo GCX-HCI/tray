@@ -24,6 +24,7 @@ import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.Resources;
@@ -47,6 +48,8 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public static class TrayIsolatedContext extends IsolatedContext {
 
+        boolean mThrowNameNotFoundFromPm = false;
+        
         boolean mHasMockResolver = false;
 
         private List<ProviderInfo> mProviderInfos;
@@ -73,6 +76,10 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
             mHasMockResolver = enabled;
         }
 
+        public void setThrowNameNotFoundFromPackageManager(final boolean shouldThrow){
+            mThrowNameNotFoundFromPm = shouldThrow;
+        }
+        
         @Override
         public Context getApplicationContext() {
             return innerContext;
@@ -120,6 +127,18 @@ public abstract class TrayProviderTestCase extends ProviderTestCase2<TrayContent
                 public List<ProviderInfo> queryContentProviders(final String processName,
                         final int uid, final int flags) {
                     return mProviderInfos;
+                }
+    
+                @Override
+                public PackageInfo getPackageInfo(String packageName, int flags) throws NameNotFoundException {
+                    if(mThrowNameNotFoundFromPm) throw new NameNotFoundException();
+                    else {
+                        final PackageInfo pkgInfo = new PackageInfo();
+                        if (null != mProviderInfos) {
+                            pkgInfo.providers = mProviderInfos.toArray(new ProviderInfo[mProviderInfos.size()]);
+                        }
+                        return pkgInfo;
+                    }
                 }
             };
         }
